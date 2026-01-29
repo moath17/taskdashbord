@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { usersApi } from '../api';
+import { teamApi } from '../api/users';
 import { User } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -20,6 +20,7 @@ import {
   Loader,
   Search,
   Crown,
+  Building2,
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -32,16 +33,22 @@ export default function UserManagement() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const isOwnerOrManager = currentUser?.role === 'owner' || currentUser?.role === 'manager';
+
   useEffect(() => {
-    loadUsers();
-  }, []);
+    if (isOwnerOrManager) {
+      loadUsers();
+    } else {
+      setLoading(false);
+    }
+  }, [isOwnerOrManager]);
 
   const loadUsers = async () => {
     try {
-      const data = await usersApi.getAll();
+      const data = await teamApi.getAll();
       setUsers(data);
     } catch (error) {
-      console.error('Failed to load users:', error);
+      console.error('Failed to load team members:', error);
       toast.error(t.messages.loadingFailed);
     } finally {
       setLoading(false);
@@ -50,13 +57,23 @@ export default function UserManagement() {
 
   const handleDelete = async (id: string) => {
     const userToDelete = users.find((u) => u.id === id);
-    if (userToDelete?.role === 'manager') {
-      toast.error(isRTL ? 'لا يمكن حذف حساب المدير' : 'Cannot delete the manager account');
+    
+    // Cannot delete owner
+    if (userToDelete?.role === 'owner') {
+      toast.error(isRTL ? 'لا يمكن حذف حساب المالك' : 'Cannot delete the owner account');
       return;
     }
+    
+    // Cannot delete yourself
+    if (userToDelete?.id === currentUser?.id) {
+      toast.error(isRTL ? 'لا يمكنك حذف حسابك الخاص' : 'Cannot delete your own account');
+      return;
+    }
+
     if (!window.confirm(t.users.confirmDeleteUser)) return;
+    
     try {
-      await usersApi.delete(id);
+      await teamApi.delete(id);
       toast.success(t.users.userDeleted);
       loadUsers();
     } catch (error: any) {
@@ -70,9 +87,45 @@ export default function UserManagement() {
       user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const managerExists = users.some((u) => u.role === 'manager');
+  const getRoleIcon = (role: string) => {
+    switch (role) {
+      case 'owner':
+        return <Crown className="w-3 h-3" />;
+      case 'manager':
+        return <Shield className="w-3 h-3" />;
+      default:
+        return <UserIcon className="w-3 h-3" />;
+    }
+  };
 
-  if (currentUser?.role !== 'manager') {
+  const getRoleColor = (role: string) => {
+    switch (role) {
+      case 'owner':
+        return 'bg-purple-100 text-purple-800';
+      case 'manager':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-blue-100 text-blue-800';
+    }
+  };
+
+  const getRoleLabel = (role: string) => {
+    if (isRTL) {
+      switch (role) {
+        case 'owner': return 'المالك';
+        case 'manager': return 'مدير';
+        default: return 'موظف';
+      }
+    }
+    switch (role) {
+      case 'owner': return 'Owner';
+      case 'manager': return 'Manager';
+      default: return 'Employee';
+    }
+  };
+
+  // Access denied for non-owners/managers
+  if (!isOwnerOrManager) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
@@ -81,7 +134,9 @@ export default function UserManagement() {
             {isRTL ? 'الوصول مرفوض' : 'Access Denied'}
           </h2>
           <p className="text-gray-600">
-            {isRTL ? 'يمكن للمديرين فقط الوصول لإدارة المستخدمين.' : 'Only managers can access user management.'}
+            {isRTL 
+              ? 'يمكن للمالك والمديرين فقط الوصول لإدارة الفريق.' 
+              : 'Only owners and managers can access team management.'}
           </p>
         </div>
       </div>
@@ -101,15 +156,19 @@ export default function UserManagement() {
       {/* Header */}
       <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
         <div className={isRTL ? 'text-right' : ''}>
-          <h1 className="text-3xl font-bold text-gray-900">{t.users.title}</h1>
-          <p className="text-gray-600 mt-1">{t.users.subtitle}</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {isRTL ? 'إدارة الفريق' : 'Team Management'}
+          </h1>
+          <p className="text-gray-600 mt-1">
+            {isRTL ? 'إدارة أعضاء فريق مؤسستك' : 'Manage your organization team members'}
+          </p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
           className={`btn btn-primary flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
         >
           <Plus className="w-5 h-5" />
-          {t.users.addUser}
+          {isRTL ? 'إضافة عضو' : 'Add Member'}
         </button>
       </div>
 
@@ -118,7 +177,7 @@ export default function UserManagement() {
         <Search className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 ${isRTL ? 'right-3' : 'left-3'}`} />
         <input
           type="text"
-          placeholder={isRTL ? 'البحث بالاسم أو البريد...' : 'Search users by name or email...'}
+          placeholder={isRTL ? 'البحث بالاسم أو البريد...' : 'Search by name or email...'}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className={`input ${isRTL ? 'pr-10' : 'pl-10'}`}
@@ -126,25 +185,36 @@ export default function UserManagement() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div className={`card p-4 flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
           <div className="p-3 bg-primary-100 rounded-lg">
             <Users className="w-6 h-6 text-primary-600" />
           </div>
           <div className={isRTL ? 'text-right' : ''}>
             <p className="text-2xl font-bold text-gray-900">{users.length}</p>
-            <p className="text-sm text-gray-500">{isRTL ? 'إجمالي المستخدمين' : 'Total Users'}</p>
+            <p className="text-sm text-gray-500">{isRTL ? 'إجمالي الأعضاء' : 'Total Members'}</p>
+          </div>
+        </div>
+        <div className={`card p-4 flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className="p-3 bg-purple-100 rounded-lg">
+            <Crown className="w-6 h-6 text-purple-600" />
+          </div>
+          <div className={isRTL ? 'text-right' : ''}>
+            <p className="text-2xl font-bold text-gray-900">
+              {users.filter((u) => u.role === 'owner').length}
+            </p>
+            <p className="text-sm text-gray-500">{isRTL ? 'مالك' : 'Owner'}</p>
           </div>
         </div>
         <div className={`card p-4 flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
           <div className="p-3 bg-yellow-100 rounded-lg">
-            <Crown className="w-6 h-6 text-yellow-600" />
+            <Shield className="w-6 h-6 text-yellow-600" />
           </div>
           <div className={isRTL ? 'text-right' : ''}>
             <p className="text-2xl font-bold text-gray-900">
               {users.filter((u) => u.role === 'manager').length}
             </p>
-            <p className="text-sm text-gray-500">{t.auth.manager}</p>
+            <p className="text-sm text-gray-500">{isRTL ? 'مدراء' : 'Managers'}</p>
           </div>
         </div>
         <div className={`card p-4 flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
@@ -155,7 +225,7 @@ export default function UserManagement() {
             <p className="text-2xl font-bold text-gray-900">
               {users.filter((u) => u.role === 'employee').length}
             </p>
-            <p className="text-sm text-gray-500">{t.auth.employee}</p>
+            <p className="text-sm text-gray-500">{isRTL ? 'موظفين' : 'Employees'}</p>
           </div>
         </div>
       </div>
@@ -167,16 +237,16 @@ export default function UserManagement() {
             <thead className="bg-gray-50">
               <tr>
                 <th className={`px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider ${isRTL ? 'text-right' : 'text-left'}`}>
-                  {t.users.userName}
+                  {isRTL ? 'العضو' : 'Member'}
                 </th>
                 <th className={`px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider ${isRTL ? 'text-right' : 'text-left'}`}>
-                  {t.users.role}
+                  {isRTL ? 'الدور' : 'Role'}
                 </th>
                 <th className={`px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider ${isRTL ? 'text-right' : 'text-left'}`}>
-                  {t.users.createdAt}
+                  {isRTL ? 'تاريخ الإضافة' : 'Joined'}
                 </th>
                 <th className={`px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider ${isRTL ? 'text-left' : 'text-right'}`}>
-                  {t.users.actions}
+                  {isRTL ? 'إجراءات' : 'Actions'}
                 </th>
               </tr>
             </thead>
@@ -187,7 +257,9 @@ export default function UserManagement() {
                     <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                       <div
                         className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${
-                          user.role === 'manager'
+                          user.role === 'owner'
+                            ? 'bg-gradient-to-br from-purple-400 to-purple-600'
+                            : user.role === 'manager'
                             ? 'bg-gradient-to-br from-yellow-400 to-orange-500'
                             : 'bg-gradient-to-br from-blue-400 to-blue-600'
                         }`}
@@ -197,8 +269,8 @@ export default function UserManagement() {
                       <div className={isRTL ? 'text-right' : ''}>
                         <p className={`font-medium text-gray-900 flex items-center gap-2 ${isRTL ? 'flex-row-reverse justify-end' : ''}`}>
                           {user.name}
-                          {user.role === 'manager' && (
-                            <Crown className="w-4 h-4 text-yellow-500" />
+                          {user.role === 'owner' && (
+                            <Crown className="w-4 h-4 text-purple-500" />
                           )}
                         </p>
                         <p className={`text-sm text-gray-500 flex items-center gap-1 ${isRTL ? 'flex-row-reverse justify-end' : ''}`}>
@@ -210,18 +282,10 @@ export default function UserManagement() {
                   </td>
                   <td className="px-6 py-4">
                     <span
-                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${
-                        user.role === 'manager'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-blue-100 text-blue-800'
-                      } ${isRTL ? 'flex-row-reverse' : ''}`}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role)} ${isRTL ? 'flex-row-reverse' : ''}`}
                     >
-                      {user.role === 'manager' ? (
-                        <Shield className="w-3 h-3" />
-                      ) : (
-                        <UserIcon className="w-3 h-3" />
-                      )}
-                      {user.role === 'manager' ? t.auth.manager : t.auth.employee}
+                      {getRoleIcon(user.role)}
+                      {getRoleLabel(user.role)}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -234,21 +298,25 @@ export default function UserManagement() {
                   </td>
                   <td className="px-6 py-4">
                     <div className={`flex items-center gap-2 ${isRTL ? 'justify-start' : 'justify-end'}`}>
-                      <button
-                        onClick={() => {
-                          setEditingUser(user);
-                          setShowCreateModal(true);
-                        }}
-                        className="p-2 hover:bg-gray-100 rounded-lg text-gray-600"
-                        title={t.app.edit}
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      {user.role !== 'manager' && (
+                      {/* Can't edit owner (unless you are the owner editing yourself) */}
+                      {(user.role !== 'owner' || user.id === currentUser?.id) && (
+                        <button
+                          onClick={() => {
+                            setEditingUser(user);
+                            setShowCreateModal(true);
+                          }}
+                          className="p-2 hover:bg-gray-100 rounded-lg text-gray-600"
+                          title={isRTL ? 'تعديل' : 'Edit'}
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                      )}
+                      {/* Can't delete owner or yourself */}
+                      {user.role !== 'owner' && user.id !== currentUser?.id && (
                         <button
                           onClick={() => handleDelete(user.id)}
                           className="p-2 hover:bg-red-100 rounded-lg text-red-600"
-                          title={t.app.delete}
+                          title={isRTL ? 'حذف' : 'Delete'}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -264,15 +332,14 @@ export default function UserManagement() {
         {filteredUsers.length === 0 && (
           <div className="p-12 text-center">
             <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">{t.users.noUsers}</p>
+            <p className="text-gray-500">{isRTL ? 'لا يوجد أعضاء' : 'No team members found'}</p>
           </div>
         )}
       </div>
 
       {/* Create/Edit Modal */}
       {showCreateModal && (
-        <UserModal
-          t={t}
+        <TeamMemberModal
           isRTL={isRTL}
           onClose={() => {
             setShowCreateModal(false);
@@ -284,23 +351,22 @@ export default function UserManagement() {
             loadUsers();
           }}
           existingUser={editingUser}
-          managerExists={managerExists}
+          currentUser={currentUser}
         />
       )}
     </div>
   );
 }
 
-interface UserModalProps {
-  t: any;
+interface TeamMemberModalProps {
   isRTL: boolean;
   onClose: () => void;
   onSave: () => void;
   existingUser: User | null;
-  managerExists: boolean;
+  currentUser: User | null;
 }
 
-function UserModal({ t, isRTL, onClose, onSave, existingUser, managerExists }: UserModalProps) {
+function TeamMemberModal({ isRTL, onClose, onSave, existingUser, currentUser }: TeamMemberModalProps) {
   const [formData, setFormData] = useState({
     name: existingUser?.name || '',
     email: existingUser?.email || '',
@@ -310,13 +376,18 @@ function UserModal({ t, isRTL, onClose, onSave, existingUser, managerExists }: U
   const [saving, setSaving] = useState(false);
 
   const isEditing = !!existingUser;
-  const canSelectManager = !managerExists || existingUser?.role === 'manager';
+  const isEditingOwner = existingUser?.role === 'owner';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!isEditing && !formData.password) {
-      toast.error(isRTL ? 'كلمة المرور مطلوبة للمستخدمين الجدد' : 'Password is required for new users');
+      toast.error(isRTL ? 'كلمة المرور مطلوبة للأعضاء الجدد' : 'Password is required for new members');
+      return;
+    }
+
+    if (!isEditing && formData.password.length < 6) {
+      toast.error(isRTL ? 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' : 'Password must be at least 6 characters');
       return;
     }
 
@@ -327,23 +398,24 @@ function UserModal({ t, isRTL, onClose, onSave, existingUser, managerExists }: U
           name: formData.name,
           email: formData.email,
         };
-        if (formData.role !== existingUser.role) {
+        // Only include role if it changed and user is not owner
+        if (formData.role !== existingUser.role && existingUser.role !== 'owner') {
           updateData.role = formData.role;
         }
-        await usersApi.update(existingUser.id, updateData);
-        toast.success(t.users.userUpdated);
+        await teamApi.update(existingUser.id, updateData);
+        toast.success(isRTL ? 'تم تحديث العضو' : 'Member updated successfully');
       } else {
-        await usersApi.create({
+        await teamApi.create({
           name: formData.name,
           email: formData.email,
           password: formData.password,
           role: formData.role as 'manager' | 'employee',
         });
-        toast.success(t.users.userCreated);
+        toast.success(isRTL ? 'تم إضافة العضو' : 'Member added successfully');
       }
       onSave();
     } catch (error: any) {
-      toast.error(error.response?.data?.error || t.messages.failed);
+      toast.error(error.response?.data?.error || (isRTL ? 'فشلت العملية' : 'Operation failed'));
     } finally {
       setSaving(false);
     }
@@ -354,7 +426,10 @@ function UserModal({ t, isRTL, onClose, onSave, existingUser, managerExists }: U
       <div className={`bg-white rounded-xl shadow-2xl max-w-md w-full ${isRTL ? 'rtl' : 'ltr'}`}>
         <div className={`flex items-center justify-between p-6 border-b ${isRTL ? 'flex-row-reverse' : ''}`}>
           <h3 className="text-xl font-bold text-gray-900">
-            {isEditing ? t.users.editUser : t.users.createUser}
+            {isEditing 
+              ? (isRTL ? 'تعديل العضو' : 'Edit Member') 
+              : (isRTL ? 'إضافة عضو جديد' : 'Add New Member')
+            }
           </h3>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
             <X className="w-5 h-5" />
@@ -363,7 +438,9 @@ function UserModal({ t, isRTL, onClose, onSave, existingUser, managerExists }: U
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>{t.auth.name}</label>
+            <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>
+              {isRTL ? 'الاسم' : 'Name'}
+            </label>
             <input
               type="text"
               value={formData.name}
@@ -374,7 +451,9 @@ function UserModal({ t, isRTL, onClose, onSave, existingUser, managerExists }: U
           </div>
 
           <div>
-            <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>{t.auth.email}</label>
+            <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>
+              {isRTL ? 'البريد الإلكتروني' : 'Email'}
+            </label>
             <input
               type="email"
               value={formData.email}
@@ -387,7 +466,9 @@ function UserModal({ t, isRTL, onClose, onSave, existingUser, managerExists }: U
 
           {!isEditing && (
             <div>
-              <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>{t.auth.password}</label>
+              <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>
+                {isRTL ? 'كلمة المرور' : 'Password'}
+              </label>
               <input
                 type="password"
                 value={formData.password}
@@ -404,31 +485,39 @@ function UserModal({ t, isRTL, onClose, onSave, existingUser, managerExists }: U
           )}
 
           <div>
-            <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>{t.auth.role}</label>
+            <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>
+              {isRTL ? 'الدور' : 'Role'}
+            </label>
             <select
               value={formData.role}
-              onChange={(e) => setFormData({ ...formData, role: e.target.value as 'manager' | 'employee' })}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value as 'owner' | 'manager' | 'employee' })}
               className="input"
-              disabled={existingUser?.role === 'manager'}
+              disabled={isEditingOwner}
             >
-              <option value="employee">{t.auth.employee}</option>
-              <option value="manager" disabled={!canSelectManager}>
-                {t.auth.manager} {!canSelectManager && (isRTL ? '(موجود بالفعل)' : '(Already exists)')}
-              </option>
+              <option value="employee">{isRTL ? 'موظف' : 'Employee'}</option>
+              <option value="manager">{isRTL ? 'مدير' : 'Manager'}</option>
+              {isEditingOwner && (
+                <option value="owner">{isRTL ? 'مالك' : 'Owner'}</option>
+              )}
             </select>
-            {existingUser?.role === 'manager' && (
-              <p className={`text-xs text-yellow-600 mt-1 ${isRTL ? 'text-right' : ''}`}>
-                {isRTL ? 'لا يمكن تغيير دور المدير' : 'Manager role cannot be changed'}
+            {isEditingOwner && (
+              <p className={`text-xs text-purple-600 mt-1 ${isRTL ? 'text-right' : ''}`}>
+                {isRTL ? 'لا يمكن تغيير دور المالك' : 'Owner role cannot be changed'}
               </p>
             )}
           </div>
 
           <div className={`flex justify-end gap-3 pt-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
             <button type="button" onClick={onClose} className="btn btn-secondary">
-              {t.app.cancel}
+              {isRTL ? 'إلغاء' : 'Cancel'}
             </button>
             <button type="submit" disabled={saving} className="btn btn-primary">
-              {saving ? t.app.loading : isEditing ? t.app.update : t.users.addUser}
+              {saving 
+                ? (isRTL ? 'جاري الحفظ...' : 'Saving...') 
+                : isEditing 
+                ? (isRTL ? 'تحديث' : 'Update') 
+                : (isRTL ? 'إضافة' : 'Add Member')
+              }
             </button>
           </div>
         </form>

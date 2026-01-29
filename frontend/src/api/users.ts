@@ -1,17 +1,21 @@
 import api from './client';
 import { User } from '../types';
 
-export const usersApi = {
-  checkManagerExists: async (): Promise<boolean> => {
-    try {
-      const response = await api.get<{ managerExists: boolean }>('/users/check-manager');
-      return response.data.managerExists;
-    } catch (error) {
-      // If endpoint doesn't exist or error, return false to allow registration
-      return false;
-    }
-  },
+export interface TeamMemberData {
+  email: string;
+  password: string;
+  name: string;
+  role: 'manager' | 'employee';
+}
 
+export interface UpdateTeamMemberData {
+  email?: string;
+  name?: string;
+  role?: 'manager' | 'employee';
+}
+
+export const usersApi = {
+  // Get all users in the organization (for display)
   getAll: async (): Promise<User[]> => {
     const response = await api.get<User[]>('/users');
     return response.data;
@@ -22,17 +26,38 @@ export const usersApi = {
     return response.data;
   },
 
-  create: async (data: { email: string; password: string; name: string; role: 'manager' | 'employee' }): Promise<User> => {
-    const response = await api.post<User>('/users', data);
-    return response.data;
-  },
-
-  update: async (id: string, data: Partial<{ email: string; password: string; name: string; role: 'manager' | 'employee' }>): Promise<User> => {
+  update: async (id: string, data: UpdateTeamMemberData): Promise<User> => {
     const response = await api.put<User>(`/users/${id}`, data);
     return response.data;
   },
 
   delete: async (id: string): Promise<void> => {
     await api.delete(`/users/${id}`);
+  },
+};
+
+// Team management API (for owners/managers to add team members)
+export const teamApi = {
+  // Get all team members in the organization
+  getAll: async (): Promise<User[]> => {
+    const response = await api.get<User[]>('/team');
+    return response.data;
+  },
+
+  // Add a new team member
+  create: async (data: TeamMemberData): Promise<User> => {
+    const response = await api.post<User>('/team', data);
+    return response.data;
+  },
+
+  // Update a team member
+  update: async (id: string, data: UpdateTeamMemberData): Promise<User> => {
+    const response = await api.put<User>(`/team/${id}`, data);
+    return response.data;
+  },
+
+  // Delete a team member
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/team/${id}`);
   },
 };
