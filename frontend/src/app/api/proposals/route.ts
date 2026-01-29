@@ -1,31 +1,33 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
-import { requireAuth, requireRole } from '@/lib/auth';
-import { generateId, jsonResponse, errorResponse } from '@/lib/utils';
-import { Proposal } from '@/lib/types';
+import { requireAuth, requireOwnerOrManager } from '@/lib/auth';
+import { jsonResponse, errorResponse } from '@/lib/utils';
 
 // Get all proposals
 export async function GET(request: NextRequest) {
   try {
-    requireAuth(request);
+    const user = requireAuth(request);
     
-    await db.read();
-    const proposals = db.data.proposals.map((proposal) => {
-      const user = db.data.users.find((u) => u.id === proposal.createdBy);
-      return { ...proposal, createdByName: user?.name || 'Unknown' };
+    const proposals = await db.proposals.getByOrganization(user.organizationId);
+    const users = await db.users.getByOrganization(user.organizationId);
+    
+    const proposalsWithUsers = proposals.map((proposal: any) => {
+      const proposalUser = users.find((u: any) => u.id === proposal.createdBy);
+      return { ...proposal, createdByName: proposalUser?.name || 'Unknown' };
     });
     
-    return jsonResponse(proposals);
+    return jsonResponse(proposalsWithUsers);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
+    console.error('Get proposals error:', error);
     return errorResponse('Failed to get proposals', 500);
   }
 }
 
-// Create proposal (Manager only)
+// Create proposal
 export async function POST(request: NextRequest) {
   try {
-    const user = requireRole(request, 'manager');
+    const user = requireOwnerOrManager(request);
     const body = await request.json();
     
     const { title, description, type, imageUrl, link, isHighlighted } = body;
@@ -34,32 +36,22 @@ export async function POST(request: NextRequest) {
       return errorResponse('Missing required fields', 400);
     }
 
-    if (!['course', 'article', 'instruction', 'other'].includes(type)) {
-      return errorResponse('Invalid type', 400);
-    }
-
-    await db.read();
-
-    const proposal: Proposal = {
-      id: generateId(),
+    const proposal = await db.proposals.create({
+      organizationId: user.organizationId,
       title,
       description,
       type,
-      imageUrl: imageUrl && imageUrl.trim() !== '' ? imageUrl : undefined,
-      link: link && link.trim() !== '' ? link : undefined,
+      imageUrl: imageUrl || null,
+      link: link || null,
       isHighlighted: isHighlighted || false,
       createdBy: user.id,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    db.data.proposals.push(proposal);
-    await db.write();
+    });
 
     return jsonResponse(proposal, 201);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
     if (error.message === 'Forbidden') return errorResponse('Forbidden', 403);
+    console.error('Create proposal error:', error);
     return errorResponse('Failed to create proposal', 500);
   }
 }

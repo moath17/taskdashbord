@@ -26,11 +26,19 @@ export async function comparePassword(password: string, hashedPassword: string):
   return hash === hashedPassword;
 }
 
-export function generateToken(userId: string, email: string, role: string): string {
+export function generateToken(
+  userId: string, 
+  email: string, 
+  role: string, 
+  organizationId: string,
+  name: string
+): string {
   const payload = {
     userId,
     email,
     role,
+    organizationId,
+    name,
     exp: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
   };
   const payloadStr = JSON.stringify(payload);
@@ -38,7 +46,13 @@ export function generateToken(userId: string, email: string, role: string): stri
   return `${base64Encode(payloadStr)}.${signature}`;
 }
 
-export function verifyToken(token: string): { userId: string; email: string; role: string } | null {
+export function verifyToken(token: string): { 
+  userId: string; 
+  email: string; 
+  role: string; 
+  organizationId: string;
+  name: string;
+} | null {
   try {
     const [payloadB64, signatureB64] = token.split('.');
     if (!payloadB64 || !signatureB64) return null;
@@ -55,6 +69,8 @@ export function verifyToken(token: string): { userId: string; email: string; rol
       userId: payload.userId,
       email: payload.email,
       role: payload.role,
+      organizationId: payload.organizationId,
+      name: payload.name,
     };
   } catch {
     return null;
@@ -73,7 +89,9 @@ export function getAuthUser(request: NextRequest): AuthUser | null {
   return {
     id: decoded.userId,
     email: decoded.email,
-    role: decoded.role as 'manager' | 'employee',
+    name: decoded.name,
+    role: decoded.role as 'owner' | 'manager' | 'employee',
+    organizationId: decoded.organizationId,
   };
 }
 
@@ -91,4 +109,8 @@ export function requireRole(request: NextRequest, ...allowedRoles: string[]): Au
     throw new Error('Forbidden');
   }
   return user;
+}
+
+export function requireOwnerOrManager(request: NextRequest): AuthUser {
+  return requireRole(request, 'owner', 'manager');
 }

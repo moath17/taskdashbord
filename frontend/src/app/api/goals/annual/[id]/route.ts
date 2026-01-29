@@ -1,69 +1,61 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
-import { requireRole } from '@/lib/auth';
+import { requireOwnerOrManager } from '@/lib/auth';
 import { jsonResponse, errorResponse } from '@/lib/utils';
 
-// Update annual goal (Manager only)
+// Update annual goal
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    requireRole(request, 'manager');
+    const user = requireOwnerOrManager(request);
     const { id } = await params;
     const body = await request.json();
     
-    await db.read();
-    const goal = db.data.annualGoals.find(g => g.id === id);
+    const goal = await db.annualGoals.getById(id);
     
-    if (!goal) {
+    if (!goal || goal.organizationId !== user.organizationId) {
       return errorResponse('Annual goal not found', 404);
     }
 
-    const { title, description, year } = body;
-    if (title) goal.title = title;
-    if (description !== undefined) goal.description = description;
-    if (year) goal.year = year;
-    goal.updatedAt = new Date().toISOString();
-
-    await db.write();
-    return jsonResponse(goal);
+    const updatedGoal = await db.annualGoals.update(id, body);
+    return jsonResponse(updatedGoal);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
     if (error.message === 'Forbidden') return errorResponse('Forbidden', 403);
+    console.error('Update annual goal error:', error);
     return errorResponse('Failed to update annual goal', 500);
   }
 }
 
-// Delete annual goal (Manager only)
+// Delete annual goal
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    requireRole(request, 'manager');
+    const user = requireOwnerOrManager(request);
     const { id } = await params;
     
-    await db.read();
-    const index = db.data.annualGoals.findIndex(g => g.id === id);
+    const goal = await db.annualGoals.getById(id);
     
-    if (index === -1) {
+    if (!goal || goal.organizationId !== user.organizationId) {
       return errorResponse('Annual goal not found', 404);
     }
 
     // Check for linked MBO goals
-    const linkedMBOGoals = db.data.mboGoals.filter(m => m.annualGoalId === id);
-    if (linkedMBOGoals.length > 0) {
-      return errorResponse('Cannot delete: This annual goal has linked MBO goals. Delete them first.', 400);
+    const mboGoals = await db.mboGoals.getByAnnualGoal(id);
+    if (mboGoals.length > 0) {
+      return errorResponse('Cannot delete: This annual goal has linked MBO goals', 400);
     }
 
-    db.data.annualGoals.splice(index, 1);
-    await db.write();
-
+    await db.annualGoals.delete(id);
     return jsonResponse({ message: 'Annual goal deleted successfully' });
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
     if (error.message === 'Forbidden') return errorResponse('Forbidden', 403);
+    console.error('Delete annual goal error:', error);
     return errorResponse('Failed to delete annual goal', 500);
   }
 }

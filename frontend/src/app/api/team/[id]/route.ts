@@ -1,73 +1,36 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
-import { requireAuth, requireOwnerOrManager, hashPassword } from '@/lib/auth';
+import { requireOwnerOrManager, hashPassword } from '@/lib/auth';
 import { jsonResponse, errorResponse } from '@/lib/utils';
 
-// Get single user
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const authUser = requireAuth(request);
-    const { id } = await params;
-    
-    const user = await db.users.getById(id);
-    
-    if (!user || user.organizationId !== authUser.organizationId) {
-      return errorResponse('User not found', 404);
-    }
-
-    // Employees can only view their own profile
-    if (authUser.role === 'employee' && authUser.id !== id) {
-      return errorResponse('Forbidden', 403);
-    }
-
-    return jsonResponse({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      createdAt: user.createdAt,
-    });
-  } catch (error: any) {
-    if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
-    console.error('Get user error:', error);
-    return errorResponse('Failed to get user', 500);
-  }
-}
-
-// Update user
+// Update a team member
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const authUser = requireAuth(request);
+    const authUser = requireOwnerOrManager(request);
     const { id } = await params;
     const body = await request.json();
     
+    // Get the user to update
     const user = await db.users.getById(id);
     
-    if (!user || user.organizationId !== authUser.organizationId) {
+    if (!user) {
       return errorResponse('User not found', 404);
     }
 
-    // Employees can only update their own profile
-    if (authUser.role === 'employee' && authUser.id !== id) {
+    // Ensure user belongs to same organization
+    if (user.organizationId !== authUser.organizationId) {
       return errorResponse('Forbidden', 403);
     }
 
-    // Only owner/manager can change roles
-    if (body.role && !['owner', 'manager'].includes(authUser.role)) {
-      return errorResponse('Only owners/managers can change user roles', 403);
-    }
-
-    // Can't change owner role
+    // Can't demote owner
     if (user.role === 'owner' && body.role && body.role !== 'owner') {
       return errorResponse('Cannot change owner role', 400);
     }
 
+    // Build update data
     const updateData: any = {};
     if (body.email) updateData.email = body.email;
     if (body.name) updateData.name = body.name;
@@ -85,12 +48,13 @@ export async function PUT(
     });
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
-    console.error('Update user error:', error);
-    return errorResponse('Failed to update user', 500);
+    if (error.message === 'Forbidden') return errorResponse('Forbidden', 403);
+    console.error('Update team member error:', error);
+    return errorResponse('Failed to update team member', 500);
   }
 }
 
-// Delete user
+// Delete a team member
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -99,10 +63,16 @@ export async function DELETE(
     const authUser = requireOwnerOrManager(request);
     const { id } = await params;
     
+    // Get the user to delete
     const user = await db.users.getById(id);
     
-    if (!user || user.organizationId !== authUser.organizationId) {
+    if (!user) {
       return errorResponse('User not found', 404);
+    }
+
+    // Ensure user belongs to same organization
+    if (user.organizationId !== authUser.organizationId) {
+      return errorResponse('Forbidden', 403);
     }
 
     // Can't delete owner
@@ -116,11 +86,12 @@ export async function DELETE(
     }
 
     await db.users.delete(id);
-    return jsonResponse({ message: 'User deleted successfully' });
+
+    return jsonResponse({ message: 'Team member deleted successfully' });
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
     if (error.message === 'Forbidden') return errorResponse('Forbidden', 403);
-    console.error('Delete user error:', error);
-    return errorResponse('Failed to delete user', 500);
+    console.error('Delete team member error:', error);
+    return errorResponse('Failed to delete team member', 500);
   }
 }

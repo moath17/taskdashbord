@@ -1,23 +1,23 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
 import { requireAuth } from '@/lib/auth';
-import { generateId, jsonResponse, errorResponse } from '@/lib/utils';
-import { TrainingPlan } from '@/lib/types';
+import { jsonResponse, errorResponse } from '@/lib/utils';
 
 // Get all training plans
 export async function GET(request: NextRequest) {
   try {
     const user = requireAuth(request);
     
-    await db.read();
-    let plans = [...db.data.trainingPlans];
+    let plans = await db.trainingPlans.getByOrganization(user.organizationId);
 
     if (user.role === 'employee') {
-      plans = plans.filter((p) => p.userId === user.id);
+      plans = plans.filter((p: any) => p.userId === user.id);
     }
 
-    const plansWithUsers = plans.map((plan) => {
-      const planUser = db.data.users.find((u) => u.id === plan.userId);
+    const users = await db.users.getByOrganization(user.organizationId);
+    
+    const plansWithUsers = plans.map((plan: any) => {
+      const planUser = users.find((u: any) => u.id === plan.userId);
       return {
         ...plan,
         user: planUser ? { id: planUser.id, name: planUser.name, email: planUser.email } : null,
@@ -27,6 +27,7 @@ export async function GET(request: NextRequest) {
     return jsonResponse(plansWithUsers);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
+    console.error('Get training plans error:', error);
     return errorResponse('Failed to get training plans', 500);
   }
 }
@@ -43,28 +44,22 @@ export async function POST(request: NextRequest) {
       return errorResponse('Missing required fields', 400);
     }
 
-    await db.read();
-
-    const plan: TrainingPlan = {
-      id: generateId(),
+    const plan = await db.trainingPlans.create({
+      organizationId: user.organizationId,
       userId: user.id,
       courseName,
       platform,
       duration: duration || '',
-      startDate: startDate || undefined,
-      endDate: endDate || undefined,
+      startDate: startDate || null,
+      endDate: endDate || null,
       notes: notes || '',
       status: 'pending',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    db.data.trainingPlans.push(plan);
-    await db.write();
+    });
 
     return jsonResponse(plan, 201);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
+    console.error('Create training plan error:', error);
     return errorResponse('Failed to create training plan', 500);
   }
 }

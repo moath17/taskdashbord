@@ -8,26 +8,29 @@ export async function GET(request: NextRequest) {
   try {
     const user = requireAuth(request);
     
-    await db.read();
+    const users = await db.users.getByOrganization(user.organizationId);
+    const tasks = await db.tasks.getByOrganization(user.organizationId);
+    const annualGoals = await db.annualGoals.getByOrganization(user.organizationId);
+    const kpis = await db.kpis.getByOrganization(user.organizationId);
 
-    // Basic analytics data
     const analytics = {
-      totalUsers: db.data.users.length,
-      totalTasks: db.data.tasks.length,
-      completedTasks: db.data.tasks.filter(t => t.status === 'Completed').length,
-      totalGoals: db.data.annualGoals.length,
-      totalKPIs: db.data.kpis.length,
-      averageKPIAchievement: db.data.kpis.length > 0 
-        ? db.data.kpis.reduce((sum, kpi) => {
+      totalUsers: users.length,
+      totalTasks: tasks.length,
+      completedTasks: tasks.filter((t: any) => t.status === 'Completed').length,
+      totalGoals: annualGoals.length,
+      totalKPIs: kpis.length,
+      averageKPIAchievement: kpis.length > 0 
+        ? kpis.reduce((sum: number, kpi: any) => {
             const achievement = kpi.targetValue > 0 ? (kpi.currentValue / kpi.targetValue) * 100 : 0;
             return sum + achievement;
-          }, 0) / db.data.kpis.length
+          }, 0) / kpis.length
         : 0,
     };
 
     return jsonResponse(analytics);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
+    console.error('Get analytics error:', error);
     return errorResponse('Failed to get analytics', 500);
   }
 }

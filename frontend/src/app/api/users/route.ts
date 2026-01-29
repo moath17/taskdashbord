@@ -1,80 +1,28 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
-import { requireRole, hashPassword } from '@/lib/auth';
-import { generateId, jsonResponse, errorResponse } from '@/lib/utils';
-import { User } from '@/lib/types';
+import { requireOwnerOrManager } from '@/lib/auth';
+import { jsonResponse, errorResponse } from '@/lib/utils';
 
-// Get all users (Manager only)
+// Get all users in organization (redirect to /api/team)
 export async function GET(request: NextRequest) {
   try {
-    requireRole(request, 'manager');
+    const user = requireOwnerOrManager(request);
     
-    await db.read();
-    const users = db.data.users.map((user) => ({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      createdAt: user.createdAt,
+    const users = await db.users.getByOrganization(user.organizationId);
+    
+    const safeUsers = users.map((u: any) => ({
+      id: u.id,
+      email: u.email,
+      name: u.name,
+      role: u.role,
+      createdAt: u.createdAt,
     }));
     
-    return jsonResponse(users);
+    return jsonResponse(safeUsers);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
     if (error.message === 'Forbidden') return errorResponse('Forbidden', 403);
+    console.error('Get users error:', error);
     return errorResponse('Failed to get users', 500);
-  }
-}
-
-// Create user (Manager only)
-export async function POST(request: NextRequest) {
-  try {
-    requireRole(request, 'manager');
-    
-    const body = await request.json();
-    const { email, password, name, role } = body;
-
-    if (!email || !password || !name || !role) {
-      return errorResponse('Missing required fields', 400);
-    }
-
-    await db.read();
-
-    const existingUser = db.data.users.find((u) => u.email === email);
-    if (existingUser) {
-      return errorResponse('User already exists', 400);
-    }
-
-    if (role === 'manager') {
-      const existingManager = db.data.users.find((u) => u.role === 'manager');
-      if (existingManager) {
-        return errorResponse('A manager already exists. Only one manager is allowed.', 400);
-      }
-    }
-
-    const hashedPassword = await hashPassword(password);
-    const user: User = {
-      id: generateId(),
-      email,
-      password: hashedPassword,
-      name,
-      role,
-      createdAt: new Date().toISOString(),
-    };
-
-    db.data.users.push(user);
-    await db.write();
-
-    return jsonResponse({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      createdAt: user.createdAt,
-    }, 201);
-  } catch (error: any) {
-    if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
-    if (error.message === 'Forbidden') return errorResponse('Forbidden', 403);
-    return errorResponse('Failed to create user', 500);
   }
 }

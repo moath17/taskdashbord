@@ -1,24 +1,25 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
-import { requireAuth, requireRole } from '@/lib/auth';
-import { generateId, jsonResponse, errorResponse } from '@/lib/utils';
-import { MBOGoal } from '@/lib/types';
+import { requireAuth, requireOwnerOrManager } from '@/lib/auth';
+import { jsonResponse, errorResponse } from '@/lib/utils';
 
 // Get all MBO goals
 export async function GET(request: NextRequest) {
   try {
     const user = requireAuth(request);
     
-    await db.read();
-    let goals = db.data.mboGoals;
+    let goals = await db.mboGoals.getByOrganization(user.organizationId);
     
     if (user.role === 'employee') {
-      goals = goals.filter(g => g.userId === user.id);
+      goals = goals.filter((g: any) => g.userId === user.id);
     }
     
-    const goalsWithInfo = goals.map(goal => {
-      const goalUser = db.data.users.find(u => u.id === goal.userId);
-      const annualGoal = db.data.annualGoals.find(ag => ag.id === goal.annualGoalId);
+    const users = await db.users.getByOrganization(user.organizationId);
+    const annualGoals = await db.annualGoals.getByOrganization(user.organizationId);
+    
+    const goalsWithInfo = goals.map((goal: any) => {
+      const goalUser = users.find((u: any) => u.id === goal.userId);
+      const annualGoal = annualGoals.find((ag: any) => ag.id === goal.annualGoalId);
       return {
         ...goal,
         userName: goalUser?.name || 'Unknown',
@@ -29,59 +30,39 @@ export async function GET(request: NextRequest) {
     return jsonResponse(goalsWithInfo);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
+    console.error('Get MBO goals error:', error);
     return errorResponse('Failed to get MBO goals', 500);
   }
 }
 
-// Create MBO goal (Manager only)
+// Create MBO goal
 export async function POST(request: NextRequest) {
   try {
-    const user = requireRole(request, 'manager');
+    const user = requireOwnerOrManager(request);
     const body = await request.json();
     
     const { title, description, annualGoalId, userId, targetValue, currentValue } = body;
 
     if (!title || !annualGoalId) {
-      return errorResponse('Missing required fields', 400);
+      return errorResponse('Title and annualGoalId are required', 400);
     }
 
-    await db.read();
-
-    // Verify annual goal exists
-    const annualGoal = db.data.annualGoals.find(g => g.id === annualGoalId);
-    if (!annualGoal) {
-      return errorResponse('Annual goal not found', 400);
-    }
-
-    // Verify user exists if provided
-    if (userId) {
-      const targetUser = db.data.users.find(u => u.id === userId);
-      if (!targetUser) {
-        return errorResponse('User not found', 400);
-      }
-    }
-
-    const goal: MBOGoal = {
-      id: generateId(),
+    const goal = await db.mboGoals.create({
+      organizationId: user.organizationId,
       title,
       description: description || '',
       annualGoalId,
-      userId: userId || annualGoal.userId,
+      userId: userId || user.id,
       targetValue: targetValue || '',
       currentValue: currentValue || '',
       createdBy: user.id,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    });
 
-    db.data.mboGoals.push(goal);
-    await db.write();
-
-    const goalUser = db.data.users.find(u => u.id === goal.userId);
-    return jsonResponse({ ...goal, userName: goalUser?.name || 'Unknown' }, 201);
+    return jsonResponse(goal, 201);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
     if (error.message === 'Forbidden') return errorResponse('Forbidden', 403);
+    console.error('Create MBO goal error:', error);
     return errorResponse('Failed to create MBO goal', 500);
   }
 }
