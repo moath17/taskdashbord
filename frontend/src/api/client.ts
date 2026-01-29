@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+// API is now internal - no need for external URL
+const API_URL = '/api';
 
 export const api = axios.create({
   baseURL: API_URL,

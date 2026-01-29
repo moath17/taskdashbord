@@ -1,0 +1,68 @@
+import { NextRequest } from 'next/server';
+import { db } from '@/lib/database';
+import { requireAuth } from '@/lib/auth';
+import { generateId, jsonResponse, errorResponse } from '@/lib/utils';
+import { VacationPlan } from '@/lib/types';
+
+// Get all vacation plans
+export async function GET(request: NextRequest) {
+  try {
+    const user = requireAuth(request);
+    
+    await db.read();
+    let plans = [...db.data.vacationPlans];
+
+    if (user.role === 'employee') {
+      plans = plans.filter((p) => p.userId === user.id);
+    }
+
+    const plansWithUsers = plans.map((plan) => {
+      const planUser = db.data.users.find((u) => u.id === plan.userId);
+      return {
+        ...plan,
+        user: planUser ? { id: planUser.id, name: planUser.name, email: planUser.email } : null,
+      };
+    });
+
+    return jsonResponse(plansWithUsers);
+  } catch (error: any) {
+    if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
+    return errorResponse('Failed to get vacation plans', 500);
+  }
+}
+
+// Create vacation plan
+export async function POST(request: NextRequest) {
+  try {
+    const user = requireAuth(request);
+    const body = await request.json();
+    
+    const { type, startDate, endDate, notes } = body;
+
+    if (!type || !startDate || !endDate) {
+      return errorResponse('Missing required fields', 400);
+    }
+
+    await db.read();
+
+    const plan: VacationPlan = {
+      id: generateId(),
+      userId: user.id,
+      type,
+      startDate,
+      endDate,
+      notes: notes || '',
+      status: 'pending',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    db.data.vacationPlans.push(plan);
+    await db.write();
+
+    return jsonResponse(plan, 201);
+  } catch (error: any) {
+    if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
+    return errorResponse('Failed to create vacation plan', 500);
+  }
+}
