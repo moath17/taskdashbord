@@ -1,0 +1,9 @@
+'use client';
+
+import dynamic from 'next/dynamic';
+
+const KPIs = dynamic(() => import('@/pages/KPIs'), { ssr: false });
+
+export default function KPIsPage() {
+  return <KPIs />;
+}
