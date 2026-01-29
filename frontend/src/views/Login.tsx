@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { Languages } from 'lucide-react';
@@ -11,7 +14,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const { t, language, toggleLanguage, isRTL } = useLanguage();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +23,7 @@ export default function Login() {
     try {
       await login(email, password);
       toast.success(t.auth.loginSuccess);
-      navigate('/dashboard');
+      router.push('/dashboard');
     } catch (error: any) {
       toast.error(error.response?.data?.error || t.auth.loginFailed);
     } finally {
@@ -81,7 +84,7 @@ export default function Login() {
           </form>
           <p className="mt-4 text-center text-sm text-gray-600">
             {t.auth.noAccount}{' '}
-            <Link to="/register" className="text-primary-600 hover:text-primary-700 font-medium">
+            <Link href="/register" className="text-primary-600 hover:text-primary-700 font-medium">
               {t.auth.register}
             </Link>
           </p>

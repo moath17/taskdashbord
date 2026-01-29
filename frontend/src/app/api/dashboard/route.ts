@@ -116,7 +116,7 @@ export async function GET(request: NextRequest) {
       : db.data.trainingPlans.filter((p) => p.userId === user.id && p.status === 'approved');
 
     const userIdsToCheck = user.role === 'manager'
-      ? [...new Set([...allVacations.map((v) => v.userId), ...allTrainings.map((t) => t.userId)])]
+      ? Array.from(new Set([...allVacations.map((v) => v.userId), ...allTrainings.map((t) => t.userId)]))
       : [user.id];
 
     userIdsToCheck.forEach((uid) => {
