@@ -1,5 +1,8 @@
+'use client';
+
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { usersApi } from '../api';
@@ -18,7 +21,7 @@ export default function Register() {
   const [checkingManager, setCheckingManager] = useState(true);
   const { register } = useAuth();
   const { t, language, toggleLanguage, isRTL } = useLanguage();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   useEffect(() => {
     checkManagerExists();
@@ -65,7 +68,7 @@ export default function Register() {
     try {
       await register(formData.email, formData.password, formData.name, formData.role);
       toast.success(t.auth.registerSuccess);
-      navigate('/dashboard');
+      router.push('/dashboard');
     } catch (error: any) {
       const errorMessage = error.response?.data?.error || t.auth.registerFailed;
       toast.error(errorMessage);
@@ -170,7 +173,7 @@ export default function Register() {
           </form>
           <p className="mt-4 text-center text-sm text-gray-600">
             {t.auth.hasAccount}{' '}
-            <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium">
+            <Link href="/login" className="text-primary-600 hover:text-primary-700 font-medium">
               {t.auth.login}
             </Link>
           </p>
