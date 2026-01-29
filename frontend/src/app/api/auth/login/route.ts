@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
-import { comparePassword, generateToken } from '@/lib/auth';
+import { comparePassword, generateToken, updateUserActivity } from '@/lib/auth';
 import { jsonResponse, errorResponse } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
@@ -29,6 +29,9 @@ export async function POST(request: NextRequest) {
 
     // Get organization name
     const organization = await db.organizations.getById(user.organizationId);
+
+    // Update user's last activity on login
+    updateUserActivity(user.id);
 
     const token = generateToken(user.id, user.email, user.role, user.organizationId, user.name);
     

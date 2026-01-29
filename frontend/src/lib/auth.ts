@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { AuthUser } from './types';
+import { supabase } from './supabase';
 
 const JWT_SECRET = process.env.JWT_SECRET || '***REMOVED***';
 
@@ -113,4 +114,25 @@ export function requireRole(request: NextRequest, ...allowedRoles: string[]): Au
 
 export function requireOwnerOrManager(request: NextRequest): AuthUser {
   return requireRole(request, 'owner', 'manager');
+}
+
+// Update user's last activity timestamp
+export async function updateUserActivity(userId: string): Promise<void> {
+  try {
+    await supabase
+      .from('users')
+      .update({ last_activity: new Date().toISOString() })
+      .eq('id', userId);
+  } catch (error) {
+    // Silently fail - don't break the request if activity update fails
+    console.error('Failed to update user activity:', error);
+  }
+}
+
+// Get authenticated user and update their activity
+export async function requireAuthWithActivity(request: NextRequest): Promise<AuthUser> {
+  const user = requireAuth(request);
+  // Update activity in background (don't await)
+  updateUserActivity(user.id);
+  return user;
 }

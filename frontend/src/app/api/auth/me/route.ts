@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
-import { verifyToken } from '@/lib/auth';
+import { verifyToken, updateUserActivity } from '@/lib/auth';
 import { jsonResponse, errorResponse } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
@@ -22,6 +22,9 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return errorResponse('User not found', 404);
     }
+
+    // Update user's last activity (non-blocking)
+    updateUserActivity(user.id);
 
     const organization = await db.organizations.getById(user.organizationId);
 
