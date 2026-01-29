@@ -1,4 +1,4 @@
-export type UserRole = 'manager' | 'employee';
+export type UserRole = 'owner' | 'manager' | 'employee';
 export type TaskStatus = 'New' | 'In Progress' | 'Completed' | 'Delayed';
 export type TaskPriority = 'High' | 'Medium' | 'Low';
 export type VacationType = 'Annual' | 'Sick' | 'Other';
@@ -9,6 +9,8 @@ export interface User {
   email: string;
   name: string;
   role: UserRole;
+  organizationId?: string;
+  organizationName?: string;
   createdAt?: string;
 }
 

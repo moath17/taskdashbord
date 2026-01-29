@@ -7,10 +7,10 @@ export interface LoginCredentials {
 }
 
 export interface RegisterData {
+  organizationName: string;
   email: string;
   password: string;
   name: string;
-  role: string;
 }
 
 export interface AuthResponse {
