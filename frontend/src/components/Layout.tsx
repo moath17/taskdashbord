@@ -40,7 +40,17 @@ export default function Layout({ children }: LayoutProps) {
     router.push('/login');
   };
 
+  const isOwner = user?.role === 'owner';
   const isManager = user?.role === 'manager';
+  const isOwnerOrManager = isOwner || isManager;
+
+  // Get role display label
+  const getRoleLabel = () => {
+    if (isOwner) return { emoji: '👑', label: 'Owner' };
+    if (isManager) return { emoji: '🛡️', label: t.auth.manager };
+    return { emoji: '👤', label: t.auth.employee };
+  };
+  const roleInfo = getRoleLabel();
 
   const navItems = useMemo(() => {
     const items = [
@@ -51,7 +61,8 @@ export default function Layout({ children }: LayoutProps) {
       { path: '/plans', label: t.nav.plans, icon: Calendar, color: 'from-pink-500 to-rose-500' },
     ];
 
-    if (isManager) {
+    // Owners and managers can see weekly updates and users management
+    if (isOwnerOrManager) {
       items.push(
         { path: '/weekly-updates', label: t.nav.weeklyUpdates, icon: FileText, color: 'from-indigo-500 to-blue-500' },
         { path: '/users', label: t.nav.users, icon: Users, color: 'from-fuchsia-500 to-pink-500' }
@@ -64,7 +75,7 @@ export default function Layout({ children }: LayoutProps) {
     );
 
     return items;
-  }, [isManager, t]);
+  }, [isOwnerOrManager, t]);
 
   return (
     <div className={`min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
@@ -101,7 +112,7 @@ export default function Layout({ children }: LayoutProps) {
                   {t.app.name}
                 </h1>
                 <p className="text-xs text-slate-400 font-medium">
-                  {isManager ? '👑 ' : '👤 '}{isManager ? t.auth.manager : t.auth.employee}
+                  {roleInfo.emoji} {roleInfo.label}
                 </p>
               </div>
             )}
