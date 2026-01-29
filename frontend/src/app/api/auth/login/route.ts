@@ -12,19 +12,26 @@ export async function POST(request: NextRequest) {
       return errorResponse('Missing email or password', 400);
     }
 
-    await db.read();
+    // Find user by email (could be in multiple orgs, but email is unique globally now)
+    const users = await db.users.getByEmail(email);
     
-    const user = db.data.users.find((u) => u.email === email);
-    if (!user) {
+    if (users.length === 0) {
       return errorResponse('Invalid credentials', 401);
     }
+
+    // For simplicity, we'll use the first match (email is unique per org)
+    const user = users[0];
 
     const isValid = await comparePassword(password, user.password);
     if (!isValid) {
       return errorResponse('Invalid credentials', 401);
     }
 
-    const token = generateToken(user.id, user.email, user.role);
+    // Get organization name
+    const organization = await db.organizations.getById(user.organizationId);
+
+    const token = generateToken(user.id, user.email, user.role, user.organizationId, user.name);
+    
     return jsonResponse({
       token,
       user: {
@@ -32,10 +39,12 @@ export async function POST(request: NextRequest) {
         email: user.email,
         name: user.name,
         role: user.role,
+        organizationId: user.organizationId,
+        organizationName: organization?.name || 'Unknown',
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Login error:', error);
-    return errorResponse('Login failed', 500);
+    return errorResponse(error.message || 'Login failed', 500);
   }
 }

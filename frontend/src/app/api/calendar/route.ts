@@ -1,31 +1,33 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
-import { requireAuth, requireRole } from '@/lib/auth';
-import { generateId, jsonResponse, errorResponse } from '@/lib/utils';
-import { CalendarEvent } from '@/lib/types';
+import { requireAuth, requireOwnerOrManager } from '@/lib/auth';
+import { jsonResponse, errorResponse } from '@/lib/utils';
 
 // Get all calendar events
 export async function GET(request: NextRequest) {
   try {
-    requireAuth(request);
+    const user = requireAuth(request);
     
-    await db.read();
-    const events = db.data.calendarEvents.map((event) => {
-      const user = db.data.users.find((u) => u.id === event.createdBy);
-      return { ...event, createdByName: user?.name || 'Unknown' };
+    const events = await db.calendarEvents.getByOrganization(user.organizationId);
+    const users = await db.users.getByOrganization(user.organizationId);
+    
+    const eventsWithUsers = events.map((event: any) => {
+      const eventUser = users.find((u: any) => u.id === event.createdBy);
+      return { ...event, createdByName: eventUser?.name || 'Unknown' };
     });
     
-    return jsonResponse(events);
+    return jsonResponse(eventsWithUsers);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
+    console.error('Get calendar events error:', error);
     return errorResponse('Failed to get calendar events', 500);
   }
 }
 
-// Create calendar event (Manager only)
+// Create calendar event
 export async function POST(request: NextRequest) {
   try {
-    const user = requireRole(request, 'manager');
+    const user = requireOwnerOrManager(request);
     const body = await request.json();
     
     const { title, type, startDate, endDate, description } = body;
@@ -34,37 +36,21 @@ export async function POST(request: NextRequest) {
       return errorResponse('Missing required fields', 400);
     }
 
-    if (!['holiday', 'training'].includes(type)) {
-      return errorResponse('Invalid type', 400);
-    }
-
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    if (end < start) {
-      return errorResponse('End date cannot be before start date', 400);
-    }
-
-    await db.read();
-
-    const event: CalendarEvent = {
-      id: generateId(),
+    const event = await db.calendarEvents.create({
+      organizationId: user.organizationId,
       title,
       type,
       startDate,
       endDate,
       description: description || '',
       createdBy: user.id,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    db.data.calendarEvents.push(event);
-    await db.write();
+    });
 
     return jsonResponse(event, 201);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
     if (error.message === 'Forbidden') return errorResponse('Forbidden', 403);
+    console.error('Create calendar event error:', error);
     return errorResponse('Failed to create calendar event', 500);
   }
 }

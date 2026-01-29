@@ -17,20 +17,23 @@ export async function GET(request: NextRequest) {
       return errorResponse('Invalid token', 401);
     }
 
-    await db.read();
-    const user = db.data.users.find((u) => u.id === decoded.userId);
+    const user = await db.users.getById(decoded.userId);
     
     if (!user) {
       return errorResponse('User not found', 404);
     }
+
+    const organization = await db.organizations.getById(user.organizationId);
 
     return jsonResponse({
       id: user.id,
       email: user.email,
       name: user.name,
       role: user.role,
+      organizationId: user.organizationId,
+      organizationName: organization?.name || 'Unknown',
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Get user error:', error);
     return errorResponse('Failed to get user', 500);
   }

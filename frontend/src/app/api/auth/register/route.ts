@@ -1,55 +1,46 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
 import { hashPassword, generateToken } from '@/lib/auth';
-import { generateId, jsonResponse, errorResponse } from '@/lib/utils';
-import { User } from '@/lib/types';
+import { jsonResponse, errorResponse } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password, name, role } = body;
+    const { organizationName, email, password, name } = body;
 
-    if (!email || !password || !name || !role) {
-      return errorResponse('Missing required fields', 400);
-    }
-
-    if (!['manager', 'employee'].includes(role)) {
-      return errorResponse('Invalid role', 400);
+    // Validation
+    if (!organizationName || !email || !password || !name) {
+      return errorResponse('Missing required fields: organizationName, email, password, name', 400);
     }
 
     if (password.length < 6) {
       return errorResponse('Password must be at least 6 characters', 400);
     }
 
-    await db.read();
-    
-    const existingUser = db.data.users.find((u) => u.email === email);
-    if (existingUser) {
-      return errorResponse('User already exists', 400);
+    // Check if email already exists in any organization
+    const existingUsers = await db.users.getByEmail(email);
+    if (existingUsers.length > 0) {
+      return errorResponse('Email already registered', 400);
     }
 
-    // Check if manager already exists when trying to register as manager
-    if (role === 'manager') {
-      const existingManager = db.data.users.find((u) => u.role === 'manager');
-      if (existingManager) {
-        return errorResponse('A manager already exists. Only one manager is allowed.', 400);
-      }
-    }
+    // Create the organization
+    const organization = await db.organizations.create({
+      name: organizationName,
+    });
 
+    // Hash password and create owner user
     const hashedPassword = await hashPassword(password);
-    const user: User = {
-      id: generateId(),
+    const user = await db.users.create({
+      organizationId: organization.id,
       email,
       password: hashedPassword,
       name,
-      role,
-      createdAt: new Date().toISOString(),
-    };
+      role: 'owner',
+    });
 
-    db.data.users.push(user);
-    await db.write();
+    // Generate token
+    const token = generateToken(user.id, user.email, user.role, user.organizationId, user.name);
 
-    const token = generateToken(user.id, user.email, user.role);
     return jsonResponse({
       token,
       user: {
@@ -57,10 +48,12 @@ export async function POST(request: NextRequest) {
         email: user.email,
         name: user.name,
         role: user.role,
+        organizationId: user.organizationId,
+        organizationName: organization.name,
       },
     }, 201);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Register error:', error);
-    return errorResponse('Registration failed', 500);
+    return errorResponse(error.message || 'Registration failed', 500);
   }
 }

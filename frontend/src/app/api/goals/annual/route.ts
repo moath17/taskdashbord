@@ -1,65 +1,60 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
-import { requireAuth, requireRole } from '@/lib/auth';
-import { generateId, jsonResponse, errorResponse } from '@/lib/utils';
-import { AnnualGoal } from '@/lib/types';
+import { requireAuth, requireOwnerOrManager } from '@/lib/auth';
+import { jsonResponse, errorResponse } from '@/lib/utils';
 
 // Get all annual goals
 export async function GET(request: NextRequest) {
   try {
     const user = requireAuth(request);
     
-    await db.read();
-    let goals = db.data.annualGoals;
+    let goals = await db.annualGoals.getByOrganization(user.organizationId);
     
     if (user.role === 'employee') {
-      goals = goals.filter(g => g.userId === user.id);
+      goals = goals.filter((g: any) => g.userId === user.id);
     }
     
-    const goalsWithUser = goals.map(goal => {
-      const goalUser = db.data.users.find(u => u.id === goal.userId);
+    const users = await db.users.getByOrganization(user.organizationId);
+    
+    const goalsWithUser = goals.map((goal: any) => {
+      const goalUser = users.find((u: any) => u.id === goal.userId);
       return { ...goal, userName: goalUser?.name || 'Unknown' };
     });
     
     return jsonResponse(goalsWithUser);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
+    console.error('Get annual goals error:', error);
     return errorResponse('Failed to get annual goals', 500);
   }
 }
 
-// Create annual goal (Manager only)
+// Create annual goal (Owner/Manager only)
 export async function POST(request: NextRequest) {
   try {
-    const user = requireRole(request, 'manager');
+    const user = requireOwnerOrManager(request);
     const body = await request.json();
     
     const { title, description, year } = body;
 
     if (!title || !year) {
-      return errorResponse('Missing required fields', 400);
+      return errorResponse('Title and year are required', 400);
     }
 
-    await db.read();
-
-    const goal: AnnualGoal = {
-      id: generateId(),
+    const goal = await db.annualGoals.create({
+      organizationId: user.organizationId,
       title,
       description: description || '',
       year,
       userId: user.id,
       createdBy: user.id,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    db.data.annualGoals.push(goal);
-    await db.write();
+    });
 
     return jsonResponse(goal, 201);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
     if (error.message === 'Forbidden') return errorResponse('Forbidden', 403);
+    console.error('Create annual goal error:', error);
     return errorResponse('Failed to create annual goal', 500);
   }
 }

@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
 import { requireAuth } from '@/lib/auth';
-import { generateId, jsonResponse, errorResponse } from '@/lib/utils';
+import { jsonResponse, errorResponse } from '@/lib/utils';
 
 // Add comment to task
 export async function POST(
@@ -17,10 +17,9 @@ export async function POST(
       return errorResponse('Content is required', 400);
     }
 
-    await db.read();
-    const task = db.data.tasks.find((t) => t.id === id);
+    const task = await db.tasks.getById(id);
     
-    if (!task) {
+    if (!task || task.organizationId !== user.organizationId) {
       return errorResponse('Task not found', 404);
     }
 
@@ -28,24 +27,20 @@ export async function POST(
       return errorResponse('Forbidden', 403);
     }
 
-    const comment = {
-      id: generateId(),
+    const comment = await db.comments.create({
+      organizationId: user.organizationId,
       taskId: id,
       userId: user.id,
       content: body.content,
-      createdAt: new Date().toISOString(),
-    };
+    });
 
-    db.data.comments.push(comment);
-    await db.write();
-
-    const commentUser = db.data.users.find((u) => u.id === user.id);
     return jsonResponse({
       ...comment,
-      user: commentUser ? { id: commentUser.id, name: commentUser.name } : null,
+      user: { id: user.id, name: user.name },
     }, 201);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
+    console.error('Add comment error:', error);
     return errorResponse('Failed to add comment', 500);
   }
 }

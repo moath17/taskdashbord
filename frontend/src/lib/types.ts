@@ -1,4 +1,4 @@
-export type UserRole = 'manager' | 'employee';
+export type UserRole = 'owner' | 'manager' | 'employee';
 
 export type TaskStatus = 'New' | 'In Progress' | 'Completed' | 'Delayed';
 export type TaskPriority = 'High' | 'Medium' | 'Low';
@@ -7,8 +7,16 @@ export type VacationType = 'Annual' | 'Sick' | 'Other';
 export type PlanStatus = 'pending' | 'approved' | 'rejected';
 export type KPIFrequency = 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
 
+export interface Organization {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface User {
   id: string;
+  organizationId: string;
   email: string;
   password: string;
   name: string;
@@ -18,6 +26,7 @@ export interface User {
 
 export interface AnnualGoal {
   id: string;
+  organizationId: string;
   title: string;
   description: string;
   year: number;
@@ -29,6 +38,7 @@ export interface AnnualGoal {
 
 export interface MBOGoal {
   id: string;
+  organizationId: string;
   title: string;
   description: string;
   annualGoalId: string;
@@ -42,6 +52,7 @@ export interface MBOGoal {
 
 export interface KPI {
   id: string;
+  organizationId: string;
   title: string;
   description: string;
   annualGoalId: string;
@@ -58,6 +69,7 @@ export interface KPI {
 
 export interface Task {
   id: string;
+  organizationId: string;
   title: string;
   description: string;
   assignedTo: string;
@@ -74,6 +86,7 @@ export interface Task {
 
 export interface Comment {
   id: string;
+  organizationId: string;
   taskId?: string;
   vacationPlanId?: string;
   trainingPlanId?: string;
@@ -84,6 +97,7 @@ export interface Comment {
 
 export interface VacationPlan {
   id: string;
+  organizationId: string;
   userId: string;
   type: VacationType;
   startDate: string;
@@ -96,6 +110,7 @@ export interface VacationPlan {
 
 export interface TrainingPlan {
   id: string;
+  organizationId: string;
   userId: string;
   courseName: string;
   platform: string;
@@ -110,6 +125,7 @@ export interface TrainingPlan {
 
 export interface CalendarEvent {
   id: string;
+  organizationId: string;
   title: string;
   type: 'holiday' | 'training';
   startDate: string;
@@ -122,6 +138,7 @@ export interface CalendarEvent {
 
 export interface Proposal {
   id: string;
+  organizationId: string;
   title: string;
   description: string;
   type: 'course' | 'article' | 'instruction' | 'other';
@@ -135,6 +152,7 @@ export interface Proposal {
 
 export interface WeeklyUpdate {
   id: string;
+  organizationId: string;
   weekStartDate: string;
   weekEndDate: string;
   importantTasks: Array<{
@@ -149,22 +167,11 @@ export interface WeeklyUpdate {
   updatedAt: string;
 }
 
-export interface Database {
-  users: User[];
-  annualGoals: AnnualGoal[];
-  mboGoals: MBOGoal[];
-  kpis: KPI[];
-  tasks: Task[];
-  comments: Comment[];
-  vacationPlans: VacationPlan[];
-  trainingPlans: TrainingPlan[];
-  calendarEvents: CalendarEvent[];
-  proposals: Proposal[];
-  weeklyUpdates: WeeklyUpdate[];
-}
-
 export interface AuthUser {
   id: string;
   email: string;
+  name: string;
   role: UserRole;
+  organizationId: string;
+  organizationName?: string;
 }
