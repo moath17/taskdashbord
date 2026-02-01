@@ -1,0 +1,11 @@
+{
+  "name": "taskdashbord",
+  "private": true,
+  "scripts": {
+    "sync": "node scripts/auto-sync.js",
+    "sync:start": "node scripts/auto-sync.js"
+  },
+  "devDependencies": {
+    "chokidar": "^3.6.0"
+  }
+}
