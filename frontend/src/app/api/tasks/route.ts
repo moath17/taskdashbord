@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
 import { requireAuth, requireOwnerOrManager } from '@/lib/auth';
+import { createNotification } from '@/lib/notifications-store';
 import { jsonResponse, errorResponse } from '@/lib/utils';
 
 // Get all tasks for the organization
@@ -83,6 +84,19 @@ export async function POST(request: NextRequest) {
       priority: priority || 'Medium',
       createdBy: user.id,
     });
+
+    if (assignedTo && assignedTo !== user.id) {
+      try {
+        createNotification({
+          userId: assignedTo,
+          organizationId: user.organizationId,
+          type: 'task_created',
+          title: 'New task assigned',
+          message: `You have been assigned a new task: ${title}`,
+          link: `/tasks`,
+        });
+      } catch (_) {}
+    }
 
     return jsonResponse(task, 201);
   } catch (error: any) {

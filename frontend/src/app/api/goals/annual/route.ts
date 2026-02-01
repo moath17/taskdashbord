@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
 import { requireAuth, requireOwnerOrManager } from '@/lib/auth';
+import { createNotificationForUsers } from '@/lib/notifications-store';
 import { jsonResponse, errorResponse } from '@/lib/utils';
 
 // Get all annual goals
@@ -49,6 +50,20 @@ export async function POST(request: NextRequest) {
       userId: user.id,
       createdBy: user.id,
     });
+
+    try {
+      const users = await db.users.getByOrganization(user.organizationId);
+      const managerIds = users.filter((u: any) => u.role === 'manager' || u.role === 'owner').map((u: any) => u.id);
+      if (managerIds.length > 0) {
+        createNotificationForUsers(managerIds, {
+          organizationId: user.organizationId,
+          type: 'goal_created',
+          title: 'New annual goal',
+          message: `Annual goal "${title}" was created`,
+          link: '/goals',
+        });
+      }
+    } catch (_) {}
 
     return jsonResponse(goal, 201);
   } catch (error: any) {

@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
 import { requireAuth, requireOwnerOrManager } from '@/lib/auth';
+import { createNotification, createNotificationForUsers } from '@/lib/notifications-store';
 import { jsonResponse, errorResponse } from '@/lib/utils';
 
 // Get all MBO goals

@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
 import { requireAuth, requireOwnerOrManager } from '@/lib/auth';
+import { createNotification } from '@/lib/notifications-store';
 import { jsonResponse, errorResponse } from '@/lib/utils';
 
 // Get single task
@@ -67,7 +68,34 @@ export async function PUT(
       return errorResponse('Forbidden', 403);
     }
 
+    const previousStatus = task.status;
     const updatedTask = await db.tasks.update(id, body);
+    const newStatus = body.status ?? previousStatus;
+
+    const notifyUserIds: string[] = [];
+    if (task.assignedTo !== user.id) notifyUserIds.push(task.assignedTo);
+    if (task.createdBy && task.createdBy !== user.id && !notifyUserIds.includes(task.createdBy)) {
+      notifyUserIds.push(task.createdBy);
+    }
+
+    if (notifyUserIds.length > 0) {
+      try {
+        const isStatusChange = newStatus !== previousStatus;
+        notifyUserIds.forEach((uid) => {
+          createNotification({
+            userId: uid,
+            organizationId: user.organizationId,
+            type: isStatusChange ? 'task_status_changed' : 'task_updated',
+            title: isStatusChange ? 'Task status updated' : 'Task updated',
+            message: isStatusChange
+              ? `Task "${task.title}" status changed to ${newStatus}`
+              : `Task "${task.title}" was updated`,
+            link: `/tasks`,
+          });
+        });
+      } catch (_) {}
+    }
+
     return jsonResponse(updatedTask);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
