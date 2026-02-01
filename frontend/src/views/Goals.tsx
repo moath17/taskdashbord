@@ -35,7 +35,7 @@ export default function Goals() {
   const [selectedAnnualGoalId, setSelectedAnnualGoalId] = useState<string | null>(null);
   const [filterYear, setFilterYear] = useState<number>(new Date().getFullYear());
 
-  const isManager = user?.role === 'manager';
+  const isManager = user?.role === 'manager' || user?.role === 'owner';
 
   useEffect(() => {
     loadData();

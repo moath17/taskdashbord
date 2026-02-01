@@ -73,7 +73,7 @@ export default function Plans() {
     }
   };
 
-  const canApprove = user?.role === 'manager';
+  const canApprove = user?.role === 'manager' || user?.role === 'owner';
 
   return (
     <div className={`space-y-6 ${isRTL ? 'rtl' : 'ltr'}`}>

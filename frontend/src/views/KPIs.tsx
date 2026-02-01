@@ -29,7 +29,7 @@ export default function KPIs() {
   const [editingKPI, setEditingKPI] = useState<KPI | null>(null);
   const [filterGoalId, setFilterGoalId] = useState<string>('all');
 
-  const isManager = user?.role === 'manager';
+  const isManager = user?.role === 'manager' || user?.role === 'owner';
 
   useEffect(() => {
     loadData();
