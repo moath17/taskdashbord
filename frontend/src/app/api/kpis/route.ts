@@ -62,6 +62,20 @@ export async function POST(request: NextRequest) {
       createdBy: user.id,
     });
 
+    try {
+      const users = await db.users.getByOrganization(user.organizationId);
+      const managerIds = users.filter((u: any) => u.role === 'manager' || u.role === 'owner').map((u: any) => u.id);
+      if (managerIds.length > 0) {
+        createNotificationForUsers(managerIds, {
+          organizationId: user.organizationId,
+          type: 'kpi_created',
+          title: 'New KPI created',
+          message: `KPI "${title}" was created`,
+          link: '/kpis',
+        });
+      }
+    } catch (_) {}
+
     return jsonResponse(kpi, 201);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
