@@ -370,7 +370,6 @@ function TeamMemberModal({ isRTL, onClose, onSave, existingUser, currentUser }: 
   const [formData, setFormData] = useState({
     name: existingUser?.name || '',
     email: existingUser?.email || '',
-    password: '',
     role: existingUser?.role || 'employee',
   });
   const [saving, setSaving] = useState(false);
@@ -381,16 +380,6 @@ function TeamMemberModal({ isRTL, onClose, onSave, existingUser, currentUser }: 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!isEditing && !formData.password) {
-      toast.error(isRTL ? 'كلمة المرور مطلوبة للأعضاء الجدد' : 'Password is required for new members');
-      return;
-    }
-
-    if (!isEditing && formData.password.length < 6) {
-      toast.error(isRTL ? 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' : 'Password must be at least 6 characters');
-      return;
-    }
-
     setSaving(true);
     try {
       if (isEditing) {
@@ -398,20 +387,21 @@ function TeamMemberModal({ isRTL, onClose, onSave, existingUser, currentUser }: 
           name: formData.name,
           email: formData.email,
         };
-        // Only include role if it changed and user is not owner
         if (formData.role !== existingUser.role && existingUser.role !== 'owner') {
           updateData.role = formData.role;
         }
         await teamApi.update(existingUser.id, updateData);
         toast.success(isRTL ? 'تم تحديث العضو' : 'Member updated successfully');
       } else {
-        await teamApi.create({
+        const result = await teamApi.create({
           name: formData.name,
           email: formData.email,
-          password: formData.password,
           role: formData.role as 'manager' | 'employee',
         });
         toast.success(isRTL ? 'تم إضافة العضو' : 'Member added successfully');
+        if ((result as any).inviteLink) {
+          toast((result as any).inviteLink, { duration: 15000, icon: '📧' });
+        }
       }
       onSave();
     } catch (error: any) {

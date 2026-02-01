@@ -43,9 +43,9 @@ export const teamApi = {
     return response.data;
   },
 
-  // Add a new team member
-  create: async (data: TeamMemberData): Promise<User> => {
-    const response = await api.post<User>('/team', data);
+  // Add a new team member (invite - no password, link sent to email)
+  create: async (data: TeamMemberData): Promise<User & { inviteLink?: string }> => {
+    const response = await api.post<User & { inviteLink?: string }>('/team', data);
     return response.data;
   },
 

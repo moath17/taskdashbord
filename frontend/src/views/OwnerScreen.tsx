@@ -228,7 +228,6 @@ function OwnerUserModal({
   const [formData, setFormData] = useState({
     name: existingUser?.name || '',
     email: existingUser?.email || '',
-    password: '',
     role: (existingUser?.role === 'owner' ? 'manager' : existingUser?.role) || 'employee',
   });
   const [saving, setSaving] = useState(false);
@@ -237,27 +236,21 @@ function OwnerUserModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isEditing && !formData.password) {
-      toast.error(t.owner.passwordRequired);
-      return;
-    }
-    if (!isEditing && formData.password.length < 6) {
-      toast.error(t.owner.passwordMinLength);
-      return;
-    }
     setSaving(true);
     try {
       if (isEditing) {
         await teamApi.update(existingUser.id, { name: formData.name, email: formData.email });
         toast.success(t.users.userUpdated);
       } else {
-        await teamApi.create({
+        const result = await teamApi.create({
           name: formData.name,
           email: formData.email,
-          password: formData.password,
           role: formData.role as 'manager' | 'employee',
         });
         toast.success(t.users.userCreated);
+        if ((result as any).inviteLink) {
+          toast((result as any).inviteLink, { duration: 15000, icon: '📧' });
+        }
       }
       onSave();
     } catch (e: any) {
@@ -304,23 +297,12 @@ function OwnerUserModal({
               required
               disabled={!!existingUser}
             />
+            {!isEditing && (
+              <p className={`text-xs text-gray-500 mt-1 ${isRTL ? 'text-right' : ''}`}>
+                {isRTL ? 'سيتم إرسال رابط تعيين كلمة المرور للبريد الإلكتروني' : 'Invite link will be sent to this email'}
+              </p>
+            )}
           </div>
-          {!isEditing && (
-            <div>
-            <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>
-              {t.auth.password}
-            </label>
-              <input
-                type="password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="input"
-                dir="ltr"
-                minLength={6}
-                required
-              />
-            </div>
-          )}
           <div>
             <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>
               {t.auth.role}
