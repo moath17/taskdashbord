@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
       organizationId: authUser.organizationId,
     });
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001');
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001';
     const setupLink = `${baseUrl}/setup-password?token=${invite.token}`;
 
     const emailSent = await sendInviteEmail(email, name, setupLink);
