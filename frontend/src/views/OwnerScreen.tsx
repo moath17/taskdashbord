@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { teamApi } from '../api/users';
 import { User } from '../types';
+import { NEWS_CATEGORIES, NewsCategory, getNewsPreferences, saveNewsPreferences } from '../lib/news-preferences';
 import toast from 'react-hot-toast';
 import {
   Building2,
@@ -20,6 +21,10 @@ import {
   Edit2,
   Trash2,
   X,
+  Newspaper,
+  Settings,
+  GripVertical,
+  Check,
 } from 'lucide-react';
 
 export default function OwnerScreen() {
@@ -30,6 +35,7 @@ export default function OwnerScreen() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [showNewsSettings, setShowNewsSettings] = useState(false);
 
   useEffect(() => {
     loadUsers();
@@ -96,7 +102,7 @@ export default function OwnerScreen() {
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         {/* Platform Info Card */}
-        <div className="card mb-8">
+        <div className="card mb-6">
           <div className={`flex items-start gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
             <div className="p-3 bg-primary-100 rounded-xl">
               <Building2 className="w-8 h-8 text-primary-600" />
@@ -105,6 +111,50 @@ export default function OwnerScreen() {
               <h2 className="text-lg font-bold text-gray-900">{t.owner.platformInfo}</h2>
               <p className="text-gray-600 mt-1 text-sm">{t.owner.platformInfoDesc}</p>
             </div>
+          </div>
+        </div>
+
+        {/* News Settings Card */}
+        <div className="card mb-6">
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <div className="p-3 bg-indigo-100 rounded-xl">
+                <Newspaper className="w-8 h-8 text-indigo-600" />
+              </div>
+              <div className={isRTL ? 'text-right' : ''}>
+                <h2 className="text-lg font-bold text-gray-900">
+                  {isRTL ? 'إعدادات الأخبار' : 'News Settings'}
+                </h2>
+                <p className="text-gray-600 text-sm">
+                  {isRTL ? 'اختر نوع الأخبار التي تريد عرضها' : 'Choose the news categories you want to see'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowNewsSettings(true)}
+              className="btn btn-secondary flex items-center gap-2"
+            >
+              <Settings className="w-5 h-5" />
+              {isRTL ? 'تخصيص' : 'Customize'}
+            </button>
+          </div>
+          
+          {/* Preview of enabled categories */}
+          <div className={`mt-4 flex flex-wrap gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            {getNewsPreferences().filter(c => c.enabled).slice(0, 6).map(cat => (
+              <span 
+                key={cat.id}
+                className="px-3 py-1.5 bg-gray-100 rounded-full text-sm flex items-center gap-1"
+              >
+                <span>{cat.emoji}</span>
+                <span>{isRTL ? cat.nameAr : cat.nameEn}</span>
+              </span>
+            ))}
+            {getNewsPreferences().filter(c => c.enabled).length > 6 && (
+              <span className="px-3 py-1.5 bg-gray-100 rounded-full text-sm text-gray-500">
+                +{getNewsPreferences().filter(c => c.enabled).length - 6}
+              </span>
+            )}
           </div>
         </div>
 
@@ -206,6 +256,13 @@ export default function OwnerScreen() {
           existingUser={editingUser}
           onClose={() => { setShowModal(false); setEditingUser(null); }}
           onSave={() => { setShowModal(false); setEditingUser(null); loadUsers(); }}
+        />
+      )}
+
+      {showNewsSettings && (
+        <NewsSettingsModal
+          isRTL={isRTL}
+          onClose={() => setShowNewsSettings(false)}
         />
       )}
     </div>
@@ -331,6 +388,167 @@ function OwnerUserModal({
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  );
+}
+
+// News Settings Modal
+function NewsSettingsModal({
+  isRTL,
+  onClose,
+}: {
+  isRTL: boolean;
+  onClose: () => void;
+}) {
+  const [categories, setCategories] = useState<NewsCategory[]>(getNewsPreferences());
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleToggle = (categoryId: string) => {
+    setCategories(prev =>
+      prev.map(c =>
+        c.id === categoryId ? { ...c, enabled: !c.enabled } : c
+      )
+    );
+  };
+
+  const handleSave = () => {
+    saveNewsPreferences(categories);
+    toast.success(isRTL ? 'تم حفظ الإعدادات' : 'Settings saved');
+    onClose();
+  };
+
+  const handleSelectAll = () => {
+    setCategories(prev => prev.map(c => ({ ...c, enabled: true })));
+  };
+
+  const handleDeselectAll = () => {
+    setCategories(prev => prev.map(c => ({ ...c, enabled: false })));
+  };
+
+  const filteredCategories = searchTerm
+    ? categories.filter(c =>
+        c.nameEn.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.nameAr.includes(searchTerm)
+      )
+    : categories;
+
+  // Group categories by type
+  const categoryGroups = [
+    { key: 'tech', labelEn: 'Technology', labelAr: 'التقنية', ids: ['tech', 'ai', 'data'] },
+    { key: 'business', labelEn: 'Business', labelAr: 'الأعمال', ids: ['business', 'finance', 'entrepreneurship'] },
+    { key: 'agriculture', labelEn: 'Agriculture', labelAr: 'الزراعة', ids: ['agriculture', 'agritech', 'livestock'] },
+    { key: 'engineering', labelEn: 'Engineering', labelAr: 'الهندسة', ids: ['architecture', 'construction', 'realestate'] },
+    { key: 'health', labelEn: 'Health', labelAr: 'الصحة', ids: ['healthcare', 'pharma'] },
+    { key: 'education', labelEn: 'Education', labelAr: 'التعليم', ids: ['education', 'edtech'] },
+    { key: 'energy', labelEn: 'Energy & Environment', labelAr: 'الطاقة والبيئة', ids: ['energy', 'environment'] },
+    { key: 'lifestyle', labelEn: 'Lifestyle', labelAr: 'نمط الحياة', ids: ['entertainment', 'sports', 'tourism', 'ecommerce'] },
+    { key: 'regional', labelEn: 'Regional', labelAr: 'إقليمي', ids: ['saudi'] },
+  ];
+
+  const enabledCount = categories.filter(c => c.enabled).length;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className={`bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col ${isRTL ? 'rtl' : 'ltr'}`}>
+        {/* Header */}
+        <div className={`flex items-center justify-between p-4 border-b bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-t-xl ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Newspaper className="w-6 h-6" />
+            <div>
+              <h3 className="font-bold text-lg">
+                {isRTL ? 'تخصيص الأخبار' : 'Customize News Feed'}
+              </h3>
+              <p className="text-white/80 text-sm">
+                {isRTL ? 'اختر الفئات التي تهمك' : 'Select categories that interest you'}
+              </p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-lg">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Search and Actions */}
+        <div className="p-4 border-b bg-gray-50">
+          <div className={`flex flex-col sm:flex-row gap-3 ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
+            <input
+              type="text"
+              placeholder={isRTL ? 'بحث...' : 'Search categories...'}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="input flex-1"
+            />
+            <div className={`flex gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <button
+                onClick={handleSelectAll}
+                className="px-3 py-2 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
+              >
+                {isRTL ? 'تحديد الكل' : 'Select All'}
+              </button>
+              <button
+                onClick={handleDeselectAll}
+                className="px-3 py-2 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
+              >
+                {isRTL ? 'إلغاء الكل' : 'Deselect All'}
+              </button>
+            </div>
+          </div>
+          <p className={`text-sm text-gray-500 mt-2 ${isRTL ? 'text-right' : ''}`}>
+            {isRTL ? `${enabledCount} فئة مختارة` : `${enabledCount} categories selected`}
+          </p>
+        </div>
+
+        {/* Categories List */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-6">
+          {categoryGroups.map(group => {
+            const groupCategories = filteredCategories.filter(c => group.ids.includes(c.id));
+            if (groupCategories.length === 0) return null;
+
+            return (
+              <div key={group.key}>
+                <h4 className={`text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 ${isRTL ? 'text-right' : ''}`}>
+                  {isRTL ? group.labelAr : group.labelEn}
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {groupCategories.map(category => (
+                    <button
+                      key={category.id}
+                      onClick={() => handleToggle(category.id)}
+                      className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${isRTL ? 'flex-row-reverse text-right' : ''} ${
+                        category.enabled
+                          ? 'border-indigo-500 bg-indigo-50'
+                          : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      <span className="text-2xl">{category.emoji}</span>
+                      <div className="flex-1">
+                        <p className={`font-medium ${category.enabled ? 'text-indigo-700' : 'text-gray-700'}`}>
+                          {isRTL ? category.nameAr : category.nameEn}
+                        </p>
+                      </div>
+                      {category.enabled && (
+                        <div className="w-6 h-6 bg-indigo-500 rounded-full flex items-center justify-center">
+                          <Check className="w-4 h-4 text-white" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Footer */}
+        <div className={`flex gap-3 p-4 border-t bg-gray-50 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <button onClick={onClose} className="btn btn-secondary flex-1">
+            {isRTL ? 'إلغاء' : 'Cancel'}
+          </button>
+          <button onClick={handleSave} className="btn btn-primary flex-1">
+            {isRTL ? 'حفظ الإعدادات' : 'Save Settings'}
+          </button>
+        </div>
       </div>
     </div>
   );

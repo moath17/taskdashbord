@@ -1,23 +1,115 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Newspaper, ExternalLink, Cpu, Database, Brain, Sparkles, TrendingUp, Globe } from 'lucide-react';
+import { Newspaper, ExternalLink, Cpu, Database, Brain, Sparkles, TrendingUp, Globe, Building2, Tractor, Stethoscope, GraduationCap, Zap, ShoppingCart, Plane, Dumbbell } from 'lucide-react';
+import { getEnabledCategories, NewsCategory } from '../lib/news-preferences';
 
-interface TechNews {
+interface NewsItem {
   id: string;
   title: string;
   titleAr: string;
   description: string;
   descriptionAr: string;
-  category: 'ai' | 'data' | 'tech' | 'innovation';
+  category: string;
   source: string;
   url: string;
   date: string;
-  icon: 'ai' | 'data' | 'tech' | 'trend';
 }
 
-// Curated tech news and resources - Updated regularly
-const techNewsData: TechNews[] = [
+// أخبار متنوعة حسب الفئات - Diverse news by categories
+const allNewsData: Record<string, NewsItem[]> = {
+  // التقنية
+  tech: [
+    { id: 'tech1', title: 'Cursor IDE AI Coding Revolution', titleAr: 'ثورة البرمجة الذكية مع Cursor', description: 'AI-powered IDE transforms software development.', descriptionAr: 'بيئة التطوير الذكية تحول تطوير البرمجيات.', category: 'tech', source: 'Cursor', url: 'https://cursor.com', date: '2025-01-28' },
+    { id: 'tech2', title: 'Python 3.13 Performance Boost', titleAr: 'تحسين أداء بايثون 3.13', description: 'New Python release brings significant improvements.', descriptionAr: 'إصدار بايثون الجديد يجلب تحسينات كبيرة.', category: 'tech', source: 'Python', url: 'https://python.org', date: '2025-01-20' },
+  ],
+  ai: [
+    { id: 'ai1', title: 'Claude AI Introduces Extended Thinking', titleAr: 'كلود يقدم ميزة التفكير المعمق', description: 'Anthropic releases Claude with extended thinking capabilities.', descriptionAr: 'أنثروبيك تطلق كلود بإمكانيات التفكير المعمق.', category: 'ai', source: 'Anthropic', url: 'https://www.anthropic.com', date: '2025-01-28' },
+    { id: 'ai2', title: 'OpenAI GPT-5 Development Updates', titleAr: 'تحديثات تطوير GPT-5', description: 'OpenAI shares insights on next-generation model.', descriptionAr: 'أوبن إيه آي تشارك رؤى حول نموذج الجيل القادم.', category: 'ai', source: 'OpenAI', url: 'https://openai.com', date: '2025-01-25' },
+    { id: 'ai3', title: 'Google Gemini 2.0 Multimodal AI', titleAr: 'جوجل جيميني 2.0', description: 'Google unveils Gemini 2.0 with advanced capabilities.', descriptionAr: 'جوجل تكشف عن جيميني 2.0 بقدرات متقدمة.', category: 'ai', source: 'Google', url: 'https://deepmind.google', date: '2025-01-22' },
+  ],
+  data: [
+    { id: 'data1', title: 'Apache Spark 4.0 Released', titleAr: 'إصدار أباتشي سبارك 4.0', description: 'Major update for big data processing.', descriptionAr: 'تحديث رئيسي لمعالجة البيانات الضخمة.', category: 'data', source: 'Apache', url: 'https://spark.apache.org', date: '2025-01-26' },
+    { id: 'data2', title: 'Power BI Copilot Now Available', titleAr: 'Power BI Copilot متاح الآن', description: 'AI assistant in Power BI for data analysis.', descriptionAr: 'المساعد الذكي في Power BI لتحليل البيانات.', category: 'data', source: 'Microsoft', url: 'https://powerbi.microsoft.com', date: '2025-01-24' },
+  ],
+  // الأعمال
+  business: [
+    { id: 'bus1', title: 'Global Markets Rally in 2025', titleAr: 'ارتفاع الأسواق العالمية في 2025', description: 'Stock markets show strong performance.', descriptionAr: 'أسواق الأسهم تظهر أداءً قوياً.', category: 'business', source: 'Reuters', url: 'https://reuters.com', date: '2025-01-28' },
+    { id: 'bus2', title: 'E-commerce Growth Continues', titleAr: 'استمرار نمو التجارة الإلكترونية', description: 'Online retail sees unprecedented growth.', descriptionAr: 'التجارة الإلكترونية تشهد نمواً غير مسبوق.', category: 'business', source: 'Bloomberg', url: 'https://bloomberg.com', date: '2025-01-25' },
+  ],
+  finance: [
+    { id: 'fin1', title: 'Digital Banking Revolution', titleAr: 'ثورة البنوك الرقمية', description: 'Fintech reshaping the banking industry.', descriptionAr: 'التقنية المالية تعيد تشكيل صناعة البنوك.', category: 'finance', source: 'Financial Times', url: 'https://ft.com', date: '2025-01-27' },
+  ],
+  entrepreneurship: [
+    { id: 'ent1', title: 'Startup Funding Hits Record', titleAr: 'تمويل الشركات الناشئة يحقق رقماً قياسياً', description: 'VC investments reach new highs.', descriptionAr: 'استثمارات رأس المال الجريء تصل لمستويات جديدة.', category: 'entrepreneurship', source: 'TechCrunch', url: 'https://techcrunch.com', date: '2025-01-26' },
+  ],
+  // الزراعة
+  agriculture: [
+    { id: 'agr1', title: 'Sustainable Farming Practices 2025', titleAr: 'ممارسات الزراعة المستدامة 2025', description: 'New methods for eco-friendly farming.', descriptionAr: 'طرق جديدة للزراعة الصديقة للبيئة.', category: 'agriculture', source: 'AgriNews', url: 'https://agrinews.com', date: '2025-01-28' },
+    { id: 'agr2', title: 'Wheat Prices Stabilize', titleAr: 'استقرار أسعار القمح', description: 'Global wheat market shows stability.', descriptionAr: 'سوق القمح العالمي يظهر استقراراً.', category: 'agriculture', source: 'FarmWeek', url: 'https://farmweek.com', date: '2025-01-25' },
+  ],
+  agritech: [
+    { id: 'agt1', title: 'Smart Irrigation Systems', titleAr: 'أنظمة الري الذكية', description: 'IoT transforms water management in farms.', descriptionAr: 'إنترنت الأشياء يحول إدارة المياه في المزارع.', category: 'agritech', source: 'AgTech Weekly', url: 'https://agtechweekly.com', date: '2025-01-27' },
+    { id: 'agt2', title: 'Drone Technology in Agriculture', titleAr: 'تقنية الطائرات المسيرة في الزراعة', description: 'Drones revolutionize crop monitoring.', descriptionAr: 'الدرونز تحدث ثورة في مراقبة المحاصيل.', category: 'agritech', source: 'PrecisionAg', url: 'https://precisionag.com', date: '2025-01-24' },
+  ],
+  livestock: [
+    { id: 'liv1', title: 'Livestock Health Monitoring Tech', titleAr: 'تقنية مراقبة صحة الماشية', description: 'Wearables for animal health tracking.', descriptionAr: 'أجهزة قابلة للارتداء لتتبع صحة الحيوانات.', category: 'livestock', source: 'Livestock Weekly', url: 'https://livestockweekly.com', date: '2025-01-26' },
+  ],
+  // الهندسة والعمارة
+  architecture: [
+    { id: 'arc1', title: 'Sustainable Architecture Trends', titleAr: 'اتجاهات العمارة المستدامة', description: 'Green building designs gain momentum.', descriptionAr: 'تصاميم المباني الخضراء تكتسب زخماً.', category: 'architecture', source: 'ArchDaily', url: 'https://archdaily.com', date: '2025-01-28' },
+    { id: 'arc2', title: 'BIM Technology Advances', titleAr: 'تطورات تقنية BIM', description: 'Building Information Modeling evolution.', descriptionAr: 'تطور نمذجة معلومات البناء.', category: 'architecture', source: 'Dezeen', url: 'https://dezeen.com', date: '2025-01-25' },
+  ],
+  construction: [
+    { id: 'con1', title: '3D Printed Buildings Expand', titleAr: 'توسع المباني المطبوعة ثلاثياً', description: '3D printing revolutionizes construction.', descriptionAr: 'الطباعة ثلاثية الأبعاد تحدث ثورة في البناء.', category: 'construction', source: 'Construction Week', url: 'https://constructionweek.com', date: '2025-01-27' },
+  ],
+  realestate: [
+    { id: 'rel1', title: 'Real Estate Market Outlook 2025', titleAr: 'توقعات سوق العقارات 2025', description: 'Property market trends and forecasts.', descriptionAr: 'اتجاهات وتوقعات سوق العقارات.', category: 'realestate', source: 'PropertyWeek', url: 'https://propertyweek.com', date: '2025-01-26' },
+  ],
+  // الصحة
+  healthcare: [
+    { id: 'hea1', title: 'Telemedicine Growth Continues', titleAr: 'استمرار نمو الطب عن بُعد', description: 'Remote healthcare services expand globally.', descriptionAr: 'خدمات الرعاية الصحية عن بُعد تتوسع عالمياً.', category: 'healthcare', source: 'Health News', url: 'https://healthnews.com', date: '2025-01-28' },
+    { id: 'hea2', title: 'AI in Medical Diagnosis', titleAr: 'الذكاء الاصطناعي في التشخيص الطبي', description: 'AI improves diagnostic accuracy.', descriptionAr: 'الذكاء الاصطناعي يحسن دقة التشخيص.', category: 'healthcare', source: 'MedTech', url: 'https://medtech.com', date: '2025-01-25' },
+  ],
+  pharma: [
+    { id: 'pha1', title: 'New Drug Approvals 2025', titleAr: 'موافقات الأدوية الجديدة 2025', description: 'FDA approves groundbreaking treatments.', descriptionAr: 'إدارة الغذاء والدواء توافق على علاجات رائدة.', category: 'pharma', source: 'Pharma Times', url: 'https://pharmatimes.com', date: '2025-01-27' },
+  ],
+  // التعليم
+  education: [
+    { id: 'edu1', title: 'Digital Learning Transformation', titleAr: 'تحول التعلم الرقمي', description: 'Education embraces technology post-pandemic.', descriptionAr: 'التعليم يتبنى التقنية بعد الجائحة.', category: 'education', source: 'EdWeek', url: 'https://edweek.org', date: '2025-01-28' },
+  ],
+  edtech: [
+    { id: 'edt1', title: 'AI Tutors Gain Popularity', titleAr: 'المعلمون الآليون يكتسبون شعبية', description: 'AI-powered tutoring platforms expand.', descriptionAr: 'منصات التدريس بالذكاء الاصطناعي تتوسع.', category: 'edtech', source: 'EdSurge', url: 'https://edsurge.com', date: '2025-01-26' },
+  ],
+  // الطاقة والبيئة
+  energy: [
+    { id: 'ene1', title: 'Renewable Energy Record', titleAr: 'رقم قياسي للطاقة المتجددة', description: 'Solar and wind reach new capacity highs.', descriptionAr: 'الطاقة الشمسية والرياح تصل لمستويات جديدة.', category: 'energy', source: 'Energy News', url: 'https://energynews.com', date: '2025-01-28' },
+    { id: 'ene2', title: 'Oil Market Analysis', titleAr: 'تحليل سوق النفط', description: 'Global oil demand trends in 2025.', descriptionAr: 'اتجاهات الطلب العالمي على النفط في 2025.', category: 'energy', source: 'Oil & Gas', url: 'https://oilandgas.com', date: '2025-01-25' },
+  ],
+  environment: [
+    { id: 'env1', title: 'Climate Action Initiatives', titleAr: 'مبادرات العمل المناخي', description: 'Countries accelerate green policies.', descriptionAr: 'الدول تسرع السياسات الخضراء.', category: 'environment', source: 'Climate News', url: 'https://climatenews.com', date: '2025-01-27' },
+  ],
+  // الترفيه والرياضة
+  entertainment: [
+    { id: 'ent1', title: 'Streaming Wars Heat Up', titleAr: 'احتدام حروب البث', description: 'Major platforms compete for viewers.', descriptionAr: 'المنصات الكبرى تتنافس على المشاهدين.', category: 'entertainment', source: 'Variety', url: 'https://variety.com', date: '2025-01-28' },
+  ],
+  sports: [
+    { id: 'spo1', title: 'Saudi Pro League Expansion', titleAr: 'توسع الدوري السعودي للمحترفين', description: 'SPL continues to attract global stars.', descriptionAr: 'الدوري السعودي يستمر في جذب النجوم العالميين.', category: 'sports', source: 'Sport360', url: 'https://sport360.com', date: '2025-01-27' },
+  ],
+  tourism: [
+    { id: 'tou1', title: 'Saudi Tourism Vision Progress', titleAr: 'تقدم رؤية السياحة السعودية', description: 'Kingdom welcomes record visitors.', descriptionAr: 'المملكة تستقبل زواراً بأعداد قياسية.', category: 'tourism', source: 'Travel Weekly', url: 'https://travelweekly.com', date: '2025-01-26' },
+  ],
+  ecommerce: [
+    { id: 'eco1', title: 'E-commerce Innovation 2025', titleAr: 'ابتكارات التجارة الإلكترونية 2025', description: 'New technologies reshape online shopping.', descriptionAr: 'تقنيات جديدة تعيد تشكيل التسوق عبر الإنترنت.', category: 'ecommerce', source: 'EcomNews', url: 'https://ecomnews.com', date: '2025-01-28' },
+  ],
+  saudi: [
+    { id: 'sau1', title: 'Vision 2030 Achievements', titleAr: 'إنجازات رؤية 2030', description: 'Saudi Arabia reaches key milestones.', descriptionAr: 'المملكة العربية السعودية تحقق إنجازات رئيسية.', category: 'saudi', source: 'Arab News', url: 'https://arabnews.com', date: '2025-01-28' },
+    { id: 'sau2', title: 'NEOM Project Updates', titleAr: 'تحديثات مشروع نيوم', description: 'Latest developments from NEOM.', descriptionAr: 'آخر التطورات من نيوم.', category: 'saudi', source: 'Saudi Gazette', url: 'https://saudigazette.com', date: '2025-01-25' },
+  ],
+};
+
+// Legacy data for backwards compatibility
+const techNewsData: NewsItem[] = [
   {
     id: '1',
     title: 'Claude AI Introduces Extended Thinking',
@@ -154,21 +246,40 @@ interface Props {
 }
 
 export default function TechNewsWidget({ compact = false }: Props) {
-  const [news, setNews] = useState<TechNews[]>([]);
+  const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isArabic, setIsArabic] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'ai' | 'data' | 'tech'>('all');
+  const [enabledCategories, setEnabledCategories] = useState<NewsCategory[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   useEffect(() => {
     // Check if today is odd (Arabic) or even (English)
     const dayOfMonth = new Date().getDate();
     setIsArabic(dayOfMonth % 2 === 1);
     
-    // Simulate loading
+    // Get enabled categories and load news
+    const categories = getEnabledCategories();
+    setEnabledCategories(categories);
+    
+    // Collect news from all enabled categories
+    const allNews: NewsItem[] = [];
+    categories.forEach(cat => {
+      const categoryNews = allNewsData[cat.id] || [];
+      allNews.push(...categoryNews);
+    });
+    
+    // If no categories enabled, show default tech news
+    if (allNews.length === 0) {
+      allNews.push(...techNewsData);
+    }
+    
+    // Sort by date
+    allNews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
     setTimeout(() => {
-      setNews(techNewsData);
+      setNews(allNews);
       setLoading(false);
-    }, 500);
+    }, 300);
   }, []);
 
   const getIcon = (iconType: string) => {
@@ -187,18 +298,32 @@ export default function TechNewsWidget({ compact = false }: Props) {
   };
 
   const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'ai':
-        return 'bg-purple-100 text-purple-700 border-purple-200';
-      case 'data':
-        return 'bg-blue-100 text-blue-700 border-blue-200';
-      case 'tech':
-        return 'bg-green-100 text-green-700 border-green-200';
-      case 'innovation':
-        return 'bg-orange-100 text-orange-700 border-orange-200';
-      default:
-        return 'bg-gray-100 text-gray-700 border-gray-200';
-    }
+    const colors: Record<string, string> = {
+      ai: 'bg-purple-100 text-purple-700 border-purple-200',
+      data: 'bg-blue-100 text-blue-700 border-blue-200',
+      tech: 'bg-green-100 text-green-700 border-green-200',
+      business: 'bg-amber-100 text-amber-700 border-amber-200',
+      finance: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+      entrepreneurship: 'bg-rose-100 text-rose-700 border-rose-200',
+      agriculture: 'bg-lime-100 text-lime-700 border-lime-200',
+      agritech: 'bg-teal-100 text-teal-700 border-teal-200',
+      livestock: 'bg-orange-100 text-orange-700 border-orange-200',
+      architecture: 'bg-slate-100 text-slate-700 border-slate-200',
+      construction: 'bg-stone-100 text-stone-700 border-stone-200',
+      realestate: 'bg-cyan-100 text-cyan-700 border-cyan-200',
+      healthcare: 'bg-red-100 text-red-700 border-red-200',
+      pharma: 'bg-pink-100 text-pink-700 border-pink-200',
+      education: 'bg-indigo-100 text-indigo-700 border-indigo-200',
+      edtech: 'bg-violet-100 text-violet-700 border-violet-200',
+      energy: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+      environment: 'bg-green-100 text-green-700 border-green-200',
+      entertainment: 'bg-fuchsia-100 text-fuchsia-700 border-fuchsia-200',
+      sports: 'bg-sky-100 text-sky-700 border-sky-200',
+      tourism: 'bg-cyan-100 text-cyan-700 border-cyan-200',
+      ecommerce: 'bg-orange-100 text-orange-700 border-orange-200',
+      saudi: 'bg-green-100 text-green-700 border-green-200',
+    };
+    return colors[category] || 'bg-gray-100 text-gray-700 border-gray-200';
   };
 
   const filteredNews = selectedCategory === 'all' 
@@ -229,11 +354,18 @@ export default function TechNewsWidget({ compact = false }: Props) {
             <Newspaper className="w-5 h-5 text-indigo-600" />
           </div>
           <div>
-            <h3 className="font-bold text-gray-900">
-              {isArabic ? '🚀 أخبار التقنية والذكاء الاصطناعي' : '🚀 Tech & AI News'}
+            <h3 className="font-bold text-gray-900 flex items-center gap-1 flex-wrap">
+              {enabledCategories.slice(0, 3).map(c => c.emoji).join('')}
+              {' '}
+              {isArabic ? 'آخر الأخبار' : 'Latest News'}
             </h3>
             <p className="text-xs text-gray-500">
-              {isArabic ? 'آخر التحديثات في عالم البيانات' : 'Latest updates in data world'}
+              {enabledCategories.length > 0
+                ? (isArabic 
+                    ? `${enabledCategories.length} فئة مختارة` 
+                    : `${enabledCategories.length} categories selected`)
+                : (isArabic ? 'آخر التحديثات' : 'Latest updates')
+              }
             </p>
           </div>
         </div>
@@ -247,24 +379,30 @@ export default function TechNewsWidget({ compact = false }: Props) {
       </div>
 
       {/* Category Filter */}
-      {!compact && (
+      {!compact && enabledCategories.length > 1 && (
         <div className={`flex gap-2 mb-4 flex-wrap ${isArabic ? 'flex-row-reverse' : ''}`}>
-          {[
-            { key: 'all', label: isArabic ? 'الكل' : 'All' },
-            { key: 'ai', label: isArabic ? 'ذكاء اصطناعي' : 'AI' },
-            { key: 'data', label: isArabic ? 'بيانات' : 'Data' },
-            { key: 'tech', label: isArabic ? 'تقنية' : 'Tech' },
-          ].map(cat => (
+          <button
+            onClick={() => setSelectedCategory('all')}
+            className={`px-3 py-1 text-xs rounded-full transition-colors ${
+              selectedCategory === 'all'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            {isArabic ? 'الكل' : 'All'}
+          </button>
+          {enabledCategories.slice(0, 5).map(cat => (
             <button
-              key={cat.key}
-              onClick={() => setSelectedCategory(cat.key as typeof selectedCategory)}
-              className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                selectedCategory === cat.key
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`px-3 py-1 text-xs rounded-full transition-colors flex items-center gap-1 ${
+                selectedCategory === cat.id
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              {cat.label}
+              <span>{cat.emoji}</span>
+              <span>{isArabic ? cat.nameAr : cat.nameEn}</span>
             </button>
           ))}
         </div>
