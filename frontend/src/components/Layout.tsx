@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import NotificationBell from './NotificationBell';
 import {
   Home,
   CheckSquare,
@@ -103,6 +104,7 @@ export default function Layout({ children }: LayoutProps) {
 
             {/* Right Actions */}
             <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <NotificationBell />
               <button
                 onClick={toggleLanguage}
                 className="p-2 rounded-lg hover:bg-gray-100 text-gray-600"
