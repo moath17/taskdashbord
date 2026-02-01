@@ -28,6 +28,9 @@ build/
 *.sln
 *.sw?
 
+# Local auth data (when Supabase not configured)
+data/
+
 # Environment files
 .env
 .env.local

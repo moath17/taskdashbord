@@ -116,9 +116,12 @@ export function requireOwnerOrManager(request: NextRequest): AuthUser {
   return requireRole(request, 'owner', 'manager');
 }
 
-// Update user's last activity timestamp
+// Update user's last activity timestamp (Supabase only - skip when using local DB)
 export async function updateUserActivity(userId: string): Promise<void> {
   try {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      return; // Using local DB - no activity tracking
+    }
     await supabase
       .from('users')
       .update({ last_activity: new Date().toISOString() })

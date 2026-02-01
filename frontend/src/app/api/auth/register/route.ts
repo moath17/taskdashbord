@@ -1,7 +1,10 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
+import { localAuthDb, isSupabaseConfigured } from '@/lib/local-auth-db';
 import { hashPassword, generateToken } from '@/lib/auth';
 import { jsonResponse, errorResponse } from '@/lib/utils';
+
+const getDb = () => (isSupabaseConfigured() ? db : localAuthDb);
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,20 +20,22 @@ export async function POST(request: NextRequest) {
       return errorResponse('Password must be at least 6 characters', 400);
     }
 
+    const authDb = getDb();
+
     // Check if email already exists in any organization
-    const existingUsers = await db.users.getByEmail(email);
+    const existingUsers = await authDb.users.getByEmail(email);
     if (existingUsers.length > 0) {
       return errorResponse('Email already registered', 400);
     }
 
     // Create the organization
-    const organization = await db.organizations.create({
+    const organization = await authDb.organizations.create({
       name: organizationName,
     });
 
     // Hash password and create owner user
     const hashedPassword = await hashPassword(password);
-    const user = await db.users.create({
+    const user = await authDb.users.create({
       organizationId: organization.id,
       email,
       password: hashedPassword,

@@ -1,7 +1,10 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
+import { localAuthDb, isSupabaseConfigured } from '@/lib/local-auth-db';
 import { comparePassword, generateToken, updateUserActivity } from '@/lib/auth';
 import { jsonResponse, errorResponse } from '@/lib/utils';
+
+const getDb = () => (isSupabaseConfigured() ? db : localAuthDb);
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,8 +15,10 @@ export async function POST(request: NextRequest) {
       return errorResponse('Missing email or password', 400);
     }
 
+    const authDb = getDb();
+
     // Find user by email (could be in multiple orgs, but email is unique globally now)
-    const users = await db.users.getByEmail(email);
+    const users = await authDb.users.getByEmail(email);
     
     if (users.length === 0) {
       return errorResponse('Invalid credentials', 401);
@@ -28,7 +33,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get organization name
-    const organization = await db.organizations.getById(user.organizationId);
+    const organization = await authDb.organizations.getById(user.organizationId);
 
     // Update user's last activity on login
     updateUserActivity(user.id);
