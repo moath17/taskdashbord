@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
       role: user.role,
       organizationId: user.organizationId,
       organizationName: organization?.name || 'Unknown',
+      ownerAlsoAdmin: (user as any).ownerAlsoAdmin ?? false,
     });
   } catch (error: any) {
     console.error('Get user error:', error);

@@ -249,7 +249,12 @@ function OwnerUserModal({
         });
         toast.success(t.users.userCreated);
         if ((result as any).inviteLink) {
-          toast((result as any).inviteLink, { duration: 15000, icon: '📧' });
+          if (navigator.clipboard?.writeText) {
+            navigator.clipboard.writeText((result as any).inviteLink);
+            toast(t.owner.inviteLinkCopied || 'Invite link copied to clipboard. Send it to the user.', { duration: 5000 });
+          } else {
+            toast((result as any).inviteLink, { duration: 20000, icon: '📧' });
+          }
         }
       }
       onSave();
@@ -299,7 +304,7 @@ function OwnerUserModal({
             />
             {!isEditing && (
               <p className={`text-xs text-gray-500 mt-1 ${isRTL ? 'text-right' : ''}`}>
-                {isRTL ? 'سيتم إرسال رابط تعيين كلمة المرور للبريد الإلكتروني' : 'Invite link will be sent to this email'}
+                {t.owner.inviteEmailNote}
               </p>
             )}
           </div>

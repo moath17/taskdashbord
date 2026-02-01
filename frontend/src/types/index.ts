@@ -11,6 +11,7 @@ export interface User {
   role: UserRole;
   organizationId?: string;
   organizationName?: string;
+  ownerAlsoAdmin?: boolean;
   createdAt?: string;
 }
 

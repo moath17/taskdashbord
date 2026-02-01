@@ -42,6 +42,8 @@ export const en = {
     admin: 'Admin',
     passwordRequired: 'Password is required',
     passwordMinLength: 'Password must be at least 6 characters',
+    inviteLinkCopied: 'Invite link copied to clipboard. Send it to the user.',
+    inviteEmailNote: 'Invite link will be sent to this email',
   },
 
   // Auth
@@ -64,6 +66,7 @@ export const en = {
     noAccount: "Don't have an account?",
     hasAccount: 'Already have an account?',
     selectRole: 'Select Role',
+    forgotPassword: 'Forgot password?',
   },
 
   // Navigation

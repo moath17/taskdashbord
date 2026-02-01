@@ -75,9 +75,14 @@ export default function Login() {
               />
             </div>
             <div>
-              <label htmlFor="password" className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                {t.auth.password}
-              </label>
+              <div className={`flex items-center justify-between mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  {t.auth.password}
+                </label>
+                <Link href="/forgot-password" className="text-sm text-primary-600 hover:text-primary-700">
+                  {t.auth.forgotPassword}
+                </Link>
+              </div>
               <input
                 id="password"
                 type="password"

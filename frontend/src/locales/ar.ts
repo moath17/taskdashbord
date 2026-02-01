@@ -44,6 +44,8 @@ export const ar: TranslationKeys = {
     admin: 'مدير',
     passwordRequired: 'كلمة المرور مطلوبة',
     passwordMinLength: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
+    inviteLinkCopied: 'تم نسخ رابط الدعوة. أرسله للمستخدم.',
+    inviteEmailNote: 'سيتم إرسال رابط تعيين كلمة المرور للبريد الإلكتروني',
   },
 
   // Auth
@@ -66,6 +68,7 @@ export const ar: TranslationKeys = {
     noAccount: 'ليس لديك حساب؟',
     hasAccount: 'لديك حساب بالفعل؟',
     selectRole: 'اختر الدور',
+    forgotPassword: 'نسيت كلمة المرور؟',
   },
 
   // Navigation

@@ -61,9 +61,14 @@ export default function Login() {
               />
             </div>
             <div>
-              <label htmlFor="password" className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                {t.auth.password}
-              </label>
+              <div className={`flex items-center justify-between mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  {t.auth.password}
+                </label>
+                <Link href="/forgot-password" className="text-sm text-primary-600 hover:text-primary-700">
+                  {t.auth.forgotPassword}
+                </Link>
+              </div>
               <input
                 id="password"
                 type="password"
@@ -86,6 +91,11 @@ export default function Login() {
             {t.auth.noAccount}{' '}
             <Link href="/register" className="text-primary-600 hover:text-primary-700 font-medium">
               {t.auth.register}
+            </Link>
+          </p>
+          <p className="mt-2 text-center text-sm text-gray-500">
+            <Link href="/setup-password" className="text-primary-500 hover:text-primary-600">
+              {language === 'ar' ? 'تلقيت دعوة؟ تعيين كلمة المرور' : 'Received an invite? Set up your password'}
             </Link>
           </p>
         </div>

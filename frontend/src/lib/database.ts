@@ -104,7 +104,7 @@ export const db = {
       if (error) throw error;
       return data?.map(toCamelCase) || [];
     },
-    async update(id: string, data: Partial<{ email: string; password: string; name: string; role: string }>) {
+    async update(id: string, data: Partial<{ email: string; password: string; name: string; role: string; ownerAlsoAdmin: boolean }>) {
       const { data: user, error } = await supabase
         .from('users')
         .update(toSnakeCase(data))

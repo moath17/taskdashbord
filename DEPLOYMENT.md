@@ -48,10 +48,16 @@ NODE_ENV=production
 
 ### Frontend Environment Variables
 
-Create `.env` file in `frontend/` directory:
+Create `.env.local` file in `frontend/` directory:
 
 ```env
-VITE_API_URL=https://your-backend-api-url.com/api
+# App URL (for invite links)
+NEXT_PUBLIC_APP_URL=https://your-app-url.com
+
+# Optional: Resend API for sending invite emails
+# Without this, invite link is copied to clipboard for manual sharing
+RESEND_API_KEY=re_xxxx
+RESEND_FROM_EMAIL=Task Dashboard <noreply@yourdomain.com>
 ```
 
 ## 🌐 Deployment Options

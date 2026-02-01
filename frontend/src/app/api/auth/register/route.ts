@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
         role: user.role,
         organizationId: user.organizationId,
         organizationName: organization.name,
+        ownerAlsoAdmin: (user as any).ownerAlsoAdmin ?? false,
       },
     }, 201);
   } catch (error: any) {

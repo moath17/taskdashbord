@@ -340,6 +340,7 @@ export default function UserManagement() {
       {/* Create/Edit Modal */}
       {showCreateModal && (
         <TeamMemberModal
+          t={t}
           isRTL={isRTL}
           onClose={() => {
             setShowCreateModal(false);
@@ -359,6 +360,7 @@ export default function UserManagement() {
 }
 
 interface TeamMemberModalProps {
+  t: any;
   isRTL: boolean;
   onClose: () => void;
   onSave: () => void;
@@ -366,7 +368,7 @@ interface TeamMemberModalProps {
   currentUser: User | null;
 }
 
-function TeamMemberModal({ isRTL, onClose, onSave, existingUser, currentUser }: TeamMemberModalProps) {
+function TeamMemberModal({ t, isRTL, onClose, onSave, existingUser, currentUser }: TeamMemberModalProps) {
   const [formData, setFormData] = useState({
     name: existingUser?.name || '',
     email: existingUser?.email || '',
@@ -400,7 +402,12 @@ function TeamMemberModal({ isRTL, onClose, onSave, existingUser, currentUser }: 
         });
         toast.success(isRTL ? 'تم إضافة العضو' : 'Member added successfully');
         if ((result as any).inviteLink) {
-          toast((result as any).inviteLink, { duration: 15000, icon: '📧' });
+          if (navigator.clipboard?.writeText) {
+            navigator.clipboard.writeText((result as any).inviteLink);
+            toast(isRTL ? 'تم نسخ رابط الدعوة' : 'Invite link copied to clipboard', { duration: 5000 });
+          } else {
+            toast((result as any).inviteLink, { duration: 20000, icon: '📧' });
+          }
         }
       }
       onSave();
@@ -451,28 +458,14 @@ function TeamMemberModal({ isRTL, onClose, onSave, existingUser, currentUser }: 
               className="input"
               required
               dir="ltr"
+              disabled={!!existingUser}
             />
-          </div>
-
-          {!isEditing && (
-            <div>
-              <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>
-                {isRTL ? 'كلمة المرور' : 'Password'}
-              </label>
-              <input
-                type="password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="input"
-                minLength={6}
-                required
-                dir="ltr"
-              />
+            {!isEditing && (
               <p className={`text-xs text-gray-500 mt-1 ${isRTL ? 'text-right' : ''}`}>
-                {isRTL ? '6 أحرف كحد أدنى' : 'Minimum 6 characters'}
+                {t?.owner?.inviteEmailNote || (isRTL ? 'سيتم إرسال رابط تعيين كلمة المرور للبريد الإلكتروني' : 'Invite link will be sent to this email')}
               </p>
-            </div>
-          )}
+            )}
+          </div>
 
           <div>
             <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>

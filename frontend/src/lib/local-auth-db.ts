@@ -20,6 +20,7 @@ interface User {
   password: string;
   name: string;
   role: string;
+  ownerAlsoAdmin?: boolean;
 }
 
 interface AuthData {
@@ -102,7 +103,7 @@ export const localAuthDb = {
       const auth = loadData();
       return auth.users.filter((u) => u.organizationId === organizationId);
     },
-    async update(id: string, data: Partial<{ email: string; password: string; name: string; role: string }>) {
+    async update(id: string, data: Partial<{ email: string; password: string; name: string; role: string; ownerAlsoAdmin: boolean }>) {
       const auth = loadData();
       const idx = auth.users.findIndex((u) => u.id === id);
       if (idx === -1) return null;
