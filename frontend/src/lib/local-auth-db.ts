@@ -98,6 +98,18 @@ export const localAuthDb = {
       const auth = loadData();
       return auth.users.find((u) => u.id === id) || null;
     },
+    async getByOrganization(organizationId: string) {
+      const auth = loadData();
+      return auth.users.filter((u) => u.organizationId === organizationId);
+    },
+    async update(id: string, data: Partial<{ email: string; password: string; name: string; role: string }>) {
+      const auth = loadData();
+      const idx = auth.users.findIndex((u) => u.id === id);
+      if (idx === -1) return null;
+      auth.users[idx] = { ...auth.users[idx], ...data };
+      saveData(auth);
+      return auth.users[idx];
+    },
   },
 };
 

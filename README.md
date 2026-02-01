@@ -122,12 +122,13 @@ The frontend runs on `http://localhost:3001`
 
 ## 👥 User Roles
 
+See **[ROLES_AND_PERMISSIONS.md](./ROLES_AND_PERMISSIONS.md)** for the complete roles and permissions matrix.
+
 | Role | Permissions |
 |------|-------------|
-| **Manager** | Full access - Dashboard, Tasks, Goals, KPIs, Plans, Calendar, Weekly Updates, User Management, Proposals |
-| **Employee** | Limited access - View own tasks, Submit plans, View suggestions |
-
-**Note**: Only one Manager account can be registered in the system.
+| **Owner** | User management only - Create Admins & Employees. No operational access. |
+| **Admin (Manager)** | Full access - Dashboard, Tasks, Goals, KPIs, Plans, Weekly Updates, User Management |
+| **Employee** | Limited access - View own tasks, update status, submit plans, view goals/KPIs |
 
 ## 🔐 Authentication
 

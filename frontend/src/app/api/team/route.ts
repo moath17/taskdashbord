@@ -1,14 +1,22 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
+import { localAuthDb, isSupabaseConfigured } from '@/lib/local-auth-db';
 import { requireOwnerOrManager, hashPassword } from '@/lib/auth';
+import { createInvitation } from '@/lib/invites-store';
+import { sendInviteEmail } from '@/lib/email';
 import { jsonResponse, errorResponse } from '@/lib/utils';
+
+const getDb = () => (isSupabaseConfigured() ? db : localAuthDb);
+
+// Placeholder password for invited users - they must set password via invite link
+const PENDING_PASSWORD = '__PENDING_INVITE__';
 
 // Get all team members in the organization
 export async function GET(request: NextRequest) {
   try {
     const user = requireOwnerOrManager(request);
-    
-    const users = await db.users.getByOrganization(user.organizationId);
+    const authDb = getDb();
+    const users = await authDb.users.getByOrganization(user.organizationId);
     
     // Remove passwords from response
     const safeUsers = users.map((u: any) => ({
