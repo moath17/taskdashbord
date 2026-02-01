@@ -29,6 +29,23 @@ export const ar: TranslationKeys = {
     confirmDelete: 'هل أنت متأكد من الحذف؟',
   },
 
+  // Owner
+  owner: {
+    screenTitle: 'شاشة المالك',
+    userManagementOnly: 'إدارة المستخدمين فقط',
+    platformInfo: 'معلومات المنصة',
+    platformInfoDesc: 'أنت المالك. يمكنك إضافة المديرين والموظفين فقط. لا توجد ميزات تشغيلية أخرى في هذه الشاشة.',
+    userManagement: 'إدارة المستخدمين',
+    createUsersDesc: 'أنشئ مديرين وموظفين لمؤسستك',
+    addUser: 'إضافة مستخدم',
+    addAdminOrEmployee: 'إضافة مستخدم (مدير أو موظف)',
+    editUser: 'تعديل المستخدم',
+    noUsersYet: 'لا يوجد مستخدمين بعد. أضف مديراً أو موظفاً.',
+    admin: 'مدير',
+    passwordRequired: 'كلمة المرور مطلوبة',
+    passwordMinLength: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
+  },
+
   // Auth
   auth: {
     login: 'تسجيل الدخول',

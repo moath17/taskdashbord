@@ -21,9 +21,9 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await login(email, password);
+      const { user } = await login(email, password);
       toast.success(t.auth.loginSuccess);
-      router.push('/dashboard');
+      router.push(user?.role === 'owner' ? '/owner' : '/dashboard');
     } catch (error: any) {
       toast.error(error.response?.data?.error || t.auth.loginFailed);
     } finally {

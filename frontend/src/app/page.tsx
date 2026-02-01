@@ -6,17 +6,17 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function Home() {
   const router = useRouter();
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
 
   useEffect(() => {
     if (!loading) {
       if (isAuthenticated) {
-        router.replace('/dashboard');
+        router.replace(user?.role === 'owner' ? '/owner' : '/dashboard');
       } else {
         router.replace('/login');
       }
     }
-  }, [isAuthenticated, loading, router]);
+  }, [isAuthenticated, loading, user?.role, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

@@ -25,14 +25,14 @@ export default function Register() {
     setLoading(true);
 
     try {
-      await register(
+      const { user } = await register(
         formData.organizationName,
         formData.email,
         formData.password,
         formData.name
       );
       toast.success(t.auth.registerSuccess);
-      router.push('/dashboard');
+      router.push(user?.role === 'owner' ? '/owner' : '/dashboard');
     } catch (error: any) {
       const errorMessage = error.response?.data?.error || t.auth.registerFailed;
       toast.error(errorMessage);

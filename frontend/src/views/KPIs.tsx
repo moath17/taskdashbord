@@ -129,10 +129,10 @@ export default function KPIs() {
               setEditingKPI(null);
               setShowModal(true);
             }}
-            className={`btn btn-primary flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
+            className="btn btn-primary flex items-center gap-2 shadow-lg"
           >
             <Plus className="w-5 h-5" />
-            {t.kpis.addKpi}
+            {t.kpis.createKpi}
           </button>
         )}
       </div>

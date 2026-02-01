@@ -123,13 +123,13 @@ export default function Goals() {
           <p className="text-gray-600 mt-1">{t.goals.hierarchy}</p>
         </div>
         {isManager && (
-          <div className="flex gap-2">
+          <div className={`flex flex-wrap gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
             <button
               onClick={() => setShowAnnualModal(true)}
-              className={`btn btn-secondary flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
+              className="btn btn-primary flex items-center gap-2 shadow-lg"
             >
-              <Flag className="w-5 h-5" />
-              {t.goals.annualGoal}
+              <Plus className="w-5 h-5" />
+              {t.goals.createAnnualGoal}
             </button>
             <button
               onClick={() => {
@@ -137,10 +137,10 @@ export default function Goals() {
                 setEditingMBOGoal(null);
                 setShowMBOModal(true);
               }}
-              className={`btn btn-primary flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
+              className="btn btn-secondary flex items-center gap-2"
             >
               <Plus className="w-5 h-5" />
-              {t.goals.addMbo}
+              {t.goals.addMboGoal}
             </button>
           </div>
         )}

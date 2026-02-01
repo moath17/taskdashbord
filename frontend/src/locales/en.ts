@@ -27,6 +27,23 @@ export const en = {
     confirmDelete: 'Are you sure you want to delete this?',
   },
 
+  // Owner
+  owner: {
+    screenTitle: 'Owner Screen',
+    userManagementOnly: 'User Management Only',
+    platformInfo: 'Platform Information',
+    platformInfoDesc: 'You are the owner. You can add Admins (Managers) and Employees only. No other operational features on this screen.',
+    userManagement: 'User Management',
+    createUsersDesc: 'Create Admins and Employees for your organization',
+    addUser: 'Add User',
+    addAdminOrEmployee: 'Add User (Admin or Employee)',
+    editUser: 'Edit User',
+    noUsersYet: 'No users yet. Add an Admin or Employee.',
+    admin: 'Admin',
+    passwordRequired: 'Password is required',
+    passwordMinLength: 'Password must be at least 6 characters',
+  },
+
   // Auth
   auth: {
     login: 'Login',

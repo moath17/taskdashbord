@@ -7,8 +7,8 @@ import { authApi } from '../api/auth';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (organizationName: string, email: string, password: string, name: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ user: User }>;
+  register: (organizationName: string, email: string, password: string, name: string) => Promise<{ user: User }>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -51,6 +51,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       localStorage.setItem('user', JSON.stringify(response.user));
     }
     setUser(response.user);
+    return { user: response.user };
   };
 
   const register = async (organizationName: string, email: string, password: string, name: string) => {
@@ -60,6 +61,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       localStorage.setItem('user', JSON.stringify(response.user));
     }
     setUser(response.user);
+    return { user: response.user };
   };
 
   const logout = () => {

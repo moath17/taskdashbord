@@ -119,18 +119,18 @@ export default function Tasks() {
     <div className={`space-y-6 ${isRTL ? 'rtl' : 'ltr'}`}>
       {/* Header */}
       <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
-        <h1 className="text-3xl font-bold text-gray-900">{t.tasks.title}</h1>
-        <div className="flex items-center gap-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{t.tasks.title}</h1>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           {canCreateTask && (
             <button
               onClick={() => {
                 setSelectedTask(null);
                 setIsModalOpen(true);
               }}
-              className={`btn btn-primary flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}
+              className="btn btn-primary flex items-center gap-2 shadow-lg flex-1 sm:flex-initial justify-center"
             >
-              <Plus className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-              {t.tasks.newTask}
+              <Plus className="w-5 h-5" />
+              {t.tasks.createTask}
             </button>
           )}
         </div>
