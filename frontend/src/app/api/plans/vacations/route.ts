@@ -1,12 +1,18 @@
 import { NextRequest } from 'next/server';
-import { db } from '@/lib/database';
+import { getDatabase } from '@/lib/database';
+import { localAuthDb, isSupabaseConfigured } from '@/lib/local-auth-db';
 import { requireAuth } from '@/lib/auth';
 import { jsonResponse, errorResponse } from '@/lib/utils';
+
+const getDb = () => getDatabase();
+const getUsersDb = () => isSupabaseConfigured() ? getDatabase() : localAuthDb;
 
 // Get all vacation plans
 export async function GET(request: NextRequest) {
   try {
     const user = requireAuth(request);
+    const db = getDb();
+    const usersDb = getUsersDb();
     
     let plans = await db.vacationPlans.getByOrganization(user.organizationId);
 
@@ -14,7 +20,7 @@ export async function GET(request: NextRequest) {
       plans = plans.filter((p: any) => p.userId === user.id);
     }
 
-    const users = await db.users.getByOrganization(user.organizationId);
+    const users = await usersDb.users.getByOrganization(user.organizationId);
     
     const plansWithUsers = plans.map((plan: any) => {
       const planUser = users.find((u: any) => u.id === plan.userId);
@@ -37,6 +43,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = requireAuth(request);
     const body = await request.json();
+    const db = getDb();
     
     const { type, startDate, endDate, notes } = body;
 

@@ -33,5 +33,13 @@ export const authApi = {
     const response = await api.get<User>('/auth/me');
     return response.data;
   },
+
+  setupAdmin: async (options: { useSameAsOwner: true } | { useSameAsOwner: false; adminEmail: string; adminName: string }) => {
+    const response = await api.post<{ success: boolean; ownerAlsoAdmin?: boolean; user?: User; adminCreated?: boolean; inviteLink?: string }>(
+      '/auth/setup-admin',
+      options
+    );
+    return response.data;
+  },
 };
 

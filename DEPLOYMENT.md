@@ -141,6 +141,16 @@ The current setup uses a JSON file database, which is **NOT suitable for product
    - Traditional SQL database
    - Requires schema migration
 
+### Supabase Users Table (if using Supabase)
+
+If using Supabase for auth, add this column to the `users` table:
+
+```sql
+ALTER TABLE users ADD COLUMN IF NOT EXISTS owner_also_admin BOOLEAN DEFAULT FALSE;
+```
+
+This enables the optional "Owner as Admin" feature (owner can use same credentials for admin access).
+
 ### Current JSON Database (Development Only)
 
 If you must use JSON database temporarily:

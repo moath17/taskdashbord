@@ -20,14 +20,15 @@ export default function ProtectedLayout({
     }
   }, [isAuthenticated, loading, router]);
 
-  // Owner: redirect to /owner and show OwnerScreen only (no full nav)
+  // Owner without ownerAlsoAdmin: redirect to /owner only (no dashboard access)
+  // Owner with ownerAlsoAdmin: can access both /owner and /dashboard
   useEffect(() => {
-    if (!loading && isAuthenticated && user?.role === 'owner') {
+    if (!loading && isAuthenticated && user?.role === 'owner' && !user?.ownerAlsoAdmin) {
       if (pathname !== '/owner') {
         router.replace('/owner');
       }
     }
-  }, [loading, isAuthenticated, user?.role, pathname, router]);
+  }, [loading, isAuthenticated, user?.role, user?.ownerAlsoAdmin, pathname, router]);
 
   if (loading) {
     return (
@@ -41,8 +42,9 @@ export default function ProtectedLayout({
     return null;
   }
 
-  // Owner gets OwnerScreen (rendered by /owner page) - no Layout wrapper
-  if (user?.role === 'owner') {
+  // Owner without ownerAlsoAdmin: no Layout wrapper (OwnerScreen only)
+  // Owner with ownerAlsoAdmin: gets full Layout with dashboard access
+  if (user?.role === 'owner' && !user?.ownerAlsoAdmin) {
     return <>{children}</>;
   }
 

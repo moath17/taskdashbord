@@ -46,6 +46,14 @@ export const ar: TranslationKeys = {
     passwordMinLength: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
     inviteLinkCopied: 'تم نسخ رابط الدعوة. أرسله للمستخدم.',
     inviteEmailNote: 'سيتم إرسال رابط تعيين كلمة المرور للبريد الإلكتروني',
+    adminSetupTitle: 'إعداد حساب المدير',
+    adminSetupQuestion: 'هل تريد استخدام نفس البريد الإلكتروني وكلمة المرور كمالك لحساب المدير؟',
+    useSameAsOwner: 'نعم، استخدم نفس البريد وكلمة المرور',
+    createNewAdmin: 'لا، إنشاء حساب مدير جديد ببريد وكلمة مرور مختلفين',
+    adminEmailPlaceholder: 'بريد المدير',
+    adminNamePlaceholder: 'اسم المدير',
+    skipForNow: 'تخطي الآن - يمكنني إضافة المدير لاحقاً',
+    adminSetupSuccess: 'تم إعداد المدير بنجاح',
   },
 
   // Auth

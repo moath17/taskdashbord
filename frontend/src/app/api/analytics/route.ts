@@ -1,14 +1,20 @@
 import { NextRequest } from 'next/server';
-import { db } from '@/lib/database';
+import { getDatabase } from '@/lib/database';
+import { localAuthDb, isSupabaseConfigured } from '@/lib/local-auth-db';
 import { requireAuth } from '@/lib/auth';
 import { jsonResponse, errorResponse } from '@/lib/utils';
+
+const getDb = () => getDatabase();
+const getUsersDb = () => isSupabaseConfigured() ? getDatabase() : localAuthDb;
 
 // Get analytics data
 export async function GET(request: NextRequest) {
   try {
     const user = requireAuth(request);
+    const db = getDb();
+    const usersDb = getUsersDb();
     
-    const users = await db.users.getByOrganization(user.organizationId);
+    const users = await usersDb.users.getByOrganization(user.organizationId);
     const tasks = await db.tasks.getByOrganization(user.organizationId);
     const annualGoals = await db.annualGoals.getByOrganization(user.organizationId);
     const kpis = await db.kpis.getByOrganization(user.organizationId);

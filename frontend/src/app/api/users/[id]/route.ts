@@ -1,7 +1,11 @@
 import { NextRequest } from 'next/server';
-import { db } from '@/lib/database';
+import { getDatabase } from '@/lib/database';
+import { localAuthDb, isSupabaseConfigured } from '@/lib/local-auth-db';
 import { requireAuth, requireOwnerOrManager, hashPassword } from '@/lib/auth';
 import { jsonResponse, errorResponse } from '@/lib/utils';
+
+const getDb = () => getDatabase();
+const getUsersDb = () => isSupabaseConfigured() ? getDatabase() : localAuthDb;
 
 // Get single user
 export async function GET(
@@ -11,8 +15,9 @@ export async function GET(
   try {
     const authUser = requireAuth(request);
     const { id } = await params;
+    const usersDb = getUsersDb();
     
-    const user = await db.users.getById(id);
+    const user = await usersDb.users.getById(id);
     
     if (!user || user.organizationId !== authUser.organizationId) {
       return errorResponse('User not found', 404);
@@ -46,8 +51,9 @@ export async function PUT(
     const authUser = requireAuth(request);
     const { id } = await params;
     const body = await request.json();
+    const usersDb = getUsersDb();
     
-    const user = await db.users.getById(id);
+    const user = await usersDb.users.getById(id);
     
     if (!user || user.organizationId !== authUser.organizationId) {
       return errorResponse('User not found', 404);
@@ -74,7 +80,7 @@ export async function PUT(
     if (body.role && user.role !== 'owner') updateData.role = body.role;
     if (body.password) updateData.password = await hashPassword(body.password);
 
-    const updatedUser = await db.users.update(id, updateData);
+    const updatedUser = await usersDb.users.update(id, updateData);
 
     return jsonResponse({
       id: updatedUser.id,
@@ -98,8 +104,9 @@ export async function DELETE(
   try {
     const authUser = requireOwnerOrManager(request);
     const { id } = await params;
+    const usersDb = getUsersDb();
     
-    const user = await db.users.getById(id);
+    const user = await usersDb.users.getById(id);
     
     if (!user || user.organizationId !== authUser.organizationId) {
       return errorResponse('User not found', 404);
@@ -115,7 +122,7 @@ export async function DELETE(
       return errorResponse('Cannot delete yourself', 400);
     }
 
-    await db.users.delete(id);
+    await usersDb.users.delete(id);
     return jsonResponse({ message: 'User deleted successfully' });
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);

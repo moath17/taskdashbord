@@ -44,6 +44,14 @@ export const en = {
     passwordMinLength: 'Password must be at least 6 characters',
     inviteLinkCopied: 'Invite link copied to clipboard. Send it to the user.',
     inviteEmailNote: 'Invite link will be sent to this email',
+    adminSetupTitle: 'Admin Account Setup',
+    adminSetupQuestion: 'Do you want to use the same email and password as the Owner for the Admin account?',
+    useSameAsOwner: 'Yes, use same email and password',
+    createNewAdmin: 'No, create a new Admin with different email and password',
+    adminEmailPlaceholder: 'Admin email',
+    adminNamePlaceholder: 'Admin name',
+    skipForNow: 'Skip for now – I can add an Admin later',
+    adminSetupSuccess: 'Admin setup completed successfully',
   },
 
   // Auth

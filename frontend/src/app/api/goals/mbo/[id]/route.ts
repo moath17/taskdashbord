@@ -1,7 +1,11 @@
 import { NextRequest } from 'next/server';
-import { db } from '@/lib/database';
+import { getDatabase } from '@/lib/database';
+import { localAuthDb, isSupabaseConfigured } from '@/lib/local-auth-db';
 import { requireOwnerOrManager } from '@/lib/auth';
 import { jsonResponse, errorResponse } from '@/lib/utils';
+
+const getDb = () => getDatabase();
+const getUsersDb = () => isSupabaseConfigured() ? getDatabase() : localAuthDb;
 
 // Update MBO goal
 export async function PUT(
@@ -12,6 +16,7 @@ export async function PUT(
     const user = requireOwnerOrManager(request);
     const { id } = await params;
     const body = await request.json();
+    const db = getDb();
     
     const goal = await db.mboGoals.getById(id);
     
@@ -37,6 +42,7 @@ export async function DELETE(
   try {
     const user = requireOwnerOrManager(request);
     const { id } = await params;
+    const db = getDb();
     
     const goal = await db.mboGoals.getById(id);
     

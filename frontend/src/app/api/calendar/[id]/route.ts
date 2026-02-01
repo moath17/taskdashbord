@@ -1,7 +1,11 @@
 import { NextRequest } from 'next/server';
-import { db } from '@/lib/database';
+import { getDatabase } from '@/lib/database';
+import { localAuthDb, isSupabaseConfigured } from '@/lib/local-auth-db';
 import { requireAuth, requireOwnerOrManager } from '@/lib/auth';
 import { jsonResponse, errorResponse } from '@/lib/utils';
+
+const getDb = () => getDatabase();
+const getUsersDb = () => isSupabaseConfigured() ? getDatabase() : localAuthDb;
 
 // Get single calendar event
 export async function GET(
@@ -11,6 +15,7 @@ export async function GET(
   try {
     const user = requireAuth(request);
     const { id } = await params;
+    const db = getDb();
     
     const event = await db.calendarEvents.getById(id);
     
@@ -35,6 +40,7 @@ export async function PUT(
     const user = requireOwnerOrManager(request);
     const { id } = await params;
     const body = await request.json();
+    const db = getDb();
     
     const event = await db.calendarEvents.getById(id);
     
@@ -60,6 +66,7 @@ export async function DELETE(
   try {
     const user = requireOwnerOrManager(request);
     const { id } = await params;
+    const db = getDb();
     
     const event = await db.calendarEvents.getById(id);
     

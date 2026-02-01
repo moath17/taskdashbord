@@ -25,6 +25,12 @@ lerna-debug.log*
 # Database files (contains sensitive data)
 backend/src/data/database.json
 **/database.json
+frontend/data/
+**/local-auth.json
+**/local-db.json
+**/invites.json
+**/notifications.json
+**/reset-tokens.json
 
 # Debug logs
 .cursor/debug.log

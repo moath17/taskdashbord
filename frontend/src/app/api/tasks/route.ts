@@ -1,14 +1,19 @@
 import { NextRequest } from 'next/server';
-import { db } from '@/lib/database';
+import { getDatabase } from '@/lib/database';
+import { localAuthDb, isSupabaseConfigured } from '@/lib/local-auth-db';
 import { requireAuth, requireOwnerOrManager } from '@/lib/auth';
 import { createNotification } from '@/lib/notifications-store';
 import { jsonResponse, errorResponse } from '@/lib/utils';
+
+const getDb = () => getDatabase();
+const getUsersDb = () => isSupabaseConfigured() ? getDatabase() : localAuthDb;
 
 // Get all tasks for the organization
 export async function GET(request: NextRequest) {
   try {
     const user = requireAuth(request);
     const { searchParams } = new URL(request.url);
+    const db = getDb();
     
     let tasks = await db.tasks.getByOrganization(user.organizationId);
 
@@ -35,7 +40,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Get users for assigned info
-    const users = await db.users.getByOrganization(user.organizationId);
+    const usersDb = getUsersDb();
+    const users = await usersDb.users.getByOrganization(user.organizationId);
     const annualGoals = await db.annualGoals.getByOrganization(user.organizationId);
     const mboGoals = await db.mboGoals.getByOrganization(user.organizationId);
 
@@ -64,6 +70,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = requireOwnerOrManager(request);
     const body = await request.json();
+    const db = getDb();
     
     const { title, description, assignedTo, annualGoalId, mboGoalId, startDate, dueDate, priority } = body;
 

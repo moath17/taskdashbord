@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { Languages, Building2, User, Mail, Lock } from 'lucide-react';
+import { authApi } from '@/api/auth';
+import { Languages, Building2, User, Mail, Lock, Shield, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Register() {
@@ -15,42 +16,156 @@ export default function Register() {
     email: '',
     password: '',
   });
+  const [adminForm, setAdminForm] = useState({ adminEmail: '', adminName: '' });
   const [loading, setLoading] = useState(false);
-  const { register, isAuthenticated, loading: authLoading } = useAuth();
+  const [step, setStep] = useState<'register' | 'admin-setup'>('register');
+  const [adminChoice, setAdminChoice] = useState<'same' | 'new' | null>(null);
+  const { register, refreshUser, isAuthenticated, loading: authLoading, user } = useAuth();
   const { t, language, toggleLanguage, isRTL } = useLanguage();
   const router = useRouter();
 
   useEffect(() => {
-    if (!authLoading && isAuthenticated) {
+    if (!authLoading && isAuthenticated && user && user.role !== 'owner' && step === 'register') {
       router.replace('/dashboard');
     }
-  }, [isAuthenticated, authLoading, router]);
+  }, [isAuthenticated, authLoading, user?.role, step, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      await register(
+      const { user: newUser } = await register(
         formData.organizationName,
         formData.email,
         formData.password,
         formData.name
       );
       toast.success(t.auth.registerSuccess);
-      router.push('/dashboard');
+      if (newUser?.role === 'owner') {
+        setStep('admin-setup');
+      } else {
+        router.push('/dashboard');
+      }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.error || t.auth.registerFailed;
-      toast.error(errorMessage);
+      toast.error(error.response?.data?.error || t.auth.registerFailed);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAdminSetup = async () => {
+    if (adminChoice === null) return;
+    setLoading(true);
+    try {
+      if (adminChoice === 'same') {
+        const res = await authApi.setupAdmin({ useSameAsOwner: true });
+        if (res.user) {
+          await refreshUser();
+          toast.success(t.owner.adminSetupSuccess);
+        }
+      } else if (adminChoice === 'new' && adminForm.adminEmail && adminForm.adminName) {
+        const res = await authApi.setupAdmin({
+          useSameAsOwner: false,
+          adminEmail: adminForm.adminEmail,
+          adminName: adminForm.adminName,
+        });
+        toast.success(t.owner.adminSetupSuccess);
+        if (res.inviteLink && navigator.clipboard?.writeText) {
+          navigator.clipboard.writeText(res.inviteLink);
+          toast(t.owner.inviteLinkCopied, { duration: 5000 });
+        } else if (res.inviteLink) {
+          toast(res.inviteLink, { duration: 15000, icon: '📧' });
+        }
+      }
+      router.push('/owner');
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSkip = () => {
+    router.push('/owner');
   };
 
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  if (step === 'admin-setup') {
+    return (
+      <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100 px-4 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+        <button
+          onClick={toggleLanguage}
+          className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-all text-gray-700 hover:text-primary-600"
+        >
+          <Languages className="w-5 h-5" />
+          <span className="font-medium">{language === 'en' ? 'عربي' : 'English'}</span>
+        </button>
+        <div className="max-w-md w-full">
+          <div className="card">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-100 rounded-full mb-4">
+                <Shield className="w-8 h-8 text-amber-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900">{t.owner.adminSetupTitle}</h2>
+              <p className="text-gray-600 mt-2 text-sm">{t.owner.adminSetupQuestion}</p>
+            </div>
+            <div className="space-y-3">
+              <button
+                onClick={() => setAdminChoice('same')}
+                className={`w-full p-4 rounded-xl border-2 transition-all ${isRTL ? 'text-right' : 'text-left'} ${adminChoice === 'same' ? 'border-primary-600 bg-primary-50' : 'border-gray-200 hover:border-gray-300'}`}
+              >
+                <span className="font-medium text-gray-900">{t.owner.useSameAsOwner}</span>
+              </button>
+              <button
+                onClick={() => setAdminChoice('new')}
+                className={`w-full p-4 rounded-xl border-2 transition-all ${isRTL ? 'text-right' : 'text-left'} ${adminChoice === 'new' ? 'border-primary-600 bg-primary-50' : 'border-gray-200 hover:border-gray-300'}`}
+              >
+                <span className="font-medium text-gray-900">{t.owner.createNewAdmin}</span>
+              </button>
+              {adminChoice === 'new' && (
+                <div className="p-4 bg-gray-50 rounded-xl space-y-3">
+                  <input
+                    type="email"
+                    placeholder={t.owner.adminEmailPlaceholder}
+                    value={adminForm.adminEmail}
+                    onChange={(e) => setAdminForm({ ...adminForm, adminEmail: e.target.value })}
+                    className="input"
+                    dir="ltr"
+                  />
+                  <input
+                    type="text"
+                    placeholder={t.owner.adminNamePlaceholder}
+                    value={adminForm.adminName}
+                    onChange={(e) => setAdminForm({ ...adminForm, adminName: e.target.value })}
+                    className="input"
+                  />
+                </div>
+              )}
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={handleSkip}
+                  className="btn btn-secondary flex-1"
+                >
+                  {t.owner.skipForNow}
+                </button>
+                <button
+                  onClick={handleAdminSetup}
+                  disabled={loading || (adminChoice === 'new' && (!adminForm.adminEmail || !adminForm.adminName))}
+                  className="btn btn-primary flex-1 flex items-center justify-center gap-2"
+                >
+                  {loading ? t.app.loading : <><ArrowRight className="w-4 h-4" /> {t.app.next}</>}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

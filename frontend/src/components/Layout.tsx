@@ -18,6 +18,7 @@ import {
   BarChart3,
   Globe,
   Sparkles,
+  Crown,
 } from 'lucide-react';
 import { useState, useMemo } from 'react';
 
@@ -37,11 +38,11 @@ export default function Layout({ children }: LayoutProps) {
     router.push('/login');
   };
 
-  const isManager = user?.role === 'manager';
+  const isManager = user?.role === 'manager' || (user?.role === 'owner' && user?.ownerAlsoAdmin);
   const isOwnerOrManager = user?.role === 'owner' || isManager;
 
   const getRoleLabel = () => {
-    if (user?.role === 'owner') return { emoji: '👑', label: 'Owner' };
+    if (user?.role === 'owner') return { emoji: user?.ownerAlsoAdmin ? '👑🛡️' : '👑', label: user?.ownerAlsoAdmin ? 'Owner + Admin' : 'Owner' };
     if (isManager) return { emoji: '🛡️', label: t.auth.manager };
     return { emoji: '👤', label: t.auth.employee };
   };
@@ -55,6 +56,9 @@ export default function Layout({ children }: LayoutProps) {
       { path: '/tasks', label: t.nav.tasks, icon: CheckSquare },
       { path: '/plans', label: t.nav.plans, icon: Calendar },
     ];
+    if (user?.role === 'owner' && user?.ownerAlsoAdmin) {
+      items.unshift({ path: '/owner', label: t.owner.screenTitle, icon: Crown });
+    }
     if (isOwnerOrManager) {
       items.push(
         { path: '/weekly-updates', label: t.nav.weeklyUpdates, icon: FileText },

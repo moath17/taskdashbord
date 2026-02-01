@@ -1,8 +1,12 @@
 import { NextRequest } from 'next/server';
-import { db } from '@/lib/database';
+import { getDatabase } from '@/lib/database';
+import { localAuthDb, isSupabaseConfigured } from '@/lib/local-auth-db';
 import { requireAuth, requireOwnerOrManager } from '@/lib/auth';
 import { createNotification } from '@/lib/notifications-store';
 import { jsonResponse, errorResponse } from '@/lib/utils';
+
+const getDb = () => getDatabase();
+const getUsersDb = () => isSupabaseConfigured() ? getDatabase() : localAuthDb;
 
 // Get single task
 export async function GET(
@@ -12,6 +16,8 @@ export async function GET(
   try {
     const user = requireAuth(request);
     const { id } = await params;
+    const db = getDb();
+    const usersDb = getUsersDb();
     
     const task = await db.tasks.getById(id);
     
@@ -23,7 +29,7 @@ export async function GET(
       return errorResponse('Forbidden', 403);
     }
 
-    const users = await db.users.getByOrganization(user.organizationId);
+    const users = await usersDb.users.getByOrganization(user.organizationId);
     const comments = await db.comments.getByTask(task.id);
     
     const commentsWithUsers = comments.map((comment: any) => {
@@ -57,6 +63,7 @@ export async function PUT(
     const user = requireAuth(request);
     const { id } = await params;
     const body = await request.json();
+    const db = getDb();
     
     const task = await db.tasks.getById(id);
     
@@ -112,6 +119,7 @@ export async function DELETE(
   try {
     const user = requireOwnerOrManager(request);
     const { id } = await params;
+    const db = getDb();
     
     const task = await db.tasks.getById(id);
     

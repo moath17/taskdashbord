@@ -10,6 +10,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ user: User }>;
   register: (organizationName: string, email: string, password: string, name: string) => Promise<{ user: User }>;
   logout: () => void;
+  refreshUser: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -72,6 +73,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser(null);
   };
 
+  const refreshUser = async () => {
+    try {
+      const currentUser = await authApi.getCurrentUser();
+      setUser(currentUser);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(currentUser));
+      }
+    } catch {
+      // Ignore
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -80,6 +93,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         login,
         register,
         logout,
+        refreshUser,
         isAuthenticated: !!user,
       }}
     >

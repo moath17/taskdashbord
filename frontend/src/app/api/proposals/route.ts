@@ -1,15 +1,21 @@
 import { NextRequest } from 'next/server';
-import { db } from '@/lib/database';
+import { getDatabase } from '@/lib/database';
+import { localAuthDb, isSupabaseConfigured } from '@/lib/local-auth-db';
 import { requireAuth, requireOwnerOrManager } from '@/lib/auth';
 import { jsonResponse, errorResponse } from '@/lib/utils';
+
+const getDb = () => getDatabase();
+const getUsersDb = () => isSupabaseConfigured() ? getDatabase() : localAuthDb;
 
 // Get all proposals
 export async function GET(request: NextRequest) {
   try {
     const user = requireAuth(request);
+    const db = getDb();
+    const usersDb = getUsersDb();
     
     const proposals = await db.proposals.getByOrganization(user.organizationId);
-    const users = await db.users.getByOrganization(user.organizationId);
+    const users = await usersDb.users.getByOrganization(user.organizationId);
     
     const proposalsWithUsers = proposals.map((proposal: any) => {
       const proposalUser = users.find((u: any) => u.id === proposal.createdBy);
@@ -29,6 +35,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = requireOwnerOrManager(request);
     const body = await request.json();
+    const db = getDb();
     
     const { title, description, type, imageUrl, link, isHighlighted } = body;
 

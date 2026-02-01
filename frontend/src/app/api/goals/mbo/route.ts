@@ -1,13 +1,18 @@
 import { NextRequest } from 'next/server';
-import { db } from '@/lib/database';
+import { getDatabase } from '@/lib/database';
+import { localAuthDb, isSupabaseConfigured } from '@/lib/local-auth-db';
 import { requireAuth, requireOwnerOrManager } from '@/lib/auth';
 import { createNotificationForUsers } from '@/lib/notifications-store';
 import { jsonResponse, errorResponse } from '@/lib/utils';
+
+const getDb = () => getDatabase();
+const getUsersDb = () => isSupabaseConfigured() ? getDatabase() : localAuthDb;
 
 // Get all MBO goals
 export async function GET(request: NextRequest) {
   try {
     const user = requireAuth(request);
+    const db = getDb();
     
     let goals = await db.mboGoals.getByOrganization(user.organizationId);
     
@@ -15,7 +20,8 @@ export async function GET(request: NextRequest) {
       goals = goals.filter((g: any) => g.userId === user.id);
     }
     
-    const users = await db.users.getByOrganization(user.organizationId);
+    const usersDb = getUsersDb();
+    const users = await usersDb.users.getByOrganization(user.organizationId);
     const annualGoals = await db.annualGoals.getByOrganization(user.organizationId);
     
     const goalsWithInfo = goals.map((goal: any) => {
@@ -41,6 +47,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = requireOwnerOrManager(request);
     const body = await request.json();
+    const db = getDb();
     
     const { title, description, annualGoalId, userId, targetValue, currentValue } = body;
 
@@ -61,7 +68,8 @@ export async function POST(request: NextRequest) {
     });
 
     try {
-      const users = await db.users.getByOrganization(user.organizationId);
+      const usersDb = getUsersDb();
+      const users = await usersDb.users.getByOrganization(user.organizationId);
       const managerIds = users.filter((u: any) => u.role === 'manager' || u.role === 'owner').map((u: any) => u.id);
       const toNotify = [...new Set([assignedUserId, ...managerIds])].filter((id) => id !== user.id);
       if (toNotify.length > 0) {

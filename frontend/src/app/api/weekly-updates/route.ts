@@ -1,15 +1,21 @@
 import { NextRequest } from 'next/server';
-import { db } from '@/lib/database';
+import { getDatabase } from '@/lib/database';
+import { localAuthDb, isSupabaseConfigured } from '@/lib/local-auth-db';
 import { requireOwnerOrManager } from '@/lib/auth';
 import { jsonResponse, errorResponse } from '@/lib/utils';
+
+const getDb = () => getDatabase();
+const getUsersDb = () => isSupabaseConfigured() ? getDatabase() : localAuthDb;
 
 // Get all weekly updates
 export async function GET(request: NextRequest) {
   try {
     const user = requireOwnerOrManager(request);
+    const db = getDb();
+    const usersDb = getUsersDb();
     
     const updates = await db.weeklyUpdates.getByOrganization(user.organizationId);
-    const users = await db.users.getByOrganization(user.organizationId);
+    const users = await usersDb.users.getByOrganization(user.organizationId);
     
     const updatesWithUsers = updates.map((update: any) => {
       const updateUser = users.find((u: any) => u.id === update.createdBy);
@@ -30,6 +36,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = requireOwnerOrManager(request);
     const body = await request.json();
+    const db = getDb();
     
     const { weekStartDate, weekEndDate, importantTasks, summary } = body;
 

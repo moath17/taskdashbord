@@ -1,7 +1,11 @@
 import { NextRequest } from 'next/server';
-import { db } from '@/lib/database';
+import { getDatabase } from '@/lib/database';
+import { localAuthDb, isSupabaseConfigured } from '@/lib/local-auth-db';
 import { requireAuth } from '@/lib/auth';
 import { jsonResponse, errorResponse } from '@/lib/utils';
+
+const getDb = () => getDatabase();
+const getUsersDb = () => isSupabaseConfigured() ? getDatabase() : localAuthDb;
 
 // Add comment to vacation plan
 export async function POST(
@@ -12,6 +16,7 @@ export async function POST(
     const user = requireAuth(request);
     const { id } = await params;
     const body = await request.json();
+    const db = getDb();
     
     if (!body.content?.trim()) {
       return errorResponse('Content is required', 400);

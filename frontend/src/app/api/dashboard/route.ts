@@ -1,15 +1,21 @@
 import { NextRequest } from 'next/server';
-import { db } from '@/lib/database';
+import { getDatabase } from '@/lib/database';
+import { localAuthDb, isSupabaseConfigured } from '@/lib/local-auth-db';
 import { requireAuth } from '@/lib/auth';
 import { jsonResponse, errorResponse } from '@/lib/utils';
+
+const getDb = () => getDatabase();
+const getUsersDb = () => isSupabaseConfigured() ? getDatabase() : localAuthDb;
 
 // Get dashboard statistics
 export async function GET(request: NextRequest) {
   try {
     const user = requireAuth(request);
+    const db = getDb();
+    const usersDb = getUsersDb();
     
     let tasks = await db.tasks.getByOrganization(user.organizationId);
-    const allUsers = await db.users.getByOrganization(user.organizationId);
+    const allUsers = await usersDb.users.getByOrganization(user.organizationId);
 
     // Filter tasks based on role
     if (user.role === 'employee') {

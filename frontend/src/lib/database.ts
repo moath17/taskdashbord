@@ -1,4 +1,6 @@
 import { supabase } from './supabase';
+import { localDb } from './local-db';
+import { isSupabaseConfigured } from './local-auth-db';
 
 // Helper to convert snake_case to camelCase
 function toCamelCase(obj: any): any {
@@ -609,4 +611,6 @@ export const db = {
   },
 };
 
+// Export the appropriate database based on configuration
+export const getDatabase = () => isSupabaseConfigured() ? db : localDb;
 export default db;
