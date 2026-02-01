@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { db } from '@/lib/database';
 import { localAuthDb, isSupabaseConfigured } from '@/lib/local-auth-db';
 import { comparePassword, generateToken, updateUserActivity } from '@/lib/auth';
+import { getInvitationByEmail } from '@/lib/invites-store';
 import { jsonResponse, errorResponse } from '@/lib/utils';
 
 const getDb = () => (isSupabaseConfigured() ? db : localAuthDb);
