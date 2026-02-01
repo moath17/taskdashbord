@@ -53,8 +53,14 @@ function getRiskLevel(score: number): 'LOW' | 'MEDIUM' | 'HIGH' {
 
 // Get analytics dashboard
 export async function GET(request: NextRequest) {
+  // #region agent log
+  fetch('http://127.0.0.1:7245/ingest/15cdbcca-ca79-4c98-8d4a-d1a85d74555c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'analytics/dashboard/route.ts:GET_START',message:'Dashboard API called',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A'})}).catch(()=>{});
+  // #endregion
   try {
     const user = requireAuth(request);
+    // #region agent log
+    fetch('http://127.0.0.1:7245/ingest/15cdbcca-ca79-4c98-8d4a-d1a85d74555c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'analytics/dashboard/route.ts:AFTER_AUTH',message:'User authenticated',data:{userId:user.id,role:user.role,orgId:user.organizationId},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
     const db = getDb();
     const usersDb = getUsersDb();
     
