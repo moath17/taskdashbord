@@ -138,7 +138,9 @@ export default function WeeklyUpdates() {
     }
   };
 
-  if (user?.role !== 'manager') {
+  const isManager = user?.role === 'manager' || user?.role === 'owner';
+  
+  if (!isManager) {
     return (
       <div className="flex items-center justify-center h-96 px-4">
         <div className="text-center">
