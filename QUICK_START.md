@@ -51,7 +51,7 @@ npm run dev
 
 ### 5. Access Application
 
-- Frontend: http://localhost:3000 (or 3001 if 3000 is busy)
+- Frontend: http://localhost:3001
 - Backend API: http://localhost:3100
 
 ## 👤 Default Credentials
