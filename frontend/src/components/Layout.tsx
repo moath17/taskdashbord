@@ -81,8 +81,11 @@ export default function Layout({ children }: LayoutProps) {
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
               <div className="hidden sm:block">
-                <span className="font-bold text-gray-900">{t.app.name}</span>
-                <span className="text-xs text-gray-500 sm:ml-2">{roleInfo.emoji} {roleInfo.label}</span>
+                <div className="font-bold text-gray-900">{t.app.name}</div>
+                <div className="text-xs text-gray-500 flex items-center gap-1">
+                  <span>{roleInfo.emoji}</span>
+                  <span className="truncate max-w-[100px]">{roleInfo.label}</span>
+                </div>
               </div>
             </Link>
 
