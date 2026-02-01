@@ -48,16 +48,32 @@ export async function POST(request: NextRequest) {
       return errorResponse('Title and annualGoalId are required', 400);
     }
 
+    const assignedUserId = userId || user.id;
     const goal = await db.mboGoals.create({
       organizationId: user.organizationId,
       title,
       description: description || '',
       annualGoalId,
-      userId: userId || user.id,
+      userId: assignedUserId,
       targetValue: targetValue || '',
       currentValue: currentValue || '',
       createdBy: user.id,
     });
+
+    try {
+      const users = await db.users.getByOrganization(user.organizationId);
+      const managerIds = users.filter((u: any) => u.role === 'manager' || u.role === 'owner').map((u: any) => u.id);
+      const toNotify = [...new Set([assignedUserId, ...managerIds])].filter((id) => id !== user.id);
+      if (toNotify.length > 0) {
+        createNotificationForUsers(toNotify, {
+          organizationId: user.organizationId,
+          type: 'goal_created',
+          title: 'New MBO goal',
+          message: `MBO goal "${title}" was created`,
+          link: '/goals',
+        });
+      }
+    } catch (_) {}
 
     return jsonResponse(goal, 201);
   } catch (error: any) {
