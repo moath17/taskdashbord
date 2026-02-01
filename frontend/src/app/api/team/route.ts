@@ -36,42 +36,50 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Add a new team member
+// Add a new team member (invite flow - no password, user sets their own)
 export async function POST(request: NextRequest) {
   try {
     const authUser = requireOwnerOrManager(request);
     const body = await request.json();
     
-    const { email, password, name, role } = body;
+    const { email, name, role } = body;
 
-    // Validation
-    if (!email || !password || !name || !role) {
-      return errorResponse('Missing required fields: email, password, name, role', 400);
+    if (!email || !name || !role) {
+      return errorResponse('Missing required fields: email, name, role', 400);
     }
 
     if (!['manager', 'employee'].includes(role)) {
       return errorResponse('Role must be manager or employee', 400);
     }
 
-    if (password.length < 6) {
-      return errorResponse('Password must be at least 6 characters', 400);
-    }
+    const authDb = getDb();
 
-    // Check if email already exists globally
-    const existingUsers = await db.users.getByEmail(email);
+    const existingUsers = await authDb.users.getByEmail(email);
     if (existingUsers.length > 0) {
       return errorResponse('Email already in use', 400);
     }
 
-    // Hash password and create user
-    const hashedPassword = await hashPassword(password);
-    const newUser = await db.users.create({
+    const hashedPlaceholder = await hashPassword(PENDING_PASSWORD);
+    const newUser = await authDb.users.create({
       organizationId: authUser.organizationId,
       email,
-      password: hashedPassword,
+      password: hashedPlaceholder,
       name,
       role,
     });
+
+    const invite = createInvitation({
+      token: crypto.randomUUID(),
+      userId: newUser.id,
+      email: newUser.email,
+      name: newUser.name,
+      organizationId: authUser.organizationId,
+    });
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001');
+    const setupLink = `${baseUrl}/setup-password?token=${invite.token}`;
+
+    const emailSent = await sendInviteEmail(email, name, setupLink);
 
     return jsonResponse({
       id: newUser.id,
@@ -79,6 +87,8 @@ export async function POST(request: NextRequest) {
       name: newUser.name,
       role: newUser.role,
       createdAt: newUser.createdAt,
+      inviteLink: emailSent ? undefined : setupLink,
+      emailSent: !!emailSent,
     }, 201);
   } catch (error: any) {
     if (error.message === 'Unauthorized') return errorResponse('Unauthorized', 401);
