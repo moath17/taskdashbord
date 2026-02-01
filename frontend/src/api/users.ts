@@ -3,7 +3,6 @@ import { User } from '../types';
 
 export interface TeamMemberData {
   email: string;
-  password: string;
   name: string;
   role: 'manager' | 'employee';
 }

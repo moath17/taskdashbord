@@ -25,8 +25,12 @@ export async function POST(request: NextRequest) {
       return errorResponse('Invalid credentials', 401);
     }
 
-    // For simplicity, we'll use the first match (email is unique per org)
     const user = users[0];
+
+    const pendingInvite = getInvitationByEmail(user.email);
+    if (pendingInvite) {
+      return errorResponse('Please use the invitation link sent to your email to set up your password', 403);
+    }
 
     const isValid = await comparePassword(password, user.password);
     if (!isValid) {
