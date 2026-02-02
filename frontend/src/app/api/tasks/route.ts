@@ -74,6 +74,10 @@ export async function POST(request: NextRequest) {
     
     const { title, description, assignedTo, annualGoalId, mboGoalId, startDate, dueDate, priority } = body;
 
+    // #region agent log
+    fetch('http://127.0.0.1:7245/ingest/15cdbcca-ca79-4c98-8d4a-d1a85d74555c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'tasks/route.ts:POST',message:'Create task',data:{title,assignedTo,createdBy:user.email},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'D-tasks'})}).catch(()=>{});
+    // #endregion
+
     if (!title) {
       return errorResponse('Title is required', 400);
     }
