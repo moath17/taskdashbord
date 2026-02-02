@@ -140,12 +140,58 @@ const getPersonalizedMessage = (stats: DashboardStats, kpis: KPI[], userName: st
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { isRTL } = useLanguage();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [annualGoals, setAnnualGoals] = useState<AnnualGoal[]>([]);
   const [mboGoals, setMBOGoals] = useState<MBOGoal[]>([]);
   const [kpis, setKpis] = useState<KPI[]>([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
+
+  // Dashboard translations
+  const texts = {
+    loading: isRTL ? 'جاري تحميل لوحة التحكم...' : 'Loading dashboard...',
+    loadFailed: isRTL ? 'فشل في تحميل لوحة التحكم' : 'Failed to load dashboard',
+    export: isRTL ? 'تصدير' : 'Export',
+    exporting: isRTL ? 'جاري...' : 'Exporting...',
+    exportSuccess: isRTL ? 'تم تصدير ملف Excel بنجاح!' : 'Excel file exported successfully!',
+    exportFailed: isRTL ? 'فشل في تصدير ملف Excel' : 'Failed to export Excel file',
+    totalTasks: isRTL ? 'إجمالي المهام' : 'Total Tasks',
+    allTasks: isRTL ? 'جميع المهام المعينة' : 'All assigned tasks',
+    completed: isRTL ? 'مكتملة' : 'Completed',
+    ofTotal: isRTL ? 'من الإجمالي' : 'of total',
+    inProgress: isRTL ? 'قيد التنفيذ' : 'In Progress',
+    activeWork: isRTL ? 'عمل نشط' : 'Active work',
+    delayed: isRTL ? 'متأخرة' : 'Delayed',
+    needsAttention: isRTL ? 'تحتاج اهتمام' : 'Needs attention',
+    successRate: isRTL ? 'نسبة النجاح' : 'Success Rate',
+    teamEfficiency: isRTL ? 'كفاءة الفريق' : 'Team efficiency',
+    quickOverview: isRTL ? 'نظرة سريعة' : 'Quick Overview',
+    newTasks: isRTL ? 'مهام جديدة' : 'New Tasks',
+    activeEmployees: isRTL ? 'الموظفون النشطون' : 'Active Employees',
+    pendingPlans: isRTL ? 'خطط معلقة' : 'Pending Plans',
+    dailyInspiration: isRTL ? '💡 إلهام يومي وأخبار' : '💡 Daily Inspiration & News',
+    calendarSuggestions: isRTL ? '📅 التقويم والاقتراحات' : '📅 Calendar & Suggestions',
+    goalsKpisOverview: isRTL ? '🎯 نظرة عامة على الأهداف والمؤشرات' : '🎯 Goals & KPIs Overview',
+    annualGoals: isRTL ? 'الأهداف السنوية' : 'Annual Goals',
+    mboGoals: isRTL ? 'أهداف MBO' : 'MBO Goals',
+    kpis: isRTL ? 'مؤشرات الأداء' : 'KPIs',
+    avgAchievement: isRTL ? 'متوسط الإنجاز' : 'Avg Achievement',
+    analyticsCharts: isRTL ? '📊 التحليلات والرسوم البيانية' : '📊 Analytics & Charts',
+    tasksByStatus: isRTL ? 'المهام حسب الحالة' : 'Tasks by Status',
+    tasksByPriority: isRTL ? 'المهام حسب الأولوية' : 'Tasks by Priority',
+    employee: isRTL ? 'الموظف' : 'Employee',
+    total: isRTL ? 'الإجمالي' : 'Total',
+    new: isRTL ? 'جديد' : 'New',
+    progress: isRTL ? 'التقدم' : 'Progress',
+    recentActivity: isRTL ? 'النشاط الأخير' : 'Recent Activity',
+    scheduleConflicts: isRTL ? 'تعارضات الجدول' : 'Schedule Conflicts',
+    viewAll: isRTL ? 'عرض الكل' : 'View all',
+    mboGoalsByEmployee: isRTL ? 'أهداف MBO حسب الموظف' : 'MBO Goals by Employee',
+    high: isRTL ? 'عالية' : 'High',
+    medium: isRTL ? 'متوسطة' : 'Medium',
+    low: isRTL ? 'منخفضة' : 'Low',
+  };
 
   useEffect(() => {
     loadDashboard();
