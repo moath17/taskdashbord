@@ -111,6 +111,11 @@ export const localAuthDb = {
       saveData(auth);
       return auth.users[idx];
     },
+    async delete(id: string) {
+      const auth = loadData();
+      auth.users = auth.users.filter((u) => u.id !== id);
+      saveData(auth);
+    },
   },
 };
 

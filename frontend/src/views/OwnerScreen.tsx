@@ -371,7 +371,7 @@ function OwnerUserModal({
             </label>
             <select
               value={formData.role}
-              onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value as 'manager' | 'employee' })}
               className="input"
               disabled={!!existingUser && existingUser.role === 'owner'}
             >

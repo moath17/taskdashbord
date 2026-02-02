@@ -14,6 +14,7 @@ interface NewsItem {
   source: string;
   url: string;
   date: string;
+  icon?: string;
 }
 
 // أخبار متنوعة حسب الفئات - Diverse news by categories
@@ -422,7 +423,7 @@ export default function TechNewsWidget({ compact = false }: Props) {
           >
             <div className={`flex items-start gap-3 ${isArabic ? 'flex-row-reverse' : ''}`}>
               <div className={`p-2 rounded-lg ${getCategoryColor(item.category)}`}>
-                {getIcon(item.icon)}
+                {getIcon(item.icon || item.category)}
               </div>
               <div className="flex-1 min-w-0">
                 <div className={`flex items-center gap-2 mb-1 ${isArabic ? 'flex-row-reverse justify-end' : ''}`}>

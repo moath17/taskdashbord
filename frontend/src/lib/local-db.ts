@@ -373,9 +373,13 @@ export const localDb = {
       const { localAuthDb } = await import('./local-auth-db');
       return localAuthDb.users.getById(id);
     },
+    async update(id: string, data: Partial<{ email: string; password: string; name: string; role: string }>) {
+      const { localAuthDb } = await import('./local-auth-db');
+      return localAuthDb.users.update(id, data);
+    },
     async delete(id: string) {
       const { localAuthDb } = await import('./local-auth-db');
-      // Note: localAuthDb doesn't have delete, but we can implement if needed
+      return localAuthDb.users.delete(id);
     },
   },
 };
