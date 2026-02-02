@@ -113,7 +113,7 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
     
     // Validate MBO goal is selected (Annual goal will be auto-filled)
     if (!task && !formData.mboGoalId) {
-      toast.error('Please select an MBO Goal');
+      toast.error(texts.selectMboError);
       return;
     }
 
