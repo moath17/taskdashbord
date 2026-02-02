@@ -439,36 +439,36 @@ export default function Dashboard() {
       {/* Section Title: Quick Overview */}
       <div className="flex items-center gap-2 text-gray-500">
         <div className="h-px bg-gray-300 flex-1"></div>
-        <span className="text-xs font-medium uppercase tracking-wider">Quick Overview</span>
+        <span className="text-xs font-medium uppercase tracking-wider">{texts.quickOverview}</span>
         <div className="h-px bg-gray-300 flex-1"></div>
       </div>
 
       {/* Additional Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="card bg-gradient-to-br from-yellow-50 to-orange-50 border-l-4 border-yellow-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-medium">New Tasks</p>
+      <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 ${isRTL ? 'rtl' : ''}`}>
+        <div className={`card bg-gradient-to-br from-yellow-50 to-orange-50 ${isRTL ? 'border-r-4 border-l-0' : 'border-l-4'} border-yellow-500`}>
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <div className={isRTL ? 'text-right' : ''}>
+              <p className="text-sm text-gray-600 font-medium">{texts.newTasks}</p>
               <p className="text-2xl font-bold text-yellow-700 mt-1">{stats.summary.newTasks}</p>
             </div>
             <Target className="w-8 h-8 text-yellow-600" />
           </div>
         </div>
 
-        <div className="card bg-gradient-to-br from-indigo-50 to-blue-50 border-l-4 border-indigo-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-medium">Active Employees</p>
+        <div className={`card bg-gradient-to-br from-indigo-50 to-blue-50 ${isRTL ? 'border-r-4 border-l-0' : 'border-l-4'} border-indigo-500`}>
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <div className={isRTL ? 'text-right' : ''}>
+              <p className="text-sm text-gray-600 font-medium">{texts.activeEmployees}</p>
               <p className="text-2xl font-bold text-indigo-700 mt-1">{stats.tasksPerEmployee.length}</p>
             </div>
             <Users className="w-8 h-8 text-indigo-600" />
           </div>
         </div>
 
-        <div className="card bg-gradient-to-br from-pink-50 to-rose-50 border-l-4 border-pink-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-medium">Pending Plans</p>
+        <div className={`card bg-gradient-to-br from-pink-50 to-rose-50 ${isRTL ? 'border-r-4 border-l-0' : 'border-l-4'} border-pink-500`}>
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <div className={isRTL ? 'text-right' : ''}>
+              <p className="text-sm text-gray-600 font-medium">{texts.pendingPlans}</p>
               <p className="text-2xl font-bold text-pink-700 mt-1">
                 {stats.vacationPlans.filter(p => p.status === 'pending').length + 
                  stats.trainingPlans.filter(p => p.status === 'pending').length}
@@ -482,7 +482,7 @@ export default function Dashboard() {
       {/* Section Title: Daily Inspiration & News */}
       <div className="flex items-center gap-2 text-gray-500 mt-2">
         <div className="h-px bg-gray-300 flex-1"></div>
-        <span className="text-xs font-medium uppercase tracking-wider">💡 Daily Inspiration & News</span>
+        <span className="text-xs font-medium uppercase tracking-wider">{texts.dailyInspiration}</span>
         <div className="h-px bg-gray-300 flex-1"></div>
       </div>
 
