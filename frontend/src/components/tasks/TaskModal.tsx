@@ -109,7 +109,12 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Goal linking is now optional
+    // Validate MBO goal is selected (Annual goal will be auto-filled)
+    if (!task && !formData.mboGoalId) {
+      toast.error('Please select an MBO Goal');
+      return;
+    }
+
     setLoading(true);
 
     try {
