@@ -407,7 +407,7 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
             </form>
           ) : (
             <div className="space-y-4">
-              <div>
+              <div className={isRTL ? 'text-right' : ''}>
                 <h3 className="text-lg font-semibold text-gray-900">{task?.title}</h3>
                 <p className="text-gray-600 mt-2">{task?.description}</p>
               </div>
@@ -415,21 +415,21 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
               {/* Show goals info for view-only mode */}
               {(task?.annualGoal || task?.mboGoal) && (
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <h4 className={`text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <Target className="w-4 h-4" />
-                    Linked Goals
+                    {texts.linkedGoals}
                   </h4>
                   <div className="space-y-1 text-sm">
                     {task.mboGoal && (
-                      <div className="flex items-center gap-2">
+                      <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                         <Target className="w-3 h-3 text-purple-600" />
-                        <span className="text-gray-600">MBO: {task.mboGoal.title}</span>
+                        <span className="text-gray-600">{texts.mboGoal}: {task.mboGoal.title}</span>
                       </div>
                     )}
                     {task.annualGoal && (
-                      <div className="flex items-center gap-2">
+                      <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                         <Flag className="w-3 h-3 text-primary-600" />
-                        <span className="text-gray-600">Annual: {task.annualGoal.title}</span>
+                        <span className="text-gray-600">{texts.annualGoal}: {task.annualGoal.title}</span>
                       </div>
                     )}
                   </div>
@@ -437,20 +437,20 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
               )}
               
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="font-medium text-gray-700">Assigned To:</span>{' '}
+                <div className={isRTL ? 'text-right' : ''}>
+                  <span className="font-medium text-gray-700">{texts.assignedTo}:</span>{' '}
                   <span className="text-gray-600">{task?.assignedUser?.name}</span>
                 </div>
-                <div>
-                  <span className="font-medium text-gray-700">Status:</span>{' '}
+                <div className={isRTL ? 'text-right' : ''}>
+                  <span className="font-medium text-gray-700">{texts.status}:</span>{' '}
                   <span className="text-gray-600">{task?.status}</span>
                 </div>
-                <div>
-                  <span className="font-medium text-gray-700">Priority:</span>{' '}
+                <div className={isRTL ? 'text-right' : ''}>
+                  <span className="font-medium text-gray-700">{texts.priority}:</span>{' '}
                   <span className="text-gray-600">{task?.priority}</span>
                 </div>
-                <div>
-                  <span className="font-medium text-gray-700">Due Date:</span>{' '}
+                <div className={isRTL ? 'text-right' : ''}>
+                  <span className="font-medium text-gray-700">{texts.dueDate}:</span>{' '}
                   <span className="text-gray-600">
                     {task && format(new Date(task.dueDate), 'MMM d, yyyy')}
                   </span>
@@ -462,15 +462,15 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
           {/* Comments Section */}
           {task && (
             <div className="mt-8 border-t border-gray-200 pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Comments</h3>
+              <h3 className={`text-lg font-semibold text-gray-900 mb-4 ${isRTL ? 'text-right' : ''}`}>{texts.comments}</h3>
 
               <div className="space-y-4 mb-4">
                 {comments.length === 0 && (
-                  <p className="text-sm text-gray-500">No comments yet</p>
+                  <p className={`text-sm text-gray-500 ${isRTL ? 'text-right' : ''}`}>{texts.noComments}</p>
                 )}
                 {comments.map((comment) => (
                   <div key={comment.id} className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
+                    <div className={`flex items-center justify-between mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                       <span className="font-medium text-gray-900">
                         {comment.user?.name || 'Unknown'}
                       </span>
@@ -478,12 +478,12 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
                         {format(new Date(comment.createdAt), 'MMM d, yyyy HH:mm')}
                       </span>
                     </div>
-                    <p className="text-gray-700">{comment.content}</p>
+                    <p className={`text-gray-700 ${isRTL ? 'text-right' : ''}`}>{comment.content}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="flex gap-2">
+              <div className={`flex gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <input
                   type="text"
                   value={newComment}
@@ -494,16 +494,16 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
                       handleAddComment();
                     }
                   }}
-                  placeholder="Add a comment..."
+                  placeholder={texts.addComment}
                   className="input flex-1"
                 />
                 <button
                   onClick={handleAddComment}
                   disabled={commentLoading || !newComment.trim()}
-                  className="btn btn-primary flex items-center"
+                  className={`btn btn-primary flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}
                 >
-                  <Send className="w-4 h-4 mr-2" />
-                  Send
+                  <Send className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                  {texts.send}
                 </button>
               </div>
             </div>
