@@ -363,13 +363,13 @@ export default function Dashboard() {
       </div>
 
       {/* Enhanced Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="card hover:shadow-lg transition-all duration-300 border-l-4 border-primary-500 bg-gradient-to-br from-white to-primary-50">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-medium">Total Tasks</p>
+      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 ${isRTL ? 'rtl' : ''}`}>
+        <div className={`card hover:shadow-lg transition-all duration-300 ${isRTL ? 'border-r-4 border-l-0' : 'border-l-4'} border-primary-500 bg-gradient-to-br from-white to-primary-50`}>
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <div className={isRTL ? 'text-right' : ''}>
+              <p className="text-sm text-gray-600 font-medium">{texts.totalTasks}</p>
               <p className="text-3xl font-bold text-gray-900 mt-1">{stats.summary.totalTasks}</p>
-              <p className="text-xs text-gray-500 mt-1">All assigned tasks</p>
+              <p className="text-xs text-gray-500 mt-1">{texts.allTasks}</p>
             </div>
             <div className="bg-primary-100 rounded-full p-3">
               <ListTodo className="w-8 h-8 text-primary-600" />
@@ -377,14 +377,14 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="card hover:shadow-lg transition-all duration-300 border-l-4 border-green-500 bg-gradient-to-br from-white to-green-50">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-medium">Completed</p>
+        <div className={`card hover:shadow-lg transition-all duration-300 ${isRTL ? 'border-r-4 border-l-0' : 'border-l-4'} border-green-500 bg-gradient-to-br from-white to-green-50`}>
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <div className={isRTL ? 'text-right' : ''}>
+              <p className="text-sm text-gray-600 font-medium">{texts.completed}</p>
               <p className="text-3xl font-bold text-green-600 mt-1">{stats.summary.completedTasks}</p>
               <p className="text-xs text-gray-500 mt-1">
                 {stats.summary.totalTasks > 0 
-                  ? `${((stats.summary.completedTasks / stats.summary.totalTasks) * 100).toFixed(0)}% of total`
+                  ? `${((stats.summary.completedTasks / stats.summary.totalTasks) * 100).toFixed(0)}% ${texts.ofTotal}`
                   : '0%'}
               </p>
             </div>
@@ -394,12 +394,12 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="card hover:shadow-lg transition-all duration-300 border-l-4 border-blue-500 bg-gradient-to-br from-white to-blue-50">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-medium">In Progress</p>
+        <div className={`card hover:shadow-lg transition-all duration-300 ${isRTL ? 'border-r-4 border-l-0' : 'border-l-4'} border-blue-500 bg-gradient-to-br from-white to-blue-50`}>
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <div className={isRTL ? 'text-right' : ''}>
+              <p className="text-sm text-gray-600 font-medium">{texts.inProgress}</p>
               <p className="text-3xl font-bold text-blue-600 mt-1">{stats.summary.inProgressTasks}</p>
-              <p className="text-xs text-gray-500 mt-1">Active work</p>
+              <p className="text-xs text-gray-500 mt-1">{texts.activeWork}</p>
             </div>
             <div className="bg-blue-100 rounded-full p-3">
               <Zap className="w-8 h-8 text-blue-600" />
@@ -407,12 +407,12 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="card hover:shadow-lg transition-all duration-300 border-l-4 border-red-500 bg-gradient-to-br from-white to-red-50">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-medium">Delayed</p>
+        <div className={`card hover:shadow-lg transition-all duration-300 ${isRTL ? 'border-r-4 border-l-0' : 'border-l-4'} border-red-500 bg-gradient-to-br from-white to-red-50`}>
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <div className={isRTL ? 'text-right' : ''}>
+              <p className="text-sm text-gray-600 font-medium">{texts.delayed}</p>
               <p className="text-3xl font-bold text-red-600 mt-1">{stats.summary.delayedTasks}</p>
-              <p className="text-xs text-gray-500 mt-1">Needs attention</p>
+              <p className="text-xs text-gray-500 mt-1">{texts.needsAttention}</p>
             </div>
             <div className="bg-red-100 rounded-full p-3">
               <AlertCircle className="w-8 h-8 text-red-600" />
@@ -420,14 +420,14 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="card hover:shadow-lg transition-all duration-300 border-l-4 border-purple-500 bg-gradient-to-br from-white to-purple-50">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-medium">Success Rate</p>
+        <div className={`card hover:shadow-lg transition-all duration-300 ${isRTL ? 'border-r-4 border-l-0' : 'border-l-4'} border-purple-500 bg-gradient-to-br from-white to-purple-50`}>
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <div className={isRTL ? 'text-right' : ''}>
+              <p className="text-sm text-gray-600 font-medium">{texts.successRate}</p>
               <p className="text-3xl font-bold text-purple-600 mt-1">
                 {stats.summary.completionRate.toFixed(1)}%
               </p>
-              <p className="text-xs text-gray-500 mt-1">Team efficiency</p>
+              <p className="text-xs text-gray-500 mt-1">{texts.teamEfficiency}</p>
             </div>
             <div className="bg-purple-100 rounded-full p-3">
               <Award className="w-8 h-8 text-purple-600" />
