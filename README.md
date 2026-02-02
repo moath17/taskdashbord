@@ -1,5 +1,7 @@
 # Task Management & Employee Planning System
 
+نظام إدارة المهام وتخطيط الموظفين - Task Dashboard
+
 A comprehensive task management and planning platform for organizations with focus on tasks, performance tracking, and employee development plans.
 
 ## 🚀 Features
@@ -15,139 +17,93 @@ A comprehensive task management and planning platform for organizations with foc
 - 📅 **Calendar Widget** - Displays holidays, training, tasks, and vacations
 - 📊 **Weekly Updates** - Manager-only view for weekly progress tracking
 - 💡 **Proposals/Suggestions** - Team suggestions and recommendations
-- 📰 **Tech News Widget** - Latest AI and Data Science updates
+- 📰 **Customizable News Widget** - News from multiple categories (Tech, Business, etc.)
 - ✨ **Daily Quotes** - Motivational quotes in Arabic and English
 - 📥 **Excel Export** - Export all data with formatted styling
-- 🧠 **Smart Analytics** - AI-powered risk analysis, predictions, and workload insights (Read-only decision support)
+- 🧠 **Smart Analytics** - AI-powered risk analysis, predictions, and workload insights
+- 🌐 **Bilingual Support** - Full Arabic and English support with RTL layout
 
 ## 🛠️ Tech Stack
 
-### Backend
-- **Runtime**: Node.js with TypeScript
-- **Framework**: Express.js
-- **Database**: JSON file-based (ready for migration to MySQL/PostgreSQL)
-- **Authentication**: JWT with bcrypt
-- **Validation**: express-validator
-
-### Frontend
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite
+- **Framework**: Next.js 14 with TypeScript
 - **Styling**: Tailwind CSS
 - **Charts**: ApexCharts
-- **HTTP Client**: Axios
-- **Date Handling**: date-fns
-- **Notifications**: react-hot-toast
+- **Database**: Local file-based (JSON) or Supabase
+- **Authentication**: JWT with bcrypt
+- **Email**: Resend API (optional)
+- **Icons**: Lucide React
 
 ## 📁 Project Structure
 
 ```
-taskdashbord/
-├── backend/
-│   ├── src/
-│   │   ├── index.ts           # Server entry point
-│   │   ├── middleware/        # Auth middleware
-│   │   ├── models/            # Database management
-│   │   ├── routes/            # API routes
-│   │   │   ├── auth.ts
-│   │   │   ├── calendar.ts
-│   │   │   ├── dashboard.ts
-│   │   │   ├── goals.ts
-│   │   │   ├── kpis.ts
-│   │   │   ├── plans.ts
-│   │   │   ├── proposals.ts
-│   │   │   ├── tasks.ts
-│   │   │   ├── users.ts
-│   │   │   └── weekly-updates.ts
-│   │   ├── analytics/         # Smart Analytics module
-│   │   │   ├── analytics.routes.ts
-│   │   │   ├── analytics.service.ts
-│   │   │   └── analytics.types.ts
-│   │   ├── types/             # TypeScript types
-│   │   └── utils/             # Utilities
-│   └── package.json
-│
+taskdashbord-1/
 ├── frontend/
 │   ├── src/
-│   │   ├── api/               # API clients
-│   │   ├── components/        # React components
-│   │   │   ├── CalendarWidget.tsx
-│   │   │   ├── DailyQuote.tsx
-│   │   │   ├── Layout.tsx
-│   │   │   ├── ProposalsWidget.tsx
-│   │   │   ├── TechNewsWidget.tsx
-│   │   │   ├── plans/
-│   │   │   └── tasks/
-│   │   ├── context/           # Auth context
-│   │   ├── pages/             # Page components
-│   │   │   ├── Dashboard.tsx
-│   │   │   ├── Goals.tsx
-│   │   │   ├── KPIs.tsx
-│   │   │   ├── Plans.tsx
-│   │   │   ├── Tasks.tsx
-│   │   │   ├── UserManagement.tsx
-│   │   │   ├── WeeklyUpdates.tsx
-│   │   │   └── Analytics.tsx
-│   │   ├── types/             # TypeScript types
-│   │   └── utils/             # Utilities
+│   │   ├── app/              # Next.js App Router pages & API routes
+│   │   │   ├── api/          # API endpoints
+│   │   │   ├── (protected)/  # Protected pages
+│   │   │   └── ...
+│   │   ├── components/       # React components
+│   │   ├── context/          # React contexts (Auth, Language)
+│   │   ├── lib/              # Database & utilities
+│   │   ├── locales/          # Translations (ar.ts, en.ts)
+│   │   ├── types/            # TypeScript types
+│   │   └── views/            # Page view components
+│   ├── data/                 # Local database files (gitignored)
 │   └── package.json
-│
+├── QUICK_START.md
+├── DEPLOYMENT.md
 └── README.md
 ```
 
-## 🔧 Installation & Setup
-
-### Prerequisites
-- Node.js 18+ installed
-- npm or yarn package manager
-
-### Backend Setup
+## 🔧 Quick Start
 
 ```bash
-cd backend
-npm install
-npm run dev
-```
-
-The backend runs on `http://localhost:3100`
-
-### Frontend Setup
-
-```bash
+# Install dependencies
 cd frontend
 npm install
+
+# Run development server
 npm run dev
+
+# Access at http://localhost:3001
 ```
 
-The frontend runs on `http://localhost:3001`
+See **[QUICK_START.md](./QUICK_START.md)** for detailed instructions.
 
 ## 👥 User Roles
 
-See **[ROLES_AND_PERMISSIONS.md](./ROLES_AND_PERMISSIONS.md)** for the complete roles and permissions matrix.
-
 | Role | Permissions |
 |------|-------------|
-| **Owner** | User management only - Create Admins & Employees. No operational access. |
-| **Admin (Manager)** | Full access - Dashboard, Tasks, Goals, KPIs, Plans, Weekly Updates, User Management |
-| **Employee** | Limited access - View own tasks, update status, submit plans, view goals/KPIs |
+| **Owner** | Organization management - Create Admins & Employees only |
+| **Admin (Manager)** | Full access - Tasks, Goals, KPIs, Plans, Analytics, User Management |
+| **Employee** | Limited access - Own tasks, update status, view goals/KPIs |
 
-## 🔐 Authentication
+## 🔐 Authentication Flow
 
-1. Register a new account (first user as Manager)
-2. Login with email and password
-3. JWT token stored in localStorage
+1. **Owner Registration** - First user registers organization
+2. **User Invitation** - Owner creates users (email only, no password)
+3. **Password Setup** - Users receive invite link to set password
+4. **Password Recovery** - Forgot password flow with email link
 
 ## 📊 API Endpoints
 
 ### Auth
-- `POST /api/auth/register` - Register new user
+- `POST /api/auth/register` - Register organization (Owner)
 - `POST /api/auth/login` - Login
 - `GET /api/auth/me` - Get current user
+- `POST /api/auth/forgot-password` - Request password reset
+- `POST /api/auth/reset-password` - Reset password
+
+### Team Management
+- `GET /api/team` - Get team members
+- `POST /api/team` - Create team member (sends invite)
 
 ### Tasks
-- `GET /api/tasks` - Get all tasks
-- `POST /api/tasks` - Create task (Manager)
+- `GET /api/tasks` - Get tasks (filtered by role)
+- `POST /api/tasks` - Create task
 - `PUT /api/tasks/:id` - Update task
-- `DELETE /api/tasks/:id` - Delete task (Manager)
+- `DELETE /api/tasks/:id` - Delete task
 
 ### Goals
 - `GET /api/goals/annual` - Get annual goals
@@ -155,55 +111,32 @@ See **[ROLES_AND_PERMISSIONS.md](./ROLES_AND_PERMISSIONS.md)** for the complete 
 - `GET /api/goals/mbo` - Get MBO goals
 - `POST /api/goals/mbo` - Create MBO goal
 
-### KPIs
-- `GET /api/kpis` - Get all KPIs
-- `POST /api/kpis` - Create KPI
-- `PUT /api/kpis/:id` - Update KPI
-
-### Dashboard
-- `GET /api/dashboard` - Get dashboard statistics
-
-### Analytics (Smart Analytics Module)
-- `GET /api/analytics/status` - Check analytics module status
-- `GET /api/analytics/dashboard` - Get comprehensive analytics dashboard
-- `GET /api/analytics/goals-risk` - Get risk analysis for all goals
-- `GET /api/analytics/goals-risk/:id` - Get risk analysis for specific goal
-- `GET /api/analytics/workload` - Get workload analysis (Managers only)
-- `GET /api/analytics/high-risk` - Get high-risk goals
-- `GET /api/analytics/predictions` - Get completion predictions
+### Analytics
+- `GET /api/analytics/status` - Check analytics status
+- `GET /api/analytics/dashboard` - Get analytics dashboard
+- `GET /api/analytics/workload` - Get workload analysis
 
 ## 🚀 Deployment
 
-### Production Build
+### On-Premises Deployment
 
-**Backend:**
 ```bash
-cd backend
+cd frontend
+npm install
 npm run build
 npm start
 ```
 
-**Frontend:**
+### Using PM2
+
 ```bash
+npm install -g pm2
 cd frontend
 npm run build
+pm2 start npm --name "task-dashboard" -- start
 ```
 
-The build output will be in `frontend/dist/`
-
-### Environment Variables
-
-Create `.env` file in backend:
-```env
-PORT=3100
-JWT_SECRET=your-secret-key
-ENABLE_SMART_ANALYTICS=true
-```
-
-Create `.env` file in frontend:
-```env
-VITE_API_URL=http://localhost:3100/api
-```
+See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for cloud deployment options.
 
 ## 📝 License
 
