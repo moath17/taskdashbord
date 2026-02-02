@@ -224,7 +224,9 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
                   <div className="flex items-center gap-2 mb-3">
                     <Target className="w-5 h-5 text-purple-600" />
                     <h4 className="font-semibold text-gray-900">Link to Goal</h4>
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">Optional</span>
+                    {!task && (
+                      <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">Required</span>
+                    )}
                   </div>
                   
                   {loadingGoals ? (
