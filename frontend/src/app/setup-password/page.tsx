@@ -3,12 +3,14 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Lock, Mail, User, CheckCircle } from 'lucide-react';
+import { Lock, Mail, User, CheckCircle, Languages } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function SetupPasswordPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
+  const { isRTL, language, toggleLanguage } = useLanguage();
 
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -19,9 +21,33 @@ export default function SetupPasswordPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
+  // Translations
+  const texts = {
+    validating: isRTL ? 'جاري التحقق من الرابط...' : 'Validating link...',
+    invalidLink: isRTL ? 'رابط غير صالح أو مفقود' : 'Invalid or missing link',
+    goToLogin: isRTL ? 'الذهاب لتسجيل الدخول' : 'Go to login',
+    successTitle: isRTL ? 'تم تعيين كلمة المرور بنجاح!' : 'Password set successfully!',
+    redirecting: isRTL ? 'جاري التوجيه لصفحة الدخول...' : 'Redirecting to login...',
+    title: isRTL ? 'تعيين كلمة المرور' : 'Set your password',
+    subtitle: isRTL ? 'أنشئ كلمة مرور للوصول إلى حسابك' : 'Create a password to access your account',
+    email: isRTL ? 'البريد الإلكتروني' : 'Email',
+    name: isRTL ? 'الاسم' : 'Name',
+    newPassword: isRTL ? 'كلمة المرور الجديدة' : 'New password',
+    confirmPassword: isRTL ? 'تأكيد كلمة المرور' : 'Confirm password',
+    passwordPlaceholder: isRTL ? '6 أحرف على الأقل' : 'At least 6 characters',
+    confirmPlaceholder: isRTL ? 'أكد كلمة المرور' : 'Confirm your password',
+    passwordTooShort: isRTL ? 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' : 'Password must be at least 6 characters',
+    passwordMismatch: isRTL ? 'كلمات المرور غير متطابقة' : 'Passwords do not match',
+    settingPassword: isRTL ? 'جاري تعيين كلمة المرور...' : 'Setting password...',
+    setPassword: isRTL ? 'تعيين كلمة المرور' : 'Set password',
+    backToLogin: isRTL ? 'العودة لتسجيل الدخول' : 'Back to login',
+    failedToSet: isRTL ? 'فشل في تعيين كلمة المرور' : 'Failed to set password',
+    failedToValidate: isRTL ? 'فشل في التحقق من الرابط' : 'Failed to validate link',
+  };
+
   useEffect(() => {
     if (!token) {
-      setError('Invalid or missing link');
+      setError(texts.invalidLink);
       setLoading(false);
       return;
     }
@@ -36,7 +62,7 @@ export default function SetupPasswordPage() {
           setName(data.name);
         }
       })
-      .catch(() => setError('Failed to validate link'))
+      .catch(() => setError(texts.failedToValidate))
       .finally(() => setLoading(false));
   }, [token]);
 
@@ -45,12 +71,12 @@ export default function SetupPasswordPage() {
     setError('');
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(texts.passwordTooShort);
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(texts.passwordMismatch);
       return;
     }
 
@@ -64,13 +90,13 @@ export default function SetupPasswordPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to set password');
+        throw new Error(data.error || texts.failedToSet);
       }
 
       setSuccess(true);
       setTimeout(() => router.push('/login'), 2000);
     } catch (err: any) {
-      setError(err.message || 'Failed to set password');
+      setError(err.message || texts.failedToSet);
     } finally {
       setSaving(false);
     }
@@ -78,20 +104,20 @@ export default function SetupPasswordPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-gray-600">Validating link...</div>
+      <div className={`min-h-screen flex items-center justify-center bg-gray-50 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+        <div className="text-gray-600">{texts.validating}</div>
       </div>
     );
   }
 
   if (error && !email) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className={`min-h-screen flex items-center justify-center bg-gray-50 px-4 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
         <div className="max-w-md w-full text-center">
           <div className="bg-red-50 border border-red-200 rounded-xl p-6">
             <p className="text-red-700">{error}</p>
             <Link href="/login" className="mt-4 inline-block text-primary-600 hover:underline">
-              Go to login
+              {texts.goToLogin}
             </Link>
           </div>
         </div>
@@ -101,12 +127,12 @@ export default function SetupPasswordPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className={`min-h-screen flex items-center justify-center bg-gray-50 px-4 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
         <div className="max-w-md w-full text-center">
           <div className="bg-green-50 border border-green-200 rounded-xl p-8">
             <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-green-800 mb-2">Password set successfully!</h2>
-            <p className="text-green-700">Redirecting to login...</p>
+            <h2 className="text-xl font-bold text-green-800 mb-2">{texts.successTitle}</h2>
+            <p className="text-green-700">{texts.redirecting}</p>
           </div>
         </div>
       </div>
@@ -114,69 +140,81 @@ export default function SetupPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100 px-4">
+    <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100 px-4 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* Language Toggle */}
+      <button
+        onClick={toggleLanguage}
+        className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-all text-gray-700 hover:text-primary-600"
+      >
+        <Languages className="w-5 h-5" />
+        <span className="font-medium">{language === 'en' ? 'عربي' : 'English'}</span>
+      </button>
+
       <div className="max-w-md w-full">
         <div className="bg-white rounded-xl shadow-lg p-8">
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Set your password</h1>
-            <p className="text-gray-600 mt-1">Create a password to access your account</p>
+            <h1 className="text-2xl font-bold text-gray-900">{texts.title}</h1>
+            <p className="text-gray-600 mt-1">{texts.subtitle}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>{texts.email}</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Mail className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 ${isRTL ? 'right-3' : 'left-3'}`} />
                 <input
                   type="email"
                   value={email}
                   readOnly
-                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600"
+                  className={`w-full py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600 ${isRTL ? 'pr-10 pl-4' : 'pl-10 pr-4'}`}
+                  dir="ltr"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+              <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>{texts.name}</label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <User className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 ${isRTL ? 'right-3' : 'left-3'}`} />
                 <input
                   type="text"
                   value={name}
                   readOnly
-                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600"
+                  className={`w-full py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600 ${isRTL ? 'pr-10 pl-4' : 'pl-10 pr-4'}`}
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">New password</label>
+              <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>{texts.newPassword}</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 ${isRTL ? 'right-3' : 'left-3'}`} />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="input pl-10"
-                  placeholder="At least 6 characters"
+                  className={`input ${isRTL ? 'pr-10' : 'pl-10'}`}
+                  placeholder={texts.passwordPlaceholder}
                   minLength={6}
                   required
+                  dir="ltr"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm password</label>
+              <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>{texts.confirmPassword}</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 ${isRTL ? 'right-3' : 'left-3'}`} />
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="input pl-10"
-                  placeholder="Confirm your password"
+                  className={`input ${isRTL ? 'pr-10' : 'pl-10'}`}
+                  placeholder={texts.confirmPlaceholder}
                   minLength={6}
                   required
+                  dir="ltr"
                 />
               </div>
             </div>
@@ -192,13 +230,13 @@ export default function SetupPasswordPage() {
               disabled={saving}
               className="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
             >
-              {saving ? 'Setting password...' : 'Set password'}
+              {saving ? texts.settingPassword : texts.setPassword}
             </button>
           </form>
 
           <p className="mt-4 text-center text-sm text-gray-500">
             <Link href="/login" className="text-primary-600 hover:underline">
-              Back to login
+              {texts.backToLogin}
             </Link>
           </p>
         </div>
