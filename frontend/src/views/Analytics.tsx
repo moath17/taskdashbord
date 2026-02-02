@@ -133,17 +133,11 @@ export default function Analytics() {
   }, []);
 
   const loadAnalytics = async () => {
-    // #region agent log
-    fetch('http://127.0.0.1:7245/ingest/15cdbcca-ca79-4c98-8d4a-d1a85d74555c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Analytics.tsx:loadAnalytics_START',message:'Starting to load analytics',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'D'})}).catch(()=>{});
-    // #endregion
     try {
       setLoading(true);
       
       // Check status first
       const statusData = await getAnalyticsStatus();
-      // #region agent log
-      fetch('http://127.0.0.1:7245/ingest/15cdbcca-ca79-4c98-8d4a-d1a85d74555c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Analytics.tsx:STATUS_RECEIVED',message:'Status received',data:{enabled:statusData?.enabled,version:statusData?.version},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
       setStatus(statusData);
 
       if (!statusData.enabled) {
@@ -156,16 +150,10 @@ export default function Analytics() {
         getAnalyticsDashboard(),
         getWorkloadAnalysis().catch(() => []) // May fail for non-managers
       ]);
-      // #region agent log
-      fetch('http://127.0.0.1:7245/ingest/15cdbcca-ca79-4c98-8d4a-d1a85d74555c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Analytics.tsx:DATA_RECEIVED',message:'Dashboard data received',data:{hasDashboard:!!dashboardData,workloadCount:workloadData?.length},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'D,E'})}).catch(()=>{});
-      // #endregion
 
       setDashboard(dashboardData);
       setWorkload(workloadData);
     } catch (error: any) {
-      // #region agent log
-      fetch('http://127.0.0.1:7245/ingest/15cdbcca-ca79-4c98-8d4a-d1a85d74555c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Analytics.tsx:ERROR',message:'Error loading analytics',data:{errorMsg:error?.message,status:error?.response?.status},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'D'})}).catch(()=>{});
-      // #endregion
       console.error('Error loading analytics:', error);
       if (error.response?.status !== 403) {
         toast.error(t.common.error);
