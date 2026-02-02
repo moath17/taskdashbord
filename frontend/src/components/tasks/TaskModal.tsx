@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Task, User, Comment, AnnualGoal, MBOGoal } from '../../types';
 import { tasksApi, goalsApi } from '../../api';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import toast from 'react-hot-toast';
 import { X, Send, Trash2, Target, Flag, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
