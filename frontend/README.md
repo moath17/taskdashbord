@@ -1,52 +1,33 @@
-# Task Management Frontend
+# Task Dashboard - Frontend
 
-React + TypeScript frontend for the Task Management & Employee Planning System.
+Next.js 14 application for Task Management & Employee Planning System.
 
-## Setup
+See main [README.md](../README.md) for complete documentation.
 
-1. Install dependencies:
-```bash
-npm install
-```
-
-2. Start the development server:
-```bash
-npm run dev
-```
-
-The app will be available at `http://localhost:3001`
-
-## Build for Production
+## Quick Commands
 
 ```bash
-npm run build
+# Development
+npm run dev        # Start dev server at http://localhost:3001
+
+# Production
+npm run build      # Build for production
+npm start          # Start production server
 ```
 
-The built files will be in the `dist` directory.
+## Environment Setup
 
-## Features
+Copy `.env.example` to `.env.local` and configure:
 
-- **Authentication**: Login and registration with role-based access
-- **Dashboard**: Performance metrics and charts
-- **Tasks**: 
-  - Kanban board with drag & drop
-  - Table view with sorting and filtering
-  - Calendar view
-  - Task creation, editing, and comments
-- **Plans**: 
-  - Vacation plans management
-  - Training plans management
-  - Comments and approval workflow
+```bash
+cp .env.example .env.local
+```
 
-## Tech Stack
+Required for production:
+- `JWT_SECRET` - Secure random key for authentication
+- `NEXT_PUBLIC_APP_URL` - Application URL
 
-- React 18
-- TypeScript
-- Vite
-- Tailwind CSS
-- React Router
-- ApexCharts
-- React Beautiful DnD
-- Axios
-- React Hot Toast
-
+Optional:
+- `RESEND_API_KEY` - Email service for invitations
+- `NEXT_PUBLIC_SUPABASE_URL` - Cloud database
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase key

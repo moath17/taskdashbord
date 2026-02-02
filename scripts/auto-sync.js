@@ -14,10 +14,8 @@ let debounceTimer = null;
 // مجلدات وملفات للمراقبة (تتجاهل node_modules و .git)
 const WATCH_PATHS = [
   path.join(ROOT, 'frontend/src'),
-  path.join(ROOT, 'backend/src'),
   path.join(ROOT, 'frontend', '*.js'),
   path.join(ROOT, 'frontend', '*.json'),
-  path.join(ROOT, 'backend', '*.json'),
   path.join(ROOT, '*.md'),
   path.join(ROOT, '*.json')
 ];
@@ -65,7 +63,7 @@ function scheduleSync() {
 }
 
 console.log('👀 مراقبة التعديلات... (احفظ الملفات وسيتم الرفع تلقائياً بعد 3 ثوانٍ)\n');
-console.log('المجلدات المراقبة: frontend/src, backend/src');
+console.log('المجلدات المراقبة: frontend/src');
 console.log('اضغط Ctrl+C للإيقاف\n');
 
 chokidar.watch(WATCH_PATHS, {
