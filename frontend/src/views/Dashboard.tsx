@@ -239,10 +239,10 @@ export default function Dashboard() {
         trainings: allTrainings,
       }, 'Task_Management_Year_End_Report');
 
-      toast.success('Excel file exported successfully!');
+      toast.success(texts.exportSuccess);
     } catch (error) {
       console.error('Failed to export:', error);
-      toast.error('Failed to export Excel file');
+      toast.error(texts.exportFailed);
     } finally {
       setExporting(false);
     }
