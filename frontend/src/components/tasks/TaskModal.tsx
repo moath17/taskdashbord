@@ -238,18 +238,19 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {/* MBO Goal Dropdown - Optional Selection */}
+                      {/* MBO Goal Dropdown - Primary Selection */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
                           <Target className="w-4 h-4 text-purple-600" />
-                          MBO Goal
+                          MBO Goal <span className="text-red-500">*</span>
                         </label>
                         <select
                           value={formData.mboGoalId}
                           onChange={(e) => setFormData({ ...formData, mboGoalId: e.target.value })}
                           className="input"
+                          required={!task}
                         >
-                          <option value="">Select MBO Goal (Optional)</option>
+                          <option value="">Select MBO Goal</option>
                           {allMboGoals.map((mbo) => (
                             <option key={mbo.id} value={mbo.id}>
                               {getMBODisplayName(mbo)}
