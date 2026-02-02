@@ -159,13 +159,55 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
     return `${mbo.title}${employeeName}`;
   };
 
+  // Translations
+  const texts = {
+    newTask: isRTL ? 'مهمة جديدة' : 'New Task',
+    editTask: isRTL ? 'تعديل المهمة' : 'Edit Task',
+    title: isRTL ? 'العنوان' : 'Title',
+    description: isRTL ? 'الوصف' : 'Description',
+    assignTo: isRTL ? 'إسناد إلى' : 'Assign To',
+    selectEmployee: isRTL ? 'اختر موظف' : 'Select employee',
+    linkToGoal: isRTL ? 'ربط بهدف' : 'Link to Goal',
+    required: isRTL ? 'مطلوب' : 'Required',
+    loadingGoals: isRTL ? 'جاري تحميل الأهداف...' : 'Loading goals...',
+    noMboGoals: isRTL ? 'لا توجد أهداف MBO. يرجى إنشاء أهداف MBO أولاً.' : 'No MBO goals found. Please create MBO goals first.',
+    mboGoal: isRTL ? 'هدف MBO' : 'MBO Goal',
+    selectMboGoal: isRTL ? 'اختر هدف MBO' : 'Select MBO Goal',
+    annualGoal: isRTL ? 'الهدف السنوي' : 'Annual Goal',
+    autoFilled: isRTL ? 'يتم ملؤه تلقائياً' : 'Auto-filled',
+    willBeLinked: isRTL ? 'سيتم ربط الهدف السنوي تلقائياً' : 'Annual goal will be linked automatically',
+    status: isRTL ? 'الحالة' : 'Status',
+    priority: isRTL ? 'الأولوية' : 'Priority',
+    startDate: isRTL ? 'تاريخ البداية' : 'Start Date',
+    dueDate: isRTL ? 'تاريخ الاستحقاق' : 'Due Date',
+    saveTask: isRTL ? 'حفظ المهمة' : 'Save Task',
+    saving: isRTL ? 'جاري الحفظ...' : 'Saving...',
+    delete: isRTL ? 'حذف' : 'Delete',
+    cancel: isRTL ? 'إلغاء' : 'Cancel',
+    comments: isRTL ? 'التعليقات' : 'Comments',
+    noComments: isRTL ? 'لا توجد تعليقات بعد' : 'No comments yet',
+    addComment: isRTL ? 'أضف تعليقاً...' : 'Add a comment...',
+    send: isRTL ? 'إرسال' : 'Send',
+    linkedGoals: isRTL ? 'الأهداف المرتبطة' : 'Linked Goals',
+    assignedTo: isRTL ? 'مسند إلى' : 'Assigned To',
+    confirmDelete: isRTL ? 'هل أنت متأكد من حذف هذه المهمة؟' : 'Are you sure you want to delete this task?',
+    selectMboError: isRTL ? 'يرجى اختيار هدف MBO' : 'Please select an MBO Goal',
+    statusNew: isRTL ? 'جديدة' : 'New',
+    statusInProgress: isRTL ? 'قيد التنفيذ' : 'In Progress',
+    statusCompleted: isRTL ? 'مكتملة' : 'Completed',
+    statusDelayed: isRTL ? 'متأخرة' : 'Delayed',
+    priorityLow: isRTL ? 'منخفضة' : 'Low',
+    priorityMedium: isRTL ? 'متوسطة' : 'Medium',
+    priorityHigh: isRTL ? 'عالية' : 'High',
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className={`flex items-center justify-between p-6 border-b border-gray-200 ${isRTL ? 'flex-row-reverse' : ''}`}>
           <h2 className="text-2xl font-bold text-gray-900">
-            {task ? 'Edit Task' : 'New Task'}
+            {task ? texts.editTask : texts.newTask}
           </h2>
           <button
             onClick={onClose}
@@ -180,7 +222,7 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
           {canEdit ? (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>{texts.title}</label>
                 <input
                   type="text"
                   value={formData.title}
@@ -191,7 +233,7 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>{texts.description}</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -203,14 +245,14 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
               {/* Employee Selection */}
               {canCreate && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Assign To</label>
+                  <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>{texts.assignTo}</label>
                   <select
                     value={formData.assignedTo}
                     onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
                     className="input"
                     required
                   >
-                    <option value="">Select employee</option>
+                    <option value="">{texts.selectEmployee}</option>
                     {users.map((u) => (
                       <option key={u.id} value={u.id}>
                         {u.name}
@@ -223,28 +265,28 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
               {/* Goals Section - MBO First, then Auto-fill Annual */}
               {(canCreate || task) && (
                 <div className="bg-gradient-to-r from-purple-50 to-primary-50 p-4 rounded-lg border border-purple-200">
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className={`flex items-center gap-2 mb-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <Target className="w-5 h-5 text-purple-600" />
-                    <h4 className="font-semibold text-gray-900">Link to Goal</h4>
+                    <h4 className="font-semibold text-gray-900">{texts.linkToGoal}</h4>
                     {!task && (
-                      <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">Required</span>
+                      <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">{texts.required}</span>
                     )}
                   </div>
                   
                   {loadingGoals ? (
-                    <div className="text-sm text-gray-500">Loading goals...</div>
+                    <div className="text-sm text-gray-500">{texts.loadingGoals}</div>
                   ) : allMboGoals.length === 0 ? (
-                    <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
+                    <div className={`flex items-center gap-2 text-sm text-amber-600 bg-amber-50 p-3 rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}>
                       <AlertCircle className="w-4 h-4" />
-                      <span>No MBO goals found. Please create MBO goals first.</span>
+                      <span>{texts.noMboGoals}</span>
                     </div>
                   ) : (
                     <div className="space-y-4">
                       {/* MBO Goal Dropdown - Primary Selection */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                        <label className={`block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1 ${isRTL ? 'flex-row-reverse justify-end' : ''}`}>
                           <Target className="w-4 h-4 text-purple-600" />
-                          MBO Goal <span className="text-red-500">*</span>
+                          {texts.mboGoal} <span className="text-red-500">*</span>
                         </label>
                         <select
                           value={formData.mboGoalId}
@@ -252,7 +294,7 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
                           className="input"
                           required={!task}
                         >
-                          <option value="">Select MBO Goal</option>
+                          <option value="">{texts.selectMboGoal}</option>
                           {allMboGoals.map((mbo) => (
                             <option key={mbo.id} value={mbo.id}>
                               {getMBODisplayName(mbo)}
