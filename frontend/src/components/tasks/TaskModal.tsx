@@ -24,6 +24,7 @@ interface TaskModalProps {
 
 export default function TaskModal({ task, users, onClose, onSave, onDelete, canCreate }: TaskModalProps) {
   const { user } = useAuth();
+  const { t, isRTL } = useLanguage();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
