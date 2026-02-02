@@ -249,11 +249,11 @@ export default function Dashboard() {
   };
 
   if (loading) {
-    return <div className="text-center py-12">Loading dashboard...</div>;
+    return <div className={`text-center py-12 ${isRTL ? 'rtl' : ''}`}>{texts.loading}</div>;
   }
 
   if (!stats) {
-    return <div className="text-center py-12">Failed to load dashboard</div>;
+    return <div className={`text-center py-12 ${isRTL ? 'rtl' : ''}`}>{texts.loadFailed}</div>;
   }
 
   const taskStatusChart = {
