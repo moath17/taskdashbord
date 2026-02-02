@@ -14,6 +14,7 @@ import ProposalsWidget from '../components/ProposalsWidget';
 import DailyQuote from '../components/DailyQuote';
 import TechNewsWidget from '../components/TechNewsWidget';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
