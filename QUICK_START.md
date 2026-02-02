@@ -1,87 +1,120 @@
 # ⚡ Quick Start Guide
 
-## 🚀 Local Development
+## 🚀 Local Development (On-Premises Deployment)
 
 ### 1. Install Dependencies
 
 ```bash
-# Backend
-cd backend
-npm install
-
-# Frontend (in new terminal)
 cd frontend
 npm install
 ```
 
-### 2. Setup Environment Variables
+### 2. Setup Environment Variables (Optional)
 
-**Backend** (`backend/.env`):
+**Frontend** (`frontend/.env.local`) - Only needed for Supabase:
 ```env
-PORT=3100
-JWT_SECRET=your-secret-key-change-this-in-production
-ENABLE_SMART_ANALYTICS=true
+# Optional - If not set, local file-based database will be used
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-key
+
+# Optional - For sending emails
+RESEND_API_KEY=your-resend-api-key
+
+# Optional - App URL for invite links
+NEXT_PUBLIC_APP_URL=http://localhost:3001
 ```
 
-**Frontend** (`frontend/.env`):
-```env
-VITE_API_URL=http://localhost:3100/api
-```
+**Note:** The system works without any environment variables using local file-based storage.
 
-### 3. Initialize Database
+### 3. Run Development Server
 
-Copy the example database file:
-```bash
-cp backend/src/data/database.json.example backend/src/data/database.json
-```
-
-### 4. Run Development Servers
-
-**Terminal 1 - Backend:**
-```bash
-cd backend
-npm run dev
-```
-
-**Terminal 2 - Frontend:**
 ```bash
 cd frontend
 npm run dev
 ```
 
-### 5. Access Application
+### 4. Access Application
 
-- Frontend: http://localhost:3001
-- Backend API: http://localhost:3100
+- Application: http://localhost:3001
+- First user registration creates an **Owner** account
 
-## 👤 Default Credentials
+## 👤 User Roles
 
-After first run, register a new account. The first user will be assigned the **Manager** role.
+| Role | Description |
+|------|-------------|
+| **Owner** | Organization owner - creates Admins and Employees only |
+| **Manager (Admin)** | Full access to all features - tasks, goals, KPIs, reports |
+| **Employee** | View assigned tasks, update status, view goals |
 
 ## 📦 Build for Production
 
-**Backend:**
 ```bash
-cd backend
+cd frontend
 npm run build
 npm start
 ```
 
-**Frontend:**
+## 🌐 On-Premises Deployment
+
+### Prerequisites
+- Node.js 18+
+- npm or yarn
+
+### Steps
+
+1. **Clone repository**
+   ```bash
+   git clone <repository-url>
+   cd taskdashbord-1/frontend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Build for production**
+   ```bash
+   npm run build
+   ```
+
+4. **Start server**
+   ```bash
+   npm start
+   ```
+
+5. **Access application**
+   - Default: http://localhost:3001
+
+### Using PM2 (Recommended for production)
+
 ```bash
-cd frontend
-npm run build
-# Output in frontend/dist/
+npm install -g pm2
+pm2 start npm --name "task-dashboard" -- start
+pm2 save
+pm2 startup
 ```
 
-## 🌐 Deploy to Cloud
+## 🔐 First-Time Setup
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed cloud deployment instructions.
+1. Go to http://localhost:3001/register
+2. Register your organization (you become the Owner)
+3. Create Admin and Employee accounts from Owner dashboard
+4. Users receive invite links to set their passwords
 
 ## 🐛 Troubleshooting
 
-- **Port already in use:** Change PORT in `.env` or kill the process using the port
-- **Database not found:** Copy `database.json.example` to `database.json`
-- **CORS errors:** Check `VITE_API_URL` matches backend URL
-- **Analytics disabled:** Set `ENABLE_SMART_ANALYTICS=true` in backend `.env`
+- **Port already in use:** Edit `package.json` to change port in dev script
+- **Data not saving:** Check `frontend/data/` folder permissions
+- **Invite links not working:** Set `NEXT_PUBLIC_APP_URL` in `.env.local`
+- **Email not sending:** Set `RESEND_API_KEY` or use the shown invite link
 
+## 📁 Data Storage
+
+By default, data is stored in `frontend/data/` folder:
+- `local-auth.json` - Organizations and users
+- `local-db.json` - Tasks, goals, KPIs, etc.
+- `invites.json` - Pending invitations
+- `notifications.json` - User notifications
+
+**Note:** These files are excluded from git for security.
