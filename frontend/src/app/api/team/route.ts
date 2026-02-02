@@ -44,6 +44,10 @@ export async function POST(request: NextRequest) {
     
     const { email, name, role } = body;
 
+    // #region agent log
+    fetch('http://127.0.0.1:7245/ingest/15cdbcca-ca79-4c98-8d4a-d1a85d74555c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'team/route.ts:POST',message:'Create team member',data:{email,name,role,createdBy:authUser.email},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'B-team'})}).catch(()=>{});
+    // #endregion
+
     if (!email || !name || !role) {
       return errorResponse('Missing required fields: email, name, role', 400);
     }
