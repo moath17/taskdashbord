@@ -306,11 +306,11 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
                       {/* Annual Goal - Auto-filled, Read-only Display */}
                       {selectedAnnualGoal && (
                         <div className="bg-white p-3 rounded-lg border border-primary-200">
-                          <label className="block text-xs font-medium text-gray-500 mb-1 flex items-center gap-1">
+                          <label className={`block text-xs font-medium text-gray-500 mb-1 flex items-center gap-1 ${isRTL ? 'flex-row-reverse justify-end' : ''}`}>
                             <Flag className="w-3 h-3 text-primary-600" />
-                            Annual Goal (Auto-filled)
+                            {texts.annualGoal} ({texts.autoFilled})
                           </label>
-                          <div className="flex items-center gap-2">
+                          <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                             <Flag className="w-4 h-4 text-primary-600" />
                             <span className="font-medium text-gray-900">{selectedAnnualGoal.title}</span>
                             <span className="text-xs px-2 py-0.5 bg-primary-100 text-primary-700 rounded-full">
@@ -321,8 +321,8 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
                       )}
 
                       {formData.mboGoalId && !selectedAnnualGoal && (
-                        <div className="text-xs text-gray-500">
-                          Annual goal will be linked automatically
+                        <div className={`text-xs text-gray-500 ${isRTL ? 'text-right' : ''}`}>
+                          {texts.willBeLinked}
                         </div>
                       )}
                     </div>
@@ -332,34 +332,34 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>{texts.status}</label>
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value as Task['status'] })}
                     className="input"
                   >
-                    <option value="New">New</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Delayed">Delayed</option>
+                    <option value="New">{texts.statusNew}</option>
+                    <option value="In Progress">{texts.statusInProgress}</option>
+                    <option value="Completed">{texts.statusCompleted}</option>
+                    <option value="Delayed">{texts.statusDelayed}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                  <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>{texts.priority}</label>
                   <select
                     value={formData.priority}
                     onChange={(e) => setFormData({ ...formData, priority: e.target.value as Task['priority'] })}
                     className="input"
                   >
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
+                    <option value="Low">{texts.priorityLow}</option>
+                    <option value="Medium">{texts.priorityMedium}</option>
+                    <option value="High">{texts.priorityHigh}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                  <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>{texts.startDate}</label>
                   <input
                     type="date"
                     value={formData.startDate}
@@ -370,7 +370,7 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                  <label className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : ''}`}>{texts.dueDate}</label>
                   <input
                     type="date"
                     value={formData.dueDate}
@@ -381,27 +381,27 @@ export default function TaskModal({ task, users, onClose, onSave, onDelete, canC
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 pt-4">
+              <div className={`flex items-center gap-4 pt-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <button type="submit" disabled={loading} className="btn btn-primary">
-                  {loading ? 'Saving...' : 'Save Task'}
+                  {loading ? texts.saving : texts.saveTask}
                 </button>
                 {task && onDelete && canCreate && (
                   <button
                     type="button"
                     onClick={() => {
-                      if (confirm('Are you sure you want to delete this task?')) {
+                      if (confirm(texts.confirmDelete)) {
                         onDelete(task.id);
                         onClose();
                       }
                     }}
-                    className="btn btn-danger flex items-center"
+                    className={`btn btn-danger flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}
                   >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete
+                    <Trash2 className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                    {texts.delete}
                   </button>
                 )}
                 <button type="button" onClick={onClose} className="btn btn-secondary">
-                  Cancel
+                  {texts.cancel}
                 </button>
               </div>
             </form>
