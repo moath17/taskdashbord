@@ -453,7 +453,7 @@ export const en = {
     disabled: 'Analytics Module Disabled',
     enableHint: 'Contact your administrator to enable Smart Analytics.',
     readOnly: 'Read-Only Analytics',
-    overallHealth: 'Overall Health',
+    overallHealth: 'Project Health',
     healthy: 'Healthy',
     caution: 'Caution',
     critical: 'Critical',

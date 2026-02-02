@@ -455,7 +455,7 @@ export const ar: TranslationKeys = {
     disabled: 'وحدة التحليلات معطلة',
     enableHint: 'تواصل مع المسؤول لتفعيل التحليلات الذكية.',
     readOnly: 'تحليلات للقراءة فقط',
-    overallHealth: 'الصحة العامة',
+    overallHealth: 'صحة المشروع',
     healthy: 'صحي',
     caution: 'تحذير',
     critical: 'حرج',
