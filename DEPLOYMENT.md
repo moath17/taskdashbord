@@ -1,16 +1,16 @@
-# 🚀 Cloud Deployment Guide
+# 🚀 Deployment Guide
 
 ## Prerequisites
 
 - Node.js 18+ installed
 - Git installed
-- Cloud hosting account (Vercel, Netlify, Railway, Heroku, etc.)
+- Cloud hosting account (optional) or local server
 
 ## 📦 Pre-Deployment Checklist
 
 ### ✅ Security
 - [x] `.env` files are in `.gitignore`
-- [x] `database.json` is in `.gitignore` (contains sensitive data)
+- [x] Database files (JSON) are in `.gitignore`
 - [x] `.cursor/` folder is ignored
 - [x] Debug logs are ignored
 
@@ -18,202 +18,222 @@
 - [x] All source code files
 - [x] `package.json` and `package-lock.json`
 - [x] `tsconfig.json`
-- [x] `README.md`
-- [x] `.gitignore` (root and subdirectories)
-- [x] `database.json.example` (template file)
+- [x] `README.md`, `QUICK_START.md`, `DEPLOYMENT.md`
+- [x] `.gitignore`
 
 ### ❌ Files NOT to Commit
 - `node_modules/` (auto-ignored)
-- `.env` files (auto-ignored)
-- `database.json` (contains passwords - auto-ignored)
-- `dist/` or `build/` folders
+- `.env` / `.env.local` files (auto-ignored)
+- `frontend/data/` folder (contains user data)
+- `.next/` build folder
 - `.cursor/debug.log`
 
-## 🔧 Environment Variables Setup
+## 🖥️ On-Premises Deployment (Recommended)
 
-### Backend Environment Variables
+### Step 1: Clone and Install
 
-Create `.env` file in `backend/` directory:
-
-```env
-PORT=3100
-JWT_SECRET=your-strong-secret-key-change-this-in-production
-ENABLE_SMART_ANALYTICS=true
-NODE_ENV=production
+```bash
+git clone <repository-url>
+cd taskdashbord-1/frontend
+npm install
 ```
 
-**Important:** 
-- Use a strong, random JWT_SECRET in production
-- Never commit `.env` files to Git
+### Step 2: Build for Production
 
-### Frontend Environment Variables
+```bash
+npm run build
+```
 
-Create `.env.local` file in `frontend/` directory:
+### Step 3: Start Server
+
+```bash
+npm start
+```
+
+The application will run on port 3001 by default.
+
+### Step 4: Using PM2 (Recommended)
+
+```bash
+# Install PM2 globally
+npm install -g pm2
+
+# Start application
+pm2 start npm --name "task-dashboard" -- start
+
+# Save process list
+pm2 save
+
+# Setup auto-start on reboot
+pm2 startup
+```
+
+### Step 5: Configure Reverse Proxy (Optional)
+
+**Nginx Example:**
+
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+
+    location / {
+        proxy_pass http://localhost:3001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+## 🔧 Environment Variables (Optional)
+
+Create `.env.local` in `frontend/` directory:
 
 ```env
 # App URL (for invite links)
-NEXT_PUBLIC_APP_URL=https://your-app-url.com
+NEXT_PUBLIC_APP_URL=https://your-domain.com
 
-# Optional: Resend API for sending invite emails
-# Without this, invite link is copied to clipboard for manual sharing
+# Supabase (optional - if not set, uses local JSON database)
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-key
+
+# Email sending (optional - if not set, shows invite link)
 RESEND_API_KEY=re_xxxx
-RESEND_FROM_EMAIL=Task Dashboard <noreply@yourdomain.com>
 ```
 
-## 🌐 Deployment Options
+**Note:** The system works perfectly without any environment variables using local file storage.
 
-### Option 1: Vercel (Recommended for Frontend)
+## 🌐 Cloud Deployment Options
 
-**Frontend:**
-1. Install Vercel CLI: `npm i -g vercel`
-2. Navigate to `frontend/` directory
-3. Run: `vercel`
-4. Set environment variable: `VITE_API_URL=https://your-backend-url.com/api`
+### Option 1: Vercel (Easiest)
 
-**Backend:**
-- Use Railway, Render, or Heroku (see below)
+1. Push code to GitHub
+2. Connect repository to Vercel
+3. Deploy automatically
 
-### Option 2: Railway (Recommended for Full Stack)
+**vercel.json** is already configured:
+```json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs"
+}
+```
 
-1. Connect your GitHub repository
-2. Create two services:
-   - **Backend Service:**
-     - Root Directory: `backend`
-     - Build Command: `npm install && npm run build`
-     - Start Command: `npm start`
-     - Environment Variables: Add all backend env vars
-   
-   - **Frontend Service:**
-     - Root Directory: `frontend`
-     - Build Command: `npm install && npm run build`
-     - Start Command: `npm run preview` (or use static hosting)
-     - Environment Variables: `VITE_API_URL=https://your-backend-url.railway.app/api`
+### Option 2: Railway
 
-### Option 3: Render
-
-**Backend:**
-1. Create new Web Service
-2. Connect GitHub repository
-3. Root Directory: `backend`
+1. Connect GitHub repository
+2. Create new service
+3. Root Directory: `frontend`
 4. Build: `npm install && npm run build`
 5. Start: `npm start`
-6. Add environment variables
 
-**Frontend:**
-1. Create new Static Site
-2. Root Directory: `frontend`
-3. Build: `npm install && npm run build`
-4. Publish Directory: `dist`
-5. Add environment variable: `VITE_API_URL`
+### Option 3: Docker (Enterprise)
 
-### Option 4: Heroku
+Create `Dockerfile` in `frontend/`:
 
-**Backend:**
+```dockerfile
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:18-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+EXPOSE 3001
+ENV PORT 3001
+CMD ["node", "server.js"]
+```
+
+Build and run:
 ```bash
-cd backend
-heroku create your-app-name
-heroku config:set JWT_SECRET=your-secret
-heroku config:set ENABLE_SMART_ANALYTICS=true
-git subtree push --prefix backend heroku main
+docker build -t task-dashboard .
+docker run -p 3001:3001 task-dashboard
 ```
 
-**Frontend:**
-- Deploy to Vercel or Netlify (better for static sites)
+## 📁 Data Storage
 
-## 📝 Database Setup
+### Local File Storage (Default)
 
-### For Production (Recommended)
+Data is stored in `frontend/data/`:
+- `local-auth.json` - Users and organizations
+- `local-db.json` - Tasks, goals, KPIs, etc.
+- `invites.json` - Pending invitations
+- `notifications.json` - User notifications
 
-The current setup uses a JSON file database, which is **NOT suitable for production**. 
+**Important:** Back up this folder regularly in production!
 
-**Migration Options:**
+### Supabase (Recommended for Production)
 
-1. **MongoDB Atlas** (Recommended)
-   - Free tier available
-   - Easy migration path
-   - Update `backend/src/models/database.ts` to use MongoDB
-
-2. **PostgreSQL** (via Supabase or Railway)
-   - Robust and scalable
-   - Requires schema migration
-
-3. **MySQL** (via PlanetScale or Railway)
-   - Traditional SQL database
-   - Requires schema migration
-
-### Supabase Users Table (if using Supabase)
-
-If using Supabase for auth, add this column to the `users` table:
-
-```sql
-ALTER TABLE users ADD COLUMN IF NOT EXISTS owner_also_admin BOOLEAN DEFAULT FALSE;
-```
-
-This enables the optional "Owner as Admin" feature (owner can use same credentials for admin access).
-
-### Current JSON Database (Development Only)
-
-If you must use JSON database temporarily:
-1. Copy `backend/src/data/database.json.example` to `backend/src/data/database.json`
-2. Initialize with empty data
-3. **Warning:** JSON database is not suitable for production - data loss risk
+1. Create Supabase project
+2. Set environment variables:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your-url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-key
+   ```
+3. Create required tables (schema provided in setup)
 
 ## 🔐 Security Checklist
 
-- [ ] Change default JWT_SECRET to a strong random string
-- [ ] Enable HTTPS in production
-- [ ] Set CORS to only allow your frontend domain
-- [ ] Use environment variables for all secrets
-- [ ] Enable rate limiting on API endpoints
-- [ ] Migrate from JSON database to proper database
-- [ ] Set up proper error logging (avoid exposing stack traces)
+- [ ] Use HTTPS in production
+- [ ] Set strong passwords for all accounts
+- [ ] Configure firewall rules
+- [ ] Regular backups of `data/` folder
+- [ ] Monitor server logs
+- [ ] Keep Node.js and npm updated
 
 ## 🧪 Post-Deployment Testing
 
-1. **Test Authentication:**
-   - Register a new user
-   - Login
-   - Verify JWT token is stored
+1. **Test Registration:**
+   - Register new organization
+   - Create Admin and Employee users
+   - Verify invite links work
 
-2. **Test API Endpoints:**
-   - Create a task
-   - Create a goal
-   - Test Analytics module (if enabled)
-
-3. **Test Frontend:**
-   - Verify all pages load
+2. **Test Features:**
+   - Create tasks and goals
+   - Test notifications
    - Test language switching (AR/EN)
-   - Test RTL layout
+
+3. **Test Analytics:**
+   - Verify analytics dashboard loads
+   - Check workload analysis
+
+## 🐛 Troubleshooting
+
+### Server won't start
+- Check port 3001 is available
+- Verify Node.js version (18+)
+- Check `npm run build` completed successfully
+
+### Data not saving
+- Check `frontend/data/` folder exists
+- Verify write permissions on data folder
+- Check disk space
+
+### Invite links not working
+- Set `NEXT_PUBLIC_APP_URL` in `.env.local`
+- Verify server URL is accessible
+
+### Email not sending
+- Set `RESEND_API_KEY` in `.env.local`
+- Or use the displayed invite link manually
 
 ## 📊 Monitoring
 
 Consider setting up:
-- **Error Tracking:** Sentry, LogRocket
-- **Analytics:** Google Analytics, Plausible
 - **Uptime Monitoring:** UptimeRobot, Pingdom
-
-## 🐛 Troubleshooting
-
-### Backend won't start
-- Check environment variables are set
-- Verify PORT is not in use
-- Check database file exists (if using JSON)
-
-### Frontend can't connect to API
-- Verify `VITE_API_URL` is correct
-- Check CORS settings in backend
-- Verify backend is running
-
-### Analytics module disabled
-- Set `ENABLE_SMART_ANALYTICS=true` in backend `.env`
-
-## 📚 Additional Resources
-
-- [Vercel Deployment Docs](https://vercel.com/docs)
-- [Railway Docs](https://docs.railway.app)
-- [Render Docs](https://render.com/docs)
+- **Logs:** PM2 logs, journalctl
+- **Backups:** Automated data folder backups
 
 ---
 
-**Note:** This project uses a JSON file database for development. **Migrate to a proper database (MongoDB, PostgreSQL) before production deployment.**
-
+**For quick local development, see [QUICK_START.md](./QUICK_START.md)**
