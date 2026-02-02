@@ -11,10 +11,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { organizationName, email, password, name } = body;
 
-    // #region agent log
-    fetch('http://127.0.0.1:7245/ingest/15cdbcca-ca79-4c98-8d4a-d1a85d74555c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'register/route.ts:POST',message:'Registration attempt',data:{organizationName,email,name},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'C-register'})}).catch(()=>{});
-    // #endregion
-
     // Validation
     if (!organizationName || !email || !password || !name) {
       return errorResponse('Missing required fields: organizationName, email, password, name', 400);
