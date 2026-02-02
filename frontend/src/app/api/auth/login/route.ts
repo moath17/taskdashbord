@@ -12,6 +12,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, password } = body;
 
+    // #region agent log
+    fetch('http://127.0.0.1:7245/ingest/15cdbcca-ca79-4c98-8d4a-d1a85d74555c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'login/route.ts:POST',message:'Login attempt',data:{email,hasPassword:!!password},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A-login'})}).catch(()=>{});
+    // #endregion
+
     if (!email || !password) {
       return errorResponse('Missing email or password', 400);
     }
