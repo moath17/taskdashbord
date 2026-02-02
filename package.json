@@ -1,5 +1,10 @@
 {
   "name": "task-dashboard",
   "private": true,
-  "description": "Task Management & Employee Planning System"
+  "description": "Task Management & Employee Planning System",
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "start": "npm run start --prefix frontend"
+  }
 }
