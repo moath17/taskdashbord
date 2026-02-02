@@ -65,7 +65,7 @@ npm start
 1. **Clone repository**
    ```bash
    git clone <repository-url>
-   cd taskdashbord-1/frontend
+   cd frontend
    ```
 
 2. **Install dependencies**

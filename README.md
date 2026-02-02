@@ -36,7 +36,7 @@ A comprehensive task management and planning platform for organizations with foc
 ## 📁 Project Structure
 
 ```
-taskdashbord-1/
+project/
 ├── frontend/
 │   ├── src/
 │   │   ├── app/              # Next.js App Router pages & API routes
@@ -70,6 +70,11 @@ npm run dev
 ```
 
 See **[QUICK_START.md](./QUICK_START.md)** for detailed instructions.
+
+### 📚 Documentation
+- [docs/STRUCTURE.md](./docs/STRUCTURE.md) - Project structure | هيكل المشروع
+- [docs/CODE_GUIDE.md](./docs/CODE_GUIDE.md) - Code explanations | شرح الكود
+- [docs/SECURITY.md](./docs/SECURITY.md) - Security checklist | نصائح الأمان
 
 ## 👥 User Roles
 

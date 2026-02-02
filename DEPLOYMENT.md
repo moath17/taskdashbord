@@ -34,7 +34,7 @@
 
 ```bash
 git clone <repository-url>
-cd taskdashbord-1/frontend
+cd frontend
 npm install
 ```
 
