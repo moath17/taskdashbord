@@ -61,9 +61,6 @@ export async function GET(request: NextRequest) {
     const tasks = await db.tasks.getByOrganization(user.organizationId);
     const annualGoals = await db.annualGoals.getByOrganization(user.organizationId);
     const mboGoals = await db.mboGoals.getByOrganization(user.organizationId);
-    // #region agent log
-    fetch('http://127.0.0.1:7245/ingest/15cdbcca-ca79-4c98-8d4a-d1a85d74555c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'analytics/dashboard/route.ts:DATA_LOADED',message:'Data fetched from DB',data:{tasksCount:tasks.length,annualGoalsCount:annualGoals.length,mboGoalsCount:mboGoals.length},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'B,E'})}).catch(()=>{});
-    // #endregion
     
     // Analyze all goals
     const goalAnalyses: any[] = [];
