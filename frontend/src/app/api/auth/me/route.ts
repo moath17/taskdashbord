@@ -1,43 +1,50 @@
 import { NextRequest } from 'next/server';
-import { db } from '@/lib/database';
-import { verifyToken, updateUserActivity } from '@/lib/auth';
-import { jsonResponse, errorResponse } from '@/lib/utils';
+import { supabase } from '@/lib/supabase';
+import { requireAuth, jsonResponse, errorResponse } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return errorResponse('No token provided', 401);
-    }
+    const authUser = await requireAuth(request);
 
-    const token = authHeader.replace('Bearer ', '');
-    const decoded = verifyToken(token);
-    
-    if (!decoded) {
-      return errorResponse('Invalid token', 401);
-    }
+    // Get fresh user data with organization
+    const { data: user, error } = await supabase
+      .from('users')
+      .select(`
+        *,
+        organizations (
+          id,
+          name
+        )
+      `)
+      .eq('id', authUser.id)
+      .single();
 
-    const user = await db.users.getById(decoded.userId);
-    
-    if (!user) {
+    if (error || !user) {
       return errorResponse('User not found', 404);
     }
 
-    // Update user's last activity (non-blocking)
-    updateUserActivity(user.id);
-
-    const organization = await db.organizations.getById(user.organizationId);
+    // Update last activity
+    await supabase
+      .from('users')
+      .update({ last_activity: new Date().toISOString() })
+      .eq('id', user.id);
 
     return jsonResponse({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      organizationId: user.organizationId,
-      organizationName: organization?.name || 'Unknown',
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        organizationId: user.organization_id,
+        organizationName: user.organizations?.name,
+      },
     });
+
   } catch (error: any) {
-    console.error('Get user error:', error);
-    return errorResponse('Failed to get user', 500);
+    if (error.message === 'Unauthorized') {
+      return errorResponse('Unauthorized', 401);
+    }
+    console.error('Get me error:', error);
+    return errorResponse('Internal server error', 500);
   }
 }

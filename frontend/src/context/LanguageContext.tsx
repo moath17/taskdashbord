@@ -1,88 +1,61 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { en, ar, TranslationKeys } from '../locales';
-
-type Language = 'en' | 'ar';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Language, Translations, getTranslations } from '@/locales';
 
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: TranslationKeys;
+  t: Translations;
   isRTL: boolean;
-  toggleLanguage: () => void;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-const translations: Record<Language, TranslationKeys> = {
-  en,
-  ar,
-};
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const [language, setLanguageState] = useState<Language>('ar');
+  const [mounted, setMounted] = useState(false);
 
-export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguageState] = useState<Language>('en');
-  const [isHydrated, setIsHydrated] = useState(false);
-
-  // Load language from localStorage after hydration
   useEffect(() => {
-    const saved = localStorage.getItem('language');
-    if (saved === 'ar' || saved === 'en') {
+    setMounted(true);
+    const saved = localStorage.getItem('language') as Language;
+    if (saved && (saved === 'ar' || saved === 'en')) {
       setLanguageState(saved);
     }
-    setIsHydrated(true);
   }, []);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('language', lang);
-    }
+    localStorage.setItem('language', lang);
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
   };
 
-  const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'ar' : 'en');
-  };
-
-  const isRTL = language === 'ar';
-  const t = translations[language];
-
-  // Update document direction and lang attribute
   useEffect(() => {
-    if (typeof document !== 'undefined') {
-      document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+    if (mounted) {
+      document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
       document.documentElement.lang = language;
-      
-      // Add RTL class to body for additional styling if needed
-      if (isRTL) {
-        document.body.classList.add('rtl');
-        document.body.style.fontFamily = 'Tahoma, Arial, sans-serif';
-      } else {
-        document.body.classList.remove('rtl');
-        document.body.style.fontFamily = '';
-      }
     }
-  }, [language, isRTL]);
+  }, [language, mounted]);
+
+  const value: LanguageContextType = {
+    language,
+    setLanguage,
+    t: getTranslations(language),
+    isRTL: language === 'ar',
+  };
 
   return (
-    <LanguageContext.Provider
-      value={{
-        language,
-        setLanguage,
-        t,
-        isRTL,
-        toggleLanguage,
-      }}
-    >
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );
-};
+}
 
-export const useLanguage = () => {
+export function useLanguage() {
   const context = useContext(LanguageContext);
-  if (context === undefined) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
+  if (!context) {
+    throw new Error('useLanguage must be used within LanguageProvider');
   }
   return context;
-};
+}

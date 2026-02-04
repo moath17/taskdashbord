@@ -19,8 +19,11 @@ export default function Home() {
   }, [isAuthenticated, loading, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-lg">Loading...</div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+        <span className="text-gray-600 text-lg">Loading...</span>
+      </div>
     </div>
   );
 }

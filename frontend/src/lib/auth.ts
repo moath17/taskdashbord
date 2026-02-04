@@ -1,138 +1,85 @@
-import { NextRequest } from 'next/server';
-import { AuthUser } from './types';
-import { supabase } from './supabase';
+import { NextRequest, NextResponse } from 'next/server';
+import { SignJWT, jwtVerify } from 'jose';
+import bcrypt from 'bcryptjs';
+import { User } from './types';
 
-const JWT_SECRET = process.env.JWT_SECRET || '***REMOVED***';
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || '***REMOVED***'
+);
 
-// Simple base64 encoding for JWT-like tokens (works in Edge runtime)
-function base64Encode(str: string): string {
-  return Buffer.from(str).toString('base64url');
-}
+// =============================================
+// Password utilities
+// =============================================
 
-function base64Decode(str: string): string {
-  return Buffer.from(str, 'base64url').toString();
-}
-
-// Simple hash function for passwords (for demo - use bcrypt in production with Node runtime)
 export async function hashPassword(password: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password + JWT_SECRET);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return bcrypt.hash(password, 12);
 }
 
-export async function comparePassword(password: string, hashedPassword: string): Promise<boolean> {
-  const hash = await hashPassword(password);
-  return hash === hashedPassword;
+export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+  return bcrypt.compare(password, hashedPassword);
 }
 
-export function generateToken(
-  userId: string, 
-  email: string, 
-  role: string, 
-  organizationId: string,
-  name: string
-): string {
-  const payload = {
-    userId,
-    email,
-    role,
-    organizationId,
-    name,
-    exp: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
-  };
-  const payloadStr = JSON.stringify(payload);
-  const signature = base64Encode(payloadStr + JWT_SECRET);
-  return `${base64Encode(payloadStr)}.${signature}`;
+// =============================================
+// JWT utilities
+// =============================================
+
+export async function createToken(user: Omit<User, 'createdAt' | 'updatedAt'>): Promise<string> {
+  return new SignJWT({
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    organizationId: user.organizationId,
+    organizationName: user.organizationName,
+  })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setExpirationTime('7d')
+    .sign(JWT_SECRET);
 }
 
-export function verifyToken(token: string): { 
-  userId: string; 
-  email: string; 
-  role: string; 
-  organizationId: string;
-  name: string;
-} | null {
+export async function verifyToken(token: string): Promise<any> {
   try {
-    const [payloadB64, signatureB64] = token.split('.');
-    if (!payloadB64 || !signatureB64) return null;
-    
-    const payloadStr = base64Decode(payloadB64);
-    const expectedSignature = base64Encode(payloadStr + JWT_SECRET);
-    
-    if (signatureB64 !== expectedSignature) return null;
-    
-    const payload = JSON.parse(payloadStr);
-    if (payload.exp < Date.now()) return null;
-    
-    return {
-      userId: payload.userId,
-      email: payload.email,
-      role: payload.role,
-      organizationId: payload.organizationId,
-      name: payload.name,
-    };
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    return payload;
   } catch {
     return null;
   }
 }
 
-export function getAuthUser(request: NextRequest): AuthUser | null {
+// =============================================
+// Auth middleware helpers
+// =============================================
+
+export function getTokenFromRequest(request: NextRequest): string | null {
   const authHeader = request.headers.get('authorization');
-  if (!authHeader?.startsWith('Bearer ')) return null;
-  
-  const token = authHeader.replace('Bearer ', '');
-  const decoded = verifyToken(token);
-  
-  if (!decoded) return null;
-  
-  return {
-    id: decoded.userId,
-    email: decoded.email,
-    name: decoded.name,
-    role: decoded.role as 'owner' | 'manager' | 'employee',
-    organizationId: decoded.organizationId,
-  };
+  if (authHeader?.startsWith('Bearer ')) {
+    return authHeader.slice(7);
+  }
+  return null;
 }
 
-export function requireAuth(request: NextRequest): AuthUser {
-  const user = getAuthUser(request);
-  if (!user) {
+export async function requireAuth(request: NextRequest): Promise<User> {
+  const token = getTokenFromRequest(request);
+  if (!token) {
     throw new Error('Unauthorized');
   }
-  return user;
-}
-
-export function requireRole(request: NextRequest, ...allowedRoles: string[]): AuthUser {
-  const user = requireAuth(request);
-  if (!allowedRoles.includes(user.role)) {
-    throw new Error('Forbidden');
+  
+  const payload = await verifyToken(token);
+  if (!payload) {
+    throw new Error('Unauthorized');
   }
-  return user;
+  
+  return payload as User;
 }
 
-export function requireOwnerOrManager(request: NextRequest): AuthUser {
-  return requireRole(request, 'owner', 'manager');
+// =============================================
+// Response helpers
+// =============================================
+
+export function jsonResponse(data: any, status = 200): NextResponse {
+  return NextResponse.json(data, { status });
 }
 
-// Update user's last activity timestamp
-export async function updateUserActivity(userId: string): Promise<void> {
-  try {
-    await supabase
-      .from('users')
-      .update({ last_activity: new Date().toISOString() })
-      .eq('id', userId);
-  } catch (error) {
-    // Silently fail - don't break the request if activity update fails
-    console.error('Failed to update user activity:', error);
-  }
-}
-
-// Get authenticated user and update their activity
-export async function requireAuthWithActivity(request: NextRequest): Promise<AuthUser> {
-  const user = requireAuth(request);
-  // Update activity in background (don't await)
-  updateUserActivity(user.id);
-  return user;
+export function errorResponse(message: string, status = 400): NextResponse {
+  return NextResponse.json({ error: message }, { status });
 }

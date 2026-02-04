@@ -1,199 +1,209 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { Languages, Building2, User, Mail, Lock } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { Building2, User, Mail, Lock, UserPlus, Globe } from 'lucide-react';
 
-export default function Register() {
-  const [formData, setFormData] = useState({
-    organizationName: '',
-    name: '',
-    email: '',
-    password: '',
-  });
+export default function RegisterPage() {
+  const { register } = useAuth();
+  const { t, language, setLanguage, isRTL } = useLanguage();
+  
+  const [orgName, setOrgName] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { register, isAuthenticated, loading: authLoading } = useAuth();
-  const { t, language, toggleLanguage, isRTL } = useLanguage();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      router.replace('/dashboard');
-    }
-  }, [isAuthenticated, authLoading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+
+    // Validation
+    if (password.length < 6) {
+      setError(t.auth.passwordMin);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError(t.auth.passwordMismatch);
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await register(
-        formData.organizationName,
-        formData.email,
-        formData.password,
-        formData.name
-      );
-      toast.success(t.auth.registerSuccess);
-      router.push('/dashboard');
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.error || t.auth.registerFailed;
-      toast.error(errorMessage);
+      await register(orgName, name, email, password);
+    } catch (err: any) {
+      setError(err.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
   };
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
+  const toggleLanguage = () => {
+    setLanguage(language === 'ar' ? 'en' : 'ar');
+  };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100 px-4 ${isRTL ? 'rtl' : 'ltr'}`}>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4 py-8">
       {/* Language Toggle */}
       <button
         onClick={toggleLanguage}
-        className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-all text-gray-700 hover:text-primary-600"
+        className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 
+                   bg-white rounded-lg shadow-sm border border-gray-200 
+                   hover:bg-gray-50 transition-colors"
       >
-        <Languages className="w-5 h-5" />
-        <span className="font-medium">{language === 'en' ? 'عربي' : 'English'}</span>
+        <Globe className="w-4 h-4 text-gray-500" />
+        <span className="text-sm font-medium text-gray-700">
+          {language === 'ar' ? 'English' : 'عربي'}
+        </span>
       </button>
 
-      <div className="max-w-md w-full">
-        <div className="card">
-          {/* Header */}
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
-              <Building2 className="w-8 h-8 text-primary-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900">
-              {isRTL ? 'تسجيل مؤسستك' : 'Register Your Organization'}
-            </h2>
-            <p className="text-gray-600 mt-2 text-sm">
-              {isRTL 
-                ? 'أنشئ حساب مؤسستك وكن المالك'
-                : 'Create your organization account and become the owner'
-              }
-            </p>
+      <div className="w-full max-w-md animate-fadeIn">
+        {/* Logo & Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 
+                          bg-indigo-600 rounded-2xl mb-4 shadow-lg shadow-indigo-200">
+            <Building2 className="w-8 h-8 text-white" />
           </div>
+          <h1 className="text-2xl font-bold text-gray-900">{t.auth.registerOrg}</h1>
+          <p className="text-gray-500 mt-2">{t.auth.registerSubtitle}</p>
+        </div>
 
+        {/* Form */}
+        <div className="card">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Organization Name */}
             <div>
-              <label htmlFor="organizationName" className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                <span className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                  <Building2 className="w-4 h-4 text-gray-400" />
-                  {isRTL ? 'اسم المؤسسة' : 'Organization Name'}
-                </span>
-              </label>
-              <input
-                id="organizationName"
-                type="text"
-                value={formData.organizationName}
-                onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
-                className="input"
-                placeholder={isRTL ? 'مثال: شركة التقنية' : 'e.g., Tech Company Inc.'}
-                required
-              />
+              <label className="label">{t.auth.organizationName}</label>
+              <div className="relative">
+                <Building2 className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400
+                                       ${isRTL ? 'right-3' : 'left-3'}`} />
+                <input
+                  type="text"
+                  value={orgName}
+                  onChange={(e) => setOrgName(e.target.value)}
+                  className={`input ${isRTL ? 'pr-11' : 'pl-11'}`}
+                  placeholder={isRTL ? 'شركة المستقبل' : 'Future Company'}
+                  required
+                />
+              </div>
             </div>
 
-            {/* Owner Name */}
+            {/* Name */}
             <div>
-              <label htmlFor="name" className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                <span className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                  <User className="w-4 h-4 text-gray-400" />
-                  {isRTL ? 'اسمك (المالك)' : 'Your Name (Owner)'}
-                </span>
-              </label>
-              <input
-                id="name"
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="input"
-                placeholder={isRTL ? 'اسمك الكامل' : 'Your full name'}
-                required
-              />
+              <label className="label">{t.auth.name}</label>
+              <div className="relative">
+                <User className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400
+                                  ${isRTL ? 'right-3' : 'left-3'}`} />
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className={`input ${isRTL ? 'pr-11' : 'pl-11'}`}
+                  placeholder={isRTL ? 'أحمد محمد' : 'John Doe'}
+                  required
+                />
+              </div>
             </div>
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                <span className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                  <Mail className="w-4 h-4 text-gray-400" />
-                  {t.auth.email}
-                </span>
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="input"
-                placeholder="email@example.com"
-                required
-                dir="ltr"
-              />
+              <label className="label">{t.auth.email}</label>
+              <div className="relative">
+                <Mail className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400
+                                  ${isRTL ? 'right-3' : 'left-3'}`} />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={`input ${isRTL ? 'pr-11' : 'pl-11'}`}
+                  placeholder="email@example.com"
+                  required
+                  dir="ltr"
+                />
+              </div>
             </div>
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                <span className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                  <Lock className="w-4 h-4 text-gray-400" />
-                  {t.auth.password}
-                </span>
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="input"
-                placeholder={isRTL ? '6 أحرف على الأقل' : 'At least 6 characters'}
-                required
-                minLength={6}
-                dir="ltr"
-              />
-            </div>
-
-            {/* Info Box */}
-            <div className={`bg-blue-50 border border-blue-200 rounded-lg p-3 ${isRTL ? 'text-right' : 'text-left'}`}>
-              <p className="text-sm text-blue-800">
-                {isRTL 
-                  ? '✨ بعد التسجيل، ستصبح مالك المؤسسة ويمكنك إضافة أعضاء فريقك من لوحة التحكم.'
-                  : '✨ After registering, you\'ll be the organization owner and can add team members from the dashboard.'
-                }
+              <label className="label">{t.auth.password}</label>
+              <div className="relative">
+                <Lock className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400
+                                  ${isRTL ? 'right-3' : 'left-3'}`} />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`input ${isRTL ? 'pr-11' : 'pl-11'}`}
+                  placeholder="••••••••"
+                  required
+                  dir="ltr"
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                {isRTL ? '6 أحرف على الأقل' : 'At least 6 characters'}
               </p>
             </div>
 
-            {/* Submit Button */}
+            {/* Confirm Password */}
+            <div>
+              <label className="label">{t.auth.confirmPassword}</label>
+              <div className="relative">
+                <Lock className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400
+                                  ${isRTL ? 'right-3' : 'left-3'}`} />
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className={`input ${isRTL ? 'pr-11' : 'pl-11'}`}
+                  placeholder="••••••••"
+                  required
+                  dir="ltr"
+                />
+              </div>
+            </div>
+
+            {/* Error */}
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+            )}
+
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="btn btn-primary w-full"
+              className="btn btn-primary w-full flex items-center justify-center gap-2 mt-6"
             >
-              {loading 
-                ? (isRTL ? 'جاري التسجيل...' : 'Registering...') 
-                : (isRTL ? 'تسجيل المؤسسة' : 'Register Organization')
-              }
+              {loading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  {t.auth.registering}
+                </>
+              ) : (
+                <>
+                  <UserPlus className="w-5 h-5" />
+                  {t.auth.register}
+                </>
+              )}
             </button>
           </form>
 
           {/* Login Link */}
-          <p className="mt-4 text-center text-sm text-gray-600">
-            {t.auth.hasAccount}{' '}
-            <Link href="/login" className="text-primary-600 hover:text-primary-700 font-medium">
-              {t.auth.login}
-            </Link>
-          </p>
+          <div className="mt-6 pt-6 border-t border-gray-100 text-center">
+            <p className="text-gray-600">
+              {t.auth.hasAccount}{' '}
+              <Link href="/login" className="link">
+                {t.auth.login}
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -1,53 +1,78 @@
 import { NextRequest } from 'next/server';
-import { db } from '@/lib/database';
-import { comparePassword, generateToken, updateUserActivity } from '@/lib/auth';
-import { jsonResponse, errorResponse } from '@/lib/utils';
+import { supabase } from '@/lib/supabase';
+import { verifyPassword, createToken, jsonResponse, errorResponse } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { email, password } = body;
 
+    // Validation
     if (!email || !password) {
-      return errorResponse('Missing email or password', 400);
+      return errorResponse('Email and password are required', 400);
     }
 
-    // Find user by email (could be in multiple orgs, but email is unique globally now)
-    const users = await db.users.getByEmail(email);
-    
-    if (users.length === 0) {
-      return errorResponse('Invalid credentials', 401);
+    // Find user with organization
+    const { data: users, error } = await supabase
+      .from('users')
+      .select(`
+        *,
+        organizations (
+          id,
+          name
+        )
+      `)
+      .eq('email', email.toLowerCase());
+
+    if (error) {
+      console.error('Login query error:', error);
+      return errorResponse('Internal server error', 500);
     }
 
-    // For simplicity, we'll use the first match (email is unique per org)
+    if (!users || users.length === 0) {
+      return errorResponse('Invalid email or password', 401);
+    }
+
     const user = users[0];
 
-    const isValid = await comparePassword(password, user.password);
+    // Verify password
+    const isValid = await verifyPassword(password, user.password);
     if (!isValid) {
-      return errorResponse('Invalid credentials', 401);
+      return errorResponse('Invalid email or password', 401);
     }
 
-    // Get organization name
-    const organization = await db.organizations.getById(user.organizationId);
+    // Update last activity
+    await supabase
+      .from('users')
+      .update({ last_activity: new Date().toISOString() })
+      .eq('id', user.id);
 
-    // Update user's last activity on login
-    updateUserActivity(user.id);
+    // Create token
+    const userForToken = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      organizationId: user.organization_id,
+      organizationName: user.organizations?.name,
+    };
 
-    const token = generateToken(user.id, user.email, user.role, user.organizationId, user.name);
-    
+    const token = await createToken(userForToken);
+
     return jsonResponse({
-      token,
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
         role: user.role,
-        organizationId: user.organizationId,
-        organizationName: organization?.name || 'Unknown',
+        organizationId: user.organization_id,
+        organizationName: user.organizations?.name,
       },
+      token,
     });
-  } catch (error: any) {
+
+  } catch (error) {
     console.error('Login error:', error);
-    return errorResponse(error.message || 'Login failed', 500);
+    return errorResponse('Internal server error', 500);
   }
 }

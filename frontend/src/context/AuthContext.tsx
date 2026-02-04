@@ -1,73 +1,95 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from '../types';
-import { authApi } from '../api/auth';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
+import { User } from '@/lib/types';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (organizationName: string, email: string, password: string, name: string) => Promise<void>;
+  register: (orgName: string, name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
+  // Check auth on mount
   useEffect(() => {
-    const initAuth = async () => {
-      if (typeof window === 'undefined') {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
         setLoading(false);
         return;
       }
 
-      const token = localStorage.getItem('token');
-      const storedUser = localStorage.getItem('user');
+      const res = await fetch('/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      if (token && storedUser) {
-        try {
-          const currentUser = await authApi.getCurrentUser();
-          setUser(currentUser);
-        } catch (error) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-        }
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data.user);
+      } else {
+        localStorage.removeItem('token');
       }
+    } catch (error) {
+      localStorage.removeItem('token');
+    } finally {
       setLoading(false);
-    };
-
-    initAuth();
-  }, []);
-
-  const login = async (email: string, password: string) => {
-    const response = await authApi.login({ email, password });
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(response.user));
     }
-    setUser(response.user);
   };
 
-  const register = async (organizationName: string, email: string, password: string, name: string) => {
-    const response = await authApi.register({ organizationName, email, password, name });
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(response.user));
+  const login = async (email: string, password: string) => {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Login failed');
     }
-    setUser(response.user);
+
+    localStorage.setItem('token', data.token);
+    setUser(data.user);
+    router.push('/dashboard');
+  };
+
+  const register = async (orgName: string, name: string, email: string, password: string) => {
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ organizationName: orgName, name, email, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Registration failed');
+    }
+
+    localStorage.setItem('token', data.token);
+    setUser(data.user);
+    router.push('/dashboard');
   };
 
   const logout = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-    }
+    localStorage.removeItem('token');
     setUser(null);
+    router.push('/login');
   };
 
   return (
@@ -84,12 +106,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => {
+export function useAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
-};
+}

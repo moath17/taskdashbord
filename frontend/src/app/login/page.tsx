@@ -1,107 +1,139 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { Languages } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { Mail, Lock, LogIn, Globe } from 'lucide-react';
 
-export default function Login() {
+export default function LoginPage() {
+  const { login } = useAuth();
+  const { t, language, setLanguage, isRTL } = useLanguage();
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, isAuthenticated, loading: authLoading } = useAuth();
-  const { t, language, toggleLanguage, isRTL } = useLanguage();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      router.replace('/dashboard');
-    }
-  }, [isAuthenticated, authLoading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     setLoading(true);
 
     try {
       await login(email, password);
-      toast.success(t.auth.loginSuccess);
-      router.push('/dashboard');
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || t.auth.loginFailed);
+    } catch (err: any) {
+      setError(err.message || t.auth.invalidCredentials);
     } finally {
       setLoading(false);
     }
   };
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
+  const toggleLanguage = () => {
+    setLanguage(language === 'ar' ? 'en' : 'ar');
+  };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100 px-4 ${isRTL ? 'rtl' : 'ltr'}`}>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
       {/* Language Toggle */}
       <button
         onClick={toggleLanguage}
-        className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-all text-gray-700 hover:text-primary-600"
+        className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 
+                   bg-white rounded-lg shadow-sm border border-gray-200 
+                   hover:bg-gray-50 transition-colors"
       >
-        <Languages className="w-5 h-5" />
-        <span className="font-medium">{language === 'en' ? 'عربي' : 'English'}</span>
+        <Globe className="w-4 h-4 text-gray-500" />
+        <span className="text-sm font-medium text-gray-700">
+          {language === 'ar' ? 'English' : 'عربي'}
+        </span>
       </button>
 
-      <div className="max-w-md w-full">
+      <div className="w-full max-w-md animate-fadeIn">
+        {/* Logo & Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 
+                          bg-indigo-600 rounded-2xl mb-4 shadow-lg shadow-indigo-200">
+            <LogIn className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900">{t.auth.login}</h1>
+          <p className="text-gray-500 mt-2">{t.auth.loginSubtitle}</p>
+        </div>
+
+        {/* Form */}
         <div className="card">
-          <h2 className={`text-2xl font-bold text-gray-900 mb-6 text-center`}>{t.auth.login}</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email */}
             <div>
-              <label htmlFor="email" className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                {t.auth.email}
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="input"
-                required
-                dir="ltr"
-              />
+              <label className="label">{t.auth.email}</label>
+              <div className="relative">
+                <Mail className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400
+                                  ${isRTL ? 'right-3' : 'left-3'}`} />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={`input ${isRTL ? 'pr-11' : 'pl-11'}`}
+                  placeholder="email@example.com"
+                  required
+                  dir="ltr"
+                />
+              </div>
             </div>
+
+            {/* Password */}
             <div>
-              <label htmlFor="password" className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                {t.auth.password}
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="input"
-                required
-                dir="ltr"
-              />
+              <label className="label">{t.auth.password}</label>
+              <div className="relative">
+                <Lock className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400
+                                  ${isRTL ? 'right-3' : 'left-3'}`} />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`input ${isRTL ? 'pr-11' : 'pl-11'}`}
+                  placeholder="••••••••"
+                  required
+                  dir="ltr"
+                />
+              </div>
             </div>
+
+            {/* Error */}
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+            )}
+
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="btn btn-primary w-full"
+              className="btn btn-primary w-full flex items-center justify-center gap-2"
             >
-              {loading ? t.auth.loggingIn : t.auth.login}
+              {loading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  {t.auth.loggingIn}
+                </>
+              ) : (
+                <>
+                  <LogIn className="w-5 h-5" />
+                  {t.auth.login}
+                </>
+              )}
             </button>
           </form>
-          <p className="mt-4 text-center text-sm text-gray-600">
-            {t.auth.noAccount}{' '}
-            <Link href="/register" className="text-primary-600 hover:text-primary-700 font-medium">
-              {t.auth.register}
-            </Link>
-          </p>
+
+          {/* Register Link */}
+          <div className="mt-6 pt-6 border-t border-gray-100 text-center">
+            <p className="text-gray-600">
+              {t.auth.noAccount}{' '}
+              <Link href="/register" className="link">
+                {t.auth.register}
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>
