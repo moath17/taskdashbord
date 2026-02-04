@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { 
@@ -12,7 +13,9 @@ import {
   CheckSquare, 
   Target, 
   TrendingUp,
-  Building2
+  Building2,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -47,11 +50,13 @@ export default function DashboardPage() {
     return t.roles[role as keyof typeof t.roles] || role;
   };
 
+  const canManageTeam = user?.role === 'owner' || user?.role === 'manager';
+
   const stats = [
-    { label: isRTL ? 'المهام' : 'Tasks', value: '0', icon: CheckSquare, color: 'bg-blue-500' },
-    { label: isRTL ? 'الأهداف' : 'Goals', value: '0', icon: Target, color: 'bg-green-500' },
-    { label: isRTL ? 'مؤشرات الأداء' : 'KPIs', value: '0', icon: TrendingUp, color: 'bg-purple-500' },
-    { label: isRTL ? 'الفريق' : 'Team', value: '1', icon: Users, color: 'bg-orange-500' },
+    { label: isRTL ? 'المهام' : 'Tasks', value: '0', icon: CheckSquare, color: 'bg-blue-500', href: '/tasks' },
+    { label: isRTL ? 'الأهداف' : 'Goals', value: '0', icon: Target, color: 'bg-green-500', href: '/goals' },
+    { label: isRTL ? 'مؤشرات الأداء' : 'KPIs', value: '0', icon: TrendingUp, color: 'bg-purple-500', href: '/kpis' },
+    { label: isRTL ? 'الفريق' : 'Team', value: '1', icon: Users, color: 'bg-orange-500', href: '/team' },
   ];
 
   return (
@@ -124,33 +129,133 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {stats.map((stat, index) => (
-            <div key={index} className="card flex items-center gap-4">
-              <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center`}>
+            <Link
+              key={index}
+              href={stat.href}
+              className="card flex items-center gap-4 hover:shadow-md transition-shadow group"
+            >
+              <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center 
+                              group-hover:scale-110 transition-transform`}>
                 <stat.icon className="w-6 h-6 text-white" />
               </div>
-              <div>
+              <div className="flex-1">
                 <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
                 <p className="text-sm text-gray-500">{stat.label}</p>
               </div>
-            </div>
+              {stat.href !== '#' && (
+                isRTL 
+                  ? <ChevronLeft className="w-5 h-5 text-gray-300 group-hover:text-gray-500" />
+                  : <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-500" />
+              )}
+            </Link>
           ))}
         </div>
 
-        {/* Coming Soon */}
-        <div className="card text-center py-12">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckSquare className="w-8 h-8 text-gray-400" />
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            {isRTL ? 'المرحلة 1 مكتملة!' : 'Phase 1 Complete!'}
+        {/* Quick Actions */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            {isRTL ? 'إجراءات سريعة' : 'Quick Actions'}
           </h3>
-          <p className="text-gray-500 max-w-md mx-auto">
-            {isRTL 
-              ? 'تم بناء الأساس بنجاح. المراحل القادمة ستضيف المهام والأهداف وإدارة الفريق.'
-              : 'Foundation built successfully. Next phases will add tasks, goals, and team management.'}
-          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Link
+              href="/tasks"
+              className="card flex items-center gap-4 hover:shadow-md hover:border-blue-200 
+                         transition-all group border-2 border-transparent"
+            >
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center 
+                              group-hover:bg-blue-200 transition-colors">
+                <CheckSquare className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900">
+                  {isRTL ? 'إدارة المهام' : 'Manage Tasks'}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {isRTL ? 'إنشاء وتتبع المهام' : 'Create and track tasks'}
+                </p>
+              </div>
+            </Link>
+
+            <Link
+              href="/goals"
+              className="card flex items-center gap-4 hover:shadow-md hover:border-green-200 
+                         transition-all group border-2 border-transparent"
+            >
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center 
+                              group-hover:bg-green-200 transition-colors">
+                <Target className="w-6 h-6 text-green-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900">
+                  {isRTL ? 'إدارة الأهداف' : 'Manage Goals'}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {isRTL ? 'تتبع الأهداف السنوية والربعية' : 'Track annual and quarterly goals'}
+                </p>
+              </div>
+            </Link>
+
+            <Link
+              href="/kpis"
+              className="card flex items-center gap-4 hover:shadow-md hover:border-purple-200 
+                         transition-all group border-2 border-transparent"
+            >
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center 
+                              group-hover:bg-purple-200 transition-colors">
+                <TrendingUp className="w-6 h-6 text-purple-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900">
+                  {isRTL ? 'مؤشرات الأداء' : 'KPIs'}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {isRTL ? 'تتبع وقياس الأداء' : 'Track and measure performance'}
+                </p>
+              </div>
+            </Link>
+
+            {canManageTeam && (
+              <Link
+                href="/team"
+                className="card flex items-center gap-4 hover:shadow-md hover:border-indigo-200 
+                           transition-all group border-2 border-transparent"
+              >
+                <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center 
+                                group-hover:bg-indigo-200 transition-colors">
+                  <Users className="w-6 h-6 text-indigo-600" />
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">
+                    {isRTL ? 'إدارة الفريق' : 'Manage Team'}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {isRTL ? 'إضافة وإدارة أعضاء الفريق' : 'Add and manage team members'}
+                  </p>
+                </div>
+              </Link>
+            )}
+          </div>
+        </div>
+
+        {/* Status Card */}
+        <div className="card bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-100">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+              <TrendingUp className="w-6 h-6 text-purple-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">
+                {isRTL ? 'المرحلة 5 مكتملة!' : 'Phase 5 Complete!'}
+              </h3>
+              <p className="text-sm text-gray-600">
+                {isRTL 
+                  ? 'تم إضافة مؤشرات الأداء (KPIs). النظام جاهز للاستخدام!'
+                  : 'KPIs added. System is ready to use!'}
+              </p>
+            </div>
+          </div>
         </div>
       </main>
     </div>
