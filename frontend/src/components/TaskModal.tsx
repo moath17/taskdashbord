@@ -9,6 +9,7 @@ import {
   Flag, 
   User, 
   Calendar,
+  Target,
   Save,
   Plus,
   Loader2
@@ -20,6 +21,11 @@ interface Member {
   email: string;
 }
 
+interface Goal {
+  id: string;
+  title: string;
+}
+
 interface Task {
   id: string;
   title: string;
@@ -28,6 +34,8 @@ interface Task {
   priority: string;
   assignedTo?: string;
   dueDate?: string;
+  goalId?: string;
+  goal?: Goal;
 }
 
 interface TaskModalProps {
@@ -36,9 +44,10 @@ interface TaskModalProps {
   onSave: (data: any) => Promise<void>;
   task?: Task | null;
   members: Member[];
+  goals: Goal[];
 }
 
-export function TaskModal({ isOpen, onClose, onSave, task, members }: TaskModalProps) {
+export function TaskModal({ isOpen, onClose, onSave, task, members, goals }: TaskModalProps) {
   const { isRTL } = useLanguage();
   const isEdit = !!task;
 
@@ -48,6 +57,7 @@ export function TaskModal({ isOpen, onClose, onSave, task, members }: TaskModalP
   const [priority, setPriority] = useState('medium');
   const [assignedTo, setAssignedTo] = useState('');
   const [dueDate, setDueDate] = useState('');
+  const [goalId, setGoalId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -61,6 +71,7 @@ export function TaskModal({ isOpen, onClose, onSave, task, members }: TaskModalP
         setPriority(task.priority);
         setAssignedTo(task.assignedTo || '');
         setDueDate(task.dueDate || '');
+        setGoalId(task.goalId || '');
       } else {
         setTitle('');
         setDescription('');
@@ -68,6 +79,7 @@ export function TaskModal({ isOpen, onClose, onSave, task, members }: TaskModalP
         setPriority('medium');
         setAssignedTo('');
         setDueDate('');
+        setGoalId('');
       }
       setError('');
     }
@@ -81,6 +93,10 @@ export function TaskModal({ isOpen, onClose, onSave, task, members }: TaskModalP
       setError(isRTL ? 'عنوان المهمة مطلوب' : 'Task title is required');
       return;
     }
+    if (!goalId.trim()) {
+      setError(isRTL ? 'الهدف مطلوب' : 'Goal is required');
+      return;
+    }
 
     setLoading(true);
 
@@ -92,6 +108,7 @@ export function TaskModal({ isOpen, onClose, onSave, task, members }: TaskModalP
         priority,
         assignedTo: assignedTo || null,
         dueDate: dueDate || null,
+        goalId: goalId || null,
       });
       onClose();
     } catch (err: any) {
@@ -113,6 +130,8 @@ export function TaskModal({ isOpen, onClose, onSave, task, members }: TaskModalP
     assignTo: isRTL ? 'تعيين إلى' : 'Assign to',
     unassigned: isRTL ? 'غير معين' : 'Unassigned',
     dueDate: isRTL ? 'تاريخ الاستحقاق' : 'Due Date',
+    goal: isRTL ? 'الهدف' : 'Goal',
+    goalRequired: isRTL ? 'اختر الهدف' : 'Select goal',
     save: isRTL ? 'حفظ' : 'Save',
     add: isRTL ? 'إضافة' : 'Add',
     saving: isRTL ? 'جاري الحفظ...' : 'Saving...',
@@ -218,6 +237,28 @@ export function TaskModal({ isOpen, onClose, onSave, task, members }: TaskModalP
                 </button>
               ))}
             </div>
+          </div>
+        </div>
+
+        {/* Goal (required) */}
+        <div>
+          <label className="label">
+            {texts.goal} <span className="text-red-500">*</span>
+          </label>
+          <div className="relative">
+            <Target className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400
+                                ${isRTL ? 'right-3' : 'left-3'}`} />
+            <select
+              value={goalId}
+              onChange={(e) => setGoalId(e.target.value)}
+              className={`input ${isRTL ? 'pr-11' : 'pl-11'} appearance-none`}
+              required
+            >
+              <option value="">{texts.goalRequired}</option>
+              {goals.map((g) => (
+                <option key={g.id} value={g.id}>{g.title}</option>
+              ))}
+            </select>
           </div>
         </div>
 

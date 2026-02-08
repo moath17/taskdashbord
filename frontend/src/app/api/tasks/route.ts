@@ -12,7 +12,8 @@ export async function GET(request: NextRequest) {
       .select(`
         *,
         assigned_user:users!tasks_assigned_to_fkey(id, name, email),
-        creator:users!tasks_created_by_fkey(id, name)
+        creator:users!tasks_created_by_fkey(id, name),
+        goal:goals!tasks_goal_id_fkey(id, title)
       `)
       .eq('organization_id', user.organizationId)
       .order('created_at', { ascending: false });
@@ -41,6 +42,8 @@ export async function GET(request: NextRequest) {
         name: t.creator.name,
       } : null,
       dueDate: t.due_date,
+      goalId: t.goal_id ?? null,
+      goal: t.goal ? { id: t.goal.id, title: t.goal.title } : null,
       createdAt: t.created_at,
       updatedAt: t.updated_at,
     })) || [];
@@ -62,11 +65,26 @@ export async function POST(request: NextRequest) {
     const user = await requireAuth(request);
     const body = await request.json();
 
-    const { title, description, status, priority, assignedTo, dueDate } = body;
+    const { title, description, status, priority, assignedTo, dueDate, goalId } = body;
 
     // Validation
     if (!title?.trim()) {
       return errorResponse('Title is required', 400);
+    }
+    if (!goalId) {
+      return errorResponse('Goal is required', 400);
+    }
+
+    // Verify goal exists and belongs to organization
+    const { data: goal, error: goalError } = await supabase
+      .from('goals')
+      .select('id')
+      .eq('id', goalId)
+      .eq('organization_id', user.organizationId)
+      .single();
+
+    if (goalError || !goal) {
+      return errorResponse('Goal not found or access denied', 400);
     }
 
     // Create task
@@ -81,11 +99,13 @@ export async function POST(request: NextRequest) {
         assigned_to: assignedTo || null,
         created_by: user.id,
         due_date: dueDate || null,
+        goal_id: goalId,
       })
       .select(`
         *,
         assigned_user:users!tasks_assigned_to_fkey(id, name, email),
-        creator:users!tasks_created_by_fkey(id, name)
+        creator:users!tasks_created_by_fkey(id, name),
+        goal:goals!tasks_goal_id_fkey(id, title)
       `)
       .single();
 
@@ -113,6 +133,8 @@ export async function POST(request: NextRequest) {
           name: task.creator.name,
         } : null,
         dueDate: task.due_date,
+        goalId: task.goal_id,
+        goal: task.goal ? { id: task.goal.id, title: task.goal.title } : null,
         createdAt: task.created_at,
         updatedAt: task.updated_at,
       },

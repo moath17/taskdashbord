@@ -22,6 +22,7 @@ import {
   CheckCircle2,
   Circle,
   Loader2,
+  Target,
 } from 'lucide-react';
 
 interface Task {
@@ -35,6 +36,8 @@ interface Task {
   createdBy: string;
   creator?: { id: string; name: string };
   dueDate?: string;
+  goalId?: string;
+  goal?: { id: string; title: string };
   createdAt: string;
 }
 
@@ -52,6 +55,7 @@ export default function TasksPage() {
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
+  const [goals, setGoals] = useState<{ id: string; title: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -75,6 +79,7 @@ export default function TasksPage() {
     if (isAuthenticated) {
       fetchTasks();
       fetchMembers();
+      fetchGoals();
     }
   }, [isAuthenticated]);
 
@@ -114,6 +119,21 @@ export default function TasksPage() {
       }
     } catch (err) {
       console.error('Failed to fetch members');
+    }
+  };
+
+  const fetchGoals = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/goals', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setGoals((data.goals || []).map((g: { id: string; title: string }) => ({ id: g.id, title: g.title })));
+      }
+    } catch (err) {
+      console.error('Failed to fetch goals');
     }
   };
 
@@ -422,6 +442,7 @@ export default function TasksPage() {
         onSave={editingTask ? handleEditTask : handleAddTask}
         task={editingTask}
         members={members}
+        goals={goals}
       />
     </div>
   );
@@ -542,6 +563,14 @@ function TaskCard({
               <span className="flex items-center gap-1 text-gray-500">
                 <User className="w-3.5 h-3.5" />
                 {task.assignedUser.name}
+              </span>
+            )}
+
+            {/* Goal */}
+            {task.goal && (
+              <span className="flex items-center gap-1 text-gray-500">
+                <Target className="w-3.5 h-3.5" />
+                {task.goal.title}
               </span>
             )}
 

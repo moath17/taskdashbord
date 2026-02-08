@@ -16,7 +16,8 @@ export async function GET(
       .select(`
         *,
         assigned_user:users!tasks_assigned_to_fkey(id, name, email),
-        creator:users!tasks_created_by_fkey(id, name)
+        creator:users!tasks_created_by_fkey(id, name),
+        goal:goals!tasks_goal_id_fkey(id, title)
       `)
       .eq('id', id)
       .eq('organization_id', user.organizationId)
@@ -38,6 +39,8 @@ export async function GET(
         createdBy: task.created_by,
         creator: task.creator,
         dueDate: task.due_date,
+        goalId: task.goal_id ?? null,
+        goal: task.goal ? { id: task.goal.id, title: task.goal.title } : null,
         createdAt: task.created_at,
         updatedAt: task.updated_at,
       },
@@ -74,7 +77,21 @@ export async function PUT(
       return errorResponse('Task not found', 404);
     }
 
-    const { title, description, status, priority, assignedTo, dueDate } = body;
+    const { title, description, status, priority, assignedTo, dueDate, goalId } = body;
+
+    // If goalId provided, verify it exists and belongs to organization
+    if (goalId !== undefined) {
+      const { data: goal, error: goalError } = await supabase
+        .from('goals')
+        .select('id')
+        .eq('id', goalId)
+        .eq('organization_id', user.organizationId)
+        .single();
+
+      if (goalError || !goal) {
+        return errorResponse('Goal not found or access denied', 400);
+      }
+    }
 
     // Build update object
     const updateData: any = { updated_at: new Date().toISOString() };
@@ -85,6 +102,7 @@ export async function PUT(
     if (priority !== undefined) updateData.priority = priority;
     if (assignedTo !== undefined) updateData.assigned_to = assignedTo || null;
     if (dueDate !== undefined) updateData.due_date = dueDate || null;
+    if (goalId !== undefined) updateData.goal_id = goalId || null;
 
     // Update task
     const { data: task, error } = await supabase
@@ -94,7 +112,8 @@ export async function PUT(
       .select(`
         *,
         assigned_user:users!tasks_assigned_to_fkey(id, name, email),
-        creator:users!tasks_created_by_fkey(id, name)
+        creator:users!tasks_created_by_fkey(id, name),
+        goal:goals!tasks_goal_id_fkey(id, title)
       `)
       .single();
 
@@ -122,6 +141,8 @@ export async function PUT(
           name: task.creator.name,
         } : null,
         dueDate: task.due_date,
+        goalId: task.goal_id ?? null,
+        goal: task.goal ? { id: task.goal.id, title: task.goal.title } : null,
         createdAt: task.created_at,
         updatedAt: task.updated_at,
       },
