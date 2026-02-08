@@ -423,9 +423,6 @@ export default function DashboardPage() {
                         <p className="text-xs text-gray-500 mt-1">
                           {new Date(leave.startDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')} → {new Date(leave.endDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
                         </p>
-                        <span className={`inline-block mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${leave.status === 'approved' ? 'bg-green-100 text-green-700' : leave.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
-                          {leave.status === 'approved' ? (isRTL ? 'معتمدة' : 'Approved') : leave.status === 'rejected' ? (isRTL ? 'مرفوضة' : 'Rejected') : (isRTL ? 'قيد المراجعة' : 'Pending')}
-                        </span>
                       </Link>
                     </li>
                   ))}
