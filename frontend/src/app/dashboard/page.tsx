@@ -25,6 +25,10 @@ import {
   Flag,
   User,
   Loader2,
+  Sparkles,
+  Lightbulb,
+  AlertTriangle,
+  BarChart3,
 } from 'lucide-react';
 
 interface DashboardTask {
@@ -33,6 +37,7 @@ interface DashboardTask {
   status: string;
   priority?: string;
   dueDate?: string;
+  assignedTo?: string;
   assignedUser?: { name: string };
   goal?: { title: string };
 }
@@ -588,6 +593,121 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
+
+        {/* AI Analysis - derived from existing data, no DB changes */}
+        {(() => {
+          const isOwnerOrManager = user?.role === 'owner' || user?.role === 'manager';
+          const today = new Date().toISOString().slice(0, 10);
+          const overdueTasks = tasks.filter((t) => t.dueDate && t.dueDate < today && t.status !== 'done');
+          const pendingLeaves = leaves.filter((l) => l.status === 'pending');
+          const completedTasks = tasks.filter((t) => t.status === 'done').length;
+          const avgGoalProgress = goals.length ? Math.round(goals.reduce((a, g) => a + (g.progress ?? 0), 0) / goals.length) : 0;
+          const goalsWithNoProgress = goals.filter((g) => (g.progress ?? 0) === 0).length;
+          const myTasks = user ? tasks.filter((t) => t.assignedTo === user.id) : [];
+          const myCompleted = myTasks.filter((t) => t.status === 'done').length;
+          const myPerformancePercent = myTasks.length ? Math.round((myCompleted / myTasks.length) * 100) : 0;
+          const suggestions: string[] = [];
+          if (overdueTasks.length > 0) suggestions.push(isRTL ? `لديك ${overdueTasks.length} مهمة متأخرة — راجع قائمة المهام` : `${overdueTasks.length} overdue task(s) — review tasks`);
+          if (goalsWithNoProgress > 0) suggestions.push(isRTL ? `${goalsWithNoProgress} أهداف دون تقدم — حدّث التقدم` : `${goalsWithNoProgress} goal(s) with no progress — update progress`);
+          if (pendingLeaves.length > 0) suggestions.push(isRTL ? `${pendingLeaves.length} إجازة قيد المراجعة` : `${pendingLeaves.length} leave(s) pending review`);
+
+          return (
+            <section className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-violet-500" />
+                {isRTL ? 'تحليل ذكي' : 'AI Analysis'}
+              </h3>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {isOwnerOrManager ? (
+                  <>
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2 text-indigo-700">
+                        <BarChart3 className="w-4 h-4" />
+                        {isRTL ? 'تحليل عام' : 'Overview'}
+                      </h4>
+                      <ul className="space-y-2 text-sm text-gray-600">
+                        <li>{isRTL ? 'المهام' : 'Tasks'}: {tasks.length} ({completedTasks} {isRTL ? 'مكتملة' : 'completed'})</li>
+                        <li>{isRTL ? 'الأهداف' : 'Goals'}: {goals.length} ({isRTL ? 'متوسط التقدم' : 'avg progress'} {avgGoalProgress}%)</li>
+                        <li>{isRTL ? 'الإجازات المعلقة' : 'Pending leaves'}: {pendingLeaves.length}</li>
+                        <li className={overdueTasks.length > 0 ? 'text-amber-600 font-medium' : ''}>{isRTL ? 'مهام متأخرة' : 'Overdue tasks'}: {overdueTasks.length}</li>
+                      </ul>
+                    </div>
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2 text-amber-600">
+                        <Lightbulb className="w-4 h-4" />
+                        {isRTL ? 'مقترحات ذكية' : 'Suggestions'}
+                      </h4>
+                      {suggestions.length === 0 ? (
+                        <p className="text-sm text-gray-500">{isRTL ? 'لا توجد توصيات حالياً' : 'No recommendations at the moment.'}</p>
+                      ) : (
+                        <ul className="space-y-2 text-sm text-gray-700">
+                          {suggestions.map((s, i) => (
+                            <li key={i} className="flex items-start gap-2">
+                              <span className="text-amber-500 mt-0.5">•</span>
+                              {s}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                    <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2 text-red-600">
+                        <AlertTriangle className="w-4 h-4" />
+                        {isRTL ? 'تنبيهات إدارية' : 'Alerts'}
+                      </h4>
+                      {overdueTasks.length === 0 && pendingLeaves.length === 0 ? (
+                        <p className="text-sm text-gray-500">{isRTL ? 'لا توجد تنبيهات' : 'No alerts.'}</p>
+                      ) : (
+                        <ul className="space-y-2 text-sm">
+                          {overdueTasks.slice(0, 5).map((t) => (
+                            <li key={t.id} className="text-amber-700 flex items-center gap-2">
+                              <AlertTriangle className="w-4 h-4 shrink-0" />
+                              {isRTL ? 'مهمة متأخرة' : 'Overdue'}: {t.title}
+                            </li>
+                          ))}
+                          {pendingLeaves.length > 0 && (
+                            <li className="text-indigo-600 flex items-center gap-2">
+                              <AlertTriangle className="w-4 h-4 shrink-0" />
+                              {isRTL ? 'إجازات قيد المراجعة' : 'Leaves pending review'}: {pendingLeaves.length}
+                            </li>
+                          )}
+                        </ul>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2 text-blue-600">
+                        <CheckSquare className="w-4 h-4" />
+                        {isRTL ? 'حالة المهام' : 'My Tasks'}
+                      </h4>
+                      <ul className="space-y-2 text-sm text-gray-600">
+                        <li>{isRTL ? 'الإجمالي' : 'Total'}: {myTasks.length}</li>
+                        <li>{isRTL ? 'مكتملة' : 'Done'}: {myCompleted}</li>
+                        <li>{isRTL ? 'قيد العمل' : 'In progress'}: {myTasks.filter((t) => t.status === 'in_progress').length}</li>
+                        <li>{isRTL ? 'جديدة' : 'To do'}: {myTasks.length - myCompleted - myTasks.filter((t) => t.status === 'in_progress').length}</li>
+                      </ul>
+                    </div>
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2 text-emerald-600">
+                        <BarChart3 className="w-4 h-4" />
+                        {isRTL ? 'الأداء' : 'Performance'}
+                      </h4>
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${myPerformancePercent}%` }} />
+                        </div>
+                        <span className="text-sm font-semibold text-gray-700 tabular-nums">{myPerformancePercent}%</span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-2">{isRTL ? 'نسبة إنجاز المهام' : 'Task completion rate'}</p>
+                    </div>
+                  </>
+                )}
+              </div>
+            </section>
+          );
+        })()}
       </main>
 
       {/* Footer - hidden on mobile (bottom nav takes its place) */}
