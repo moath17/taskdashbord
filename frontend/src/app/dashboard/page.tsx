@@ -16,6 +16,8 @@ import {
   Building2,
   ChevronLeft,
   ChevronRight,
+  CalendarDays,
+  GraduationCap,
 } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -216,6 +218,44 @@ export default function DashboardPage() {
               </div>
             </Link>
 
+            <Link
+              href="/leaves"
+              className="card flex items-center gap-4 hover:shadow-md hover:border-amber-200 
+                         transition-all group border-2 border-transparent"
+            >
+              <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center 
+                              group-hover:bg-amber-200 transition-colors">
+                <CalendarDays className="w-6 h-6 text-amber-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900">
+                  {isRTL ? 'الإجازات' : 'Leaves'}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {isRTL ? 'طلب وإدارة الإجازات' : 'Request and manage leaves'}
+                </p>
+              </div>
+            </Link>
+
+            <Link
+              href="/trainings"
+              className="card flex items-center gap-4 hover:shadow-md hover:border-teal-200 
+                         transition-all group border-2 border-transparent"
+            >
+              <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center 
+                              group-hover:bg-teal-200 transition-colors">
+                <GraduationCap className="w-6 h-6 text-teal-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900">
+                  {isRTL ? 'التدريب' : 'Training'}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {isRTL ? 'الدورات والورش التدريبية' : 'Courses and workshops'}
+                </p>
+              </div>
+            </Link>
+
             {canManageTeam && (
               <Link
                 href="/team"
@@ -240,19 +280,19 @@ export default function DashboardPage() {
         </div>
 
         {/* Status Card */}
-        <div className="card bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-100">
+        <div className="card bg-gradient-to-br from-teal-50 to-emerald-50 border-teal-100">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
+              <GraduationCap className="w-6 h-6 text-teal-600" />
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 mb-1">
-                {isRTL ? 'المرحلة 5 مكتملة!' : 'Phase 5 Complete!'}
+                {isRTL ? 'النظام مكتمل!' : 'System Complete!'}
               </h3>
               <p className="text-sm text-gray-600">
                 {isRTL 
-                  ? 'تم إضافة مؤشرات الأداء (KPIs). النظام جاهز للاستخدام!'
-                  : 'KPIs added. System is ready to use!'}
+                  ? 'تم إضافة جميع الميزات: المهام، الأهداف، مؤشرات الأداء، الإجازات والتدريب.'
+                  : 'All features added: Tasks, Goals, KPIs, Leaves & Training.'}
               </p>
             </div>
           </div>
