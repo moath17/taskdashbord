@@ -55,6 +55,34 @@ interface DashboardLeave {
   user?: { name: string };
 }
 
+interface DashboardTraining {
+  id: string;
+  title: string;
+  type: string;
+  status: string;
+  startDate?: string;
+  endDate?: string;
+  provider?: string;
+  creator?: { name: string };
+}
+
+const MOTIVATIONAL_PHRASES = [
+  { ar: 'كل يوم فرصة جديدة للإنجاز', en: 'Every day is a new chance to achieve.' },
+  { ar: 'استمر، أنت على الطريق الصحيح', en: 'Keep going—you\'re on the right track.' },
+  { ar: 'إنجازك اليوم يبني نجاح غدك', en: 'Today\'s progress builds tomorrow\'s success.' },
+  { ar: 'التميز يبدأ بخطوة واحدة', en: 'Excellence starts with one step.' },
+  { ar: 'أنت قادر على أكثر مما تظن', en: 'You\'re capable of more than you think.' },
+  { ar: 'اصنع فرصك بالإصرار', en: 'Create your opportunities with persistence.' },
+  { ar: 'العمل الجيد يترك أثراً دائماً', en: 'Good work leaves a lasting impact.' },
+];
+
+function getMotivationalPhrase(isRTL: boolean): string {
+  const start = new Date(new Date().getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((Date.now() - start.getTime()) / (24 * 60 * 60 * 1000));
+  const p = MOTIVATIONAL_PHRASES[dayOfYear % MOTIVATIONAL_PHRASES.length];
+  return isRTL ? p.ar : p.en;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const { user, loading, logout, isAuthenticated } = useAuth();
@@ -63,6 +91,7 @@ export default function DashboardPage() {
   const [tasks, setTasks] = useState<DashboardTask[]>([]);
   const [goals, setGoals] = useState<DashboardGoal[]>([]);
   const [leaves, setLeaves] = useState<DashboardLeave[]>([]);
+  const [trainings, setTrainings] = useState<DashboardTraining[]>([]);
   const [dashboardLoading, setDashboardLoading] = useState(true);
 
   useEffect(() => {
@@ -81,6 +110,7 @@ export default function DashboardPage() {
         setTasks(data.tasks || []);
         setGoals(data.goals || []);
         setLeaves(data.leaves || []);
+        setTrainings(data.trainings || []);
       })
       .catch(() => {})
       .finally(() => setDashboardLoading(false));
@@ -135,7 +165,7 @@ export default function DashboardPage() {
     { label: isRTL ? 'المهام' : 'Tasks', value: String(tasks.length), icon: CheckSquare, color: 'bg-blue-500', href: '/tasks' },
     { label: isRTL ? 'الأهداف' : 'Goals', value: String(goals.length), icon: Target, color: 'bg-emerald-500', href: '/goals' },
     { label: isRTL ? 'الإجازات' : 'Leaves', value: String(leaves.length), icon: CalendarDays, color: 'bg-amber-500', href: '/leaves' },
-    { label: isRTL ? 'مؤشرات الأداء' : 'KPIs', value: '—', icon: TrendingUp, color: 'bg-purple-500', href: '/kpis' },
+    { label: isRTL ? 'التدريب' : 'Training', value: String(trainings.length), icon: GraduationCap, color: 'bg-teal-500', href: '/trainings' },
   ];
 
   return (
@@ -176,6 +206,7 @@ export default function DashboardPage() {
                 <div className={`text-sm ${isRTL ? 'text-right' : 'text-left'}`}>
                   <p className="font-medium text-gray-900">{user.name}</p>
                   <p className="text-xs text-gray-500">{getRoleLabel(user.role)}</p>
+                  <p className="text-xs text-indigo-600 mt-0.5 italic">{getMotivationalPhrase(isRTL)}</p>
                 </div>
                 <div className="w-9 h-9 bg-indigo-100 rounded-full flex items-center justify-center">
                   <span className="text-indigo-600 font-semibold">
@@ -184,11 +215,17 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Mobile Avatar */}
-              <div className="sm:hidden w-9 h-9 bg-indigo-100 rounded-full flex items-center justify-center">
-                <span className="text-indigo-600 font-semibold text-sm">
-                  {user.name.charAt(0).toUpperCase()}
-                </span>
+              {/* Mobile: name + phrase + avatar */}
+              <div className="sm:hidden flex items-center gap-2">
+                <div className={`text-sm ${isRTL ? 'text-right' : 'text-left'}`}>
+                  <p className="font-medium text-gray-900">{user.name}</p>
+                  <p className="text-[10px] text-indigo-600 italic max-w-[100px] truncate" title={getMotivationalPhrase(isRTL)}>{getMotivationalPhrase(isRTL)}</p>
+                </div>
+                <div className="w-9 h-9 bg-indigo-100 rounded-full flex items-center justify-center shrink-0">
+                  <span className="text-indigo-600 font-semibold text-sm">
+                    {user.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
               </div>
 
               {/* Logout */}
@@ -251,8 +288,8 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Tasks, Goals, Leaves - 3 columns on desktop */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        {/* Tasks, Goals, Leaves, Training - 2x2 on large */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Tasks */}
           <section className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -371,6 +408,54 @@ export default function DashboardPage() {
                         </p>
                         <span className={`inline-block mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${leave.status === 'approved' ? 'bg-green-100 text-green-700' : leave.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
                           {leave.status === 'approved' ? (isRTL ? 'معتمدة' : 'Approved') : leave.status === 'rejected' ? (isRTL ? 'مرفوضة' : 'Rejected') : (isRTL ? 'قيد المراجعة' : 'Pending')}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </section>
+
+          {/* Training */}
+          <section className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-lg bg-teal-100 flex items-center justify-center">
+                  <GraduationCap className="w-5 h-5 text-teal-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900">{isRTL ? 'التدريب' : 'Training'}</h3>
+              </div>
+              <Link href="/trainings" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                {isRTL ? 'عرض الكل' : 'View all'}
+                <ArrowUpRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="p-4 min-h-[200px]">
+              {dashboardLoading ? (
+                <div className="flex items-center justify-center h-40 text-gray-400">
+                  <Loader2 className="w-8 h-8 animate-spin" />
+                </div>
+              ) : trainings.length === 0 ? (
+                <p className="text-sm text-gray-400 py-8 text-center">{isRTL ? 'لا يوجد تدريب' : 'No trainings yet'}</p>
+              ) : (
+                <ul className="space-y-3">
+                  {trainings.slice(0, 5).map((training) => (
+                    <li key={training.id}>
+                      <Link href="/trainings" className="block p-3 rounded-xl hover:bg-gray-50 transition-colors group">
+                        <p className="font-medium text-gray-900 group-hover:text-teal-600 truncate">{training.title}</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {training.creator?.name ?? ''} {training.type ? `· ${training.type}` : ''}
+                        </p>
+                        {(training.startDate || training.endDate) && (
+                          <p className="text-xs text-gray-400 mt-0.5">
+                            {training.startDate && new Date(training.startDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
+                            {training.startDate && training.endDate ? ' → ' : ''}
+                            {training.endDate && new Date(training.endDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
+                          </p>
+                        )}
+                        <span className={`inline-block mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${training.status === 'completed' ? 'bg-green-100 text-green-700' : training.status === 'cancelled' ? 'bg-gray-100 text-gray-600' : 'bg-teal-100 text-teal-700'}`}>
+                          {training.status === 'completed' ? (isRTL ? 'مكتمل' : 'Completed') : training.status === 'cancelled' ? (isRTL ? 'ملغى' : 'Cancelled') : (isRTL ? 'قادم' : 'Upcoming')}
                         </span>
                       </Link>
                     </li>

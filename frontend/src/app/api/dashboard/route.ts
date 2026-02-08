@@ -4,7 +4,7 @@ import { requireAuth, jsonResponse, errorResponse } from '@/lib/auth';
 
 /**
  * GET /api/dashboard
- * Returns tasks, goals, and leaves for the dashboard (read-only, no DB schema changes).
+ * Returns tasks, goals, leaves, and trainings for the dashboard (read-only, no DB schema changes).
  */
 export async function GET(request: NextRequest) {
   try {
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
     const orgId = user.organizationId;
 
-    // Fetch tasks (goal relation optional for backwards compatibility)
+    // Fetch tasks
     const tasksQuery = supabase
       .from('tasks')
       .select(`
@@ -49,10 +49,22 @@ export async function GET(request: NextRequest) {
       leavesQuery = leavesQuery.eq('user_id', user.id);
     }
 
-    const [tasksRes, goalsRes, leavesRes] = await Promise.all([
+    // Fetch trainings
+    const trainingsQuery = supabase
+      .from('trainings')
+      .select(`
+        id, title, type, status, start_date, end_date, provider, created_at,
+        creator:users!trainings_created_by_fkey(id, name)
+      `)
+      .eq('organization_id', orgId)
+      .order('created_at', { ascending: false })
+      .limit(20);
+
+    const [tasksRes, goalsRes, leavesRes, trainingsRes] = await Promise.all([
       tasksQuery,
       goalsQuery,
       leavesQuery,
+      trainingsQuery,
     ]);
 
     if (tasksRes.error) {
@@ -66,6 +78,10 @@ export async function GET(request: NextRequest) {
     if (leavesRes.error) {
       console.error('Dashboard leaves error:', leavesRes.error);
       return errorResponse('Failed to load leaves', 500);
+    }
+    if (trainingsRes.error) {
+      console.error('Dashboard trainings error:', trainingsRes.error);
+      return errorResponse('Failed to load trainings', 500);
     }
 
     const tasks = (tasksRes.data || []).map((t: any) => ({
@@ -105,7 +121,19 @@ export async function GET(request: NextRequest) {
       createdAt: l.created_at,
     }));
 
-    return jsonResponse({ tasks, goals, leaves });
+    const trainings = (trainingsRes.data || []).map((t: any) => ({
+      id: t.id,
+      title: t.title,
+      type: t.type,
+      status: t.status,
+      startDate: t.start_date,
+      endDate: t.end_date,
+      provider: t.provider,
+      creator: t.creator ? { id: t.creator.id, name: t.creator.name } : null,
+      createdAt: t.created_at,
+    }));
+
+    return jsonResponse({ tasks, goals, leaves, trainings });
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
       return errorResponse('Unauthorized', 401);
