@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { useTheme } from '@/context/ThemeContext';
 import { 
   LayoutDashboard, 
   LogOut, 
@@ -29,6 +30,8 @@ import {
   Lightbulb,
   AlertTriangle,
   BarChart3,
+  Moon,
+  Sun,
 } from 'lucide-react';
 
 interface DashboardTask {
@@ -92,6 +95,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const { user, loading, logout, isAuthenticated } = useAuth();
   const { t, language, setLanguage, isRTL } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [tasks, setTasks] = useState<DashboardTask[]>([]);
   const [goals, setGoals] = useState<DashboardGoal[]>([]);
@@ -123,10 +127,10 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-sky-50 dark:bg-gray-900">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-          <span className="text-gray-600">{t.app.loading}</span>
+          <div className="w-8 h-8 border-4 border-sky-600 border-t-transparent rounded-full animate-spin" />
+          <span className="text-sky-700 dark:text-gray-300">{t.app.loading}</span>
         </div>
       </div>
     );
@@ -174,20 +178,20 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-sky-50 dark:bg-gray-900 flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top Bar */}
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-sky-600 dark:bg-sky-500 rounded-xl flex items-center justify-center">
                 <LayoutDashboard className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="font-bold text-gray-900">{t.app.name}</h1>
-                <p className="text-xs text-gray-500 flex items-center gap-1">
+                <h1 className="font-bold text-gray-900 dark:text-white">{t.app.name}</h1>
+                <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                   <Building2 className="w-3 h-3" />
                   {user.organizationName}
                 </p>
@@ -196,24 +200,33 @@ export default function DashboardPage() {
 
             {/* Actions */}
             <div className="flex items-center gap-2 sm:gap-3">
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 
+                           hover:bg-sky-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                title={theme === 'dark' ? (isRTL ? 'الوضع الفاتح' : 'Light mode') : (isRTL ? 'الوضع الداكن' : 'Dark mode')}
+              >
+                {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </button>
               {/* Language Toggle */}
               <button
                 onClick={toggleLanguage}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 
-                           hover:bg-gray-100 rounded-lg transition-colors"
+                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 
+                           hover:bg-sky-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 <Globe className="w-4 h-4" />
                 {language === 'ar' ? 'EN' : 'AR'}
               </button>
 
               {/* User Menu */}
-              <div className="hidden sm:flex items-center gap-3 px-3 py-2 bg-gray-50 rounded-lg">
+              <div className="hidden sm:flex items-center gap-3 px-3 py-2 bg-sky-50 dark:bg-gray-700 rounded-lg">
                 <div className={`text-sm ${isRTL ? 'text-right' : 'text-left'}`}>
-                  <p className="font-medium text-gray-900">{user.name}</p>
-                  <p className="text-xs text-gray-500">{getRoleLabel(user.role)}</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{user.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{getRoleLabel(user.role)}</p>
                 </div>
-                <div className="w-9 h-9 bg-indigo-100 rounded-full flex items-center justify-center">
-                  <span className="text-indigo-600 font-semibold">
+                <div className="w-9 h-9 bg-sky-200 dark:bg-sky-600 rounded-full flex items-center justify-center">
+                  <span className="text-sky-700 dark:text-white font-semibold">
                     {user.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -222,10 +235,10 @@ export default function DashboardPage() {
               {/* Mobile: name + phrase + avatar */}
               <div className="sm:hidden flex items-center gap-2">
                 <div className={`text-sm ${isRTL ? 'text-right' : 'text-left'}`}>
-                  <p className="font-medium text-gray-900">{user.name}</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{user.name}</p>
                 </div>
-                <div className="w-9 h-9 bg-indigo-100 rounded-full flex items-center justify-center shrink-0">
-                  <span className="text-indigo-600 font-semibold text-sm">
+                <div className="w-9 h-9 bg-sky-200 dark:bg-sky-600 rounded-full flex items-center justify-center shrink-0">
+                  <span className="text-sky-700 dark:text-white font-semibold text-sm">
                     {user.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -249,8 +262,8 @@ export default function DashboardPage() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-500 
-                           hover:text-indigo-600 hover:bg-indigo-50 rounded-t-lg transition-colors 
+                className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-500 dark:text-gray-400 
+                           hover:text-sky-600 dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-gray-700 rounded-t-lg transition-colors 
                            whitespace-nowrap"
               >
                 <link.icon className="w-4 h-4" />
@@ -263,12 +276,12 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome + gradient */}
-        <div className="rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 p-6 sm:p-8 mb-8 text-white shadow-xl">
+        {/* Welcome + gradient (blue, calm) */}
+        <div className="rounded-2xl bg-gradient-to-br from-sky-400 via-sky-500 to-blue-600 dark:from-sky-600 dark:via-blue-700 dark:to-sky-800 p-6 sm:p-8 mb-8 text-white shadow-xl">
           <h2 className="text-2xl sm:text-3xl font-bold">
             {t.dashboard.welcome}، {user.name} 👋
           </h2>
-          <p className="mt-1 text-indigo-100">{t.dashboard.overview}</p>
+          <p className="mt-1 text-sky-100">{t.dashboard.overview}</p>
           <p className="mt-2 text-white/95 text-sm sm:text-base italic">{getMotivationalPhrase(isRTL)}</p>
         </div>
 
@@ -278,14 +291,14 @@ export default function DashboardPage() {
             <Link
               key={index}
               href={stat.href}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 flex items-center gap-4 p-4 transition-all duration-200 group"
+              className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm hover:shadow-md hover:border-sky-200 dark:hover:border-gray-600 flex items-center gap-4 p-4 transition-all duration-200 group"
             >
               <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform`}>
                 <stat.icon className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-2xl font-bold text-gray-900 tabular-nums">{dashboardLoading ? '...' : stat.value}</p>
-                <p className="text-sm text-gray-500 truncate">{stat.label}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white tabular-nums">{dashboardLoading ? '...' : stat.value}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{stat.label}</p>
               </div>
               {isRTL ? <ChevronLeft className="w-5 h-5 text-gray-300 shrink-0" /> : <ChevronRight className="w-5 h-5 text-gray-300 shrink-0" />}
             </Link>
@@ -295,15 +308,15 @@ export default function DashboardPage() {
         {/* Tasks, Goals, Leaves, Training - 2x2 on large */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Tasks */}
-          <section className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+          <section className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-sky-100 dark:border-gray-700 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <CheckSquare className="w-5 h-5 text-blue-600" />
+                <div className="w-9 h-9 rounded-lg bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center">
+                  <CheckSquare className="w-5 h-5 text-sky-600 dark:text-sky-400" />
                 </div>
-                <h3 className="font-semibold text-gray-900">{isRTL ? 'المهام' : 'Tasks'}</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'المهام' : 'Tasks'}</h3>
               </div>
-              <Link href="/tasks" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+              <Link href="/tasks" className="text-sm font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 flex items-center gap-1">
                 {isRTL ? 'عرض الكل' : 'View all'}
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
@@ -337,15 +350,15 @@ export default function DashboardPage() {
           </section>
 
           {/* Goals */}
-          <section className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+          <section className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-sky-100 dark:border-gray-700 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center">
-                  <Target className="w-5 h-5 text-emerald-600" />
+                <div className="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center">
+                  <Target className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <h3 className="font-semibold text-gray-900">{isRTL ? 'الأهداف' : 'Goals'}</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'الأهداف' : 'Goals'}</h3>
               </div>
-              <Link href="/goals" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+              <Link href="/goals" className="text-sm font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 flex items-center gap-1">
                 {isRTL ? 'عرض الكل' : 'View all'}
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
@@ -379,15 +392,15 @@ export default function DashboardPage() {
           </section>
 
           {/* Leaves */}
-          <section className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+          <section className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-sky-100 dark:border-gray-700 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-lg bg-amber-100 flex items-center justify-center">
-                  <CalendarDays className="w-5 h-5 text-amber-600" />
+                <div className="w-9 h-9 rounded-lg bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center">
+                  <CalendarDays className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                 </div>
-                <h3 className="font-semibold text-gray-900">{isRTL ? 'الإجازات' : 'Leaves'}</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'الإجازات' : 'Leaves'}</h3>
               </div>
-              <Link href="/leaves" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+              <Link href="/leaves" className="text-sm font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 flex items-center gap-1">
                 {isRTL ? 'عرض الكل' : 'View all'}
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
@@ -422,15 +435,15 @@ export default function DashboardPage() {
           </section>
 
           {/* Training */}
-          <section className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+          <section className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-sky-100 dark:border-gray-700 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-lg bg-teal-100 flex items-center justify-center">
-                  <GraduationCap className="w-5 h-5 text-teal-600" />
+                <div className="w-9 h-9 rounded-lg bg-teal-100 dark:bg-teal-900/50 flex items-center justify-center">
+                  <GraduationCap className="w-5 h-5 text-teal-600 dark:text-teal-400" />
                 </div>
-                <h3 className="font-semibold text-gray-900">{isRTL ? 'التدريب' : 'Training'}</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'التدريب' : 'Training'}</h3>
               </div>
-              <Link href="/trainings" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+              <Link href="/trainings" className="text-sm font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 flex items-center gap-1">
                 {isRTL ? 'عرض الكل' : 'View all'}
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
@@ -472,7 +485,7 @@ export default function DashboardPage() {
 
         {/* Quick Actions */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {isRTL ? 'إجراءات سريعة' : 'Quick Actions'}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -613,27 +626,27 @@ export default function DashboardPage() {
 
           return (
             <section className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-violet-500" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-sky-500" />
                 {isRTL ? 'تحليل ذكي' : 'AI Analysis'}
               </h3>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {isOwnerOrManager ? (
                   <>
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2 text-indigo-700">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm p-5">
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-sky-600 dark:text-sky-400">
                         <BarChart3 className="w-4 h-4" />
                         {isRTL ? 'تحليل عام' : 'Overview'}
                       </h4>
-                      <ul className="space-y-2 text-sm text-gray-600">
+                      <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                         <li>{isRTL ? 'المهام' : 'Tasks'}: {tasks.length} ({completedTasks} {isRTL ? 'مكتملة' : 'completed'})</li>
                         <li>{isRTL ? 'الأهداف' : 'Goals'}: {goals.length} ({isRTL ? 'متوسط التقدم' : 'avg progress'} {avgGoalProgress}%)</li>
                         <li>{isRTL ? 'الإجازات المعلقة' : 'Pending leaves'}: {pendingLeaves.length}</li>
                         <li className={overdueTasks.length > 0 ? 'text-amber-600 font-medium' : ''}>{isRTL ? 'مهام متأخرة' : 'Overdue tasks'}: {overdueTasks.length}</li>
                       </ul>
                     </div>
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2 text-amber-600">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm p-5">
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-amber-600 dark:text-amber-400">
                         <Lightbulb className="w-4 h-4" />
                         {isRTL ? 'مقترحات ذكية' : 'Suggestions'}
                       </h4>
@@ -650,8 +663,8 @@ export default function DashboardPage() {
                         </ul>
                       )}
                     </div>
-                    <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2 text-red-600">
+                    <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm p-5">
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-red-600 dark:text-red-400">
                         <AlertTriangle className="w-4 h-4" />
                         {isRTL ? 'تنبيهات إدارية' : 'Alerts'}
                       </h4>
@@ -677,8 +690,8 @@ export default function DashboardPage() {
                   </>
                 ) : (
                   <>
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2 text-blue-600">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm p-5">
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-sky-600 dark:text-sky-400">
                         <CheckSquare className="w-4 h-4" />
                         {isRTL ? 'حالة المهام' : 'My Tasks'}
                       </h4>
@@ -689,8 +702,8 @@ export default function DashboardPage() {
                         <li>{isRTL ? 'جديدة' : 'To do'}: {myTasks.length - myCompleted - myTasks.filter((t) => t.status === 'in_progress').length}</li>
                       </ul>
                     </div>
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2 text-emerald-600">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm p-5">
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
                         <BarChart3 className="w-4 h-4" />
                         {isRTL ? 'الأداء' : 'Performance'}
                       </h4>
@@ -711,7 +724,7 @@ export default function DashboardPage() {
       </main>
 
       {/* Footer - hidden on mobile (bottom nav takes its place) */}
-      <footer className="hidden md:block bg-white border-t border-gray-200 mt-auto">
+      <footer className="hidden md:block bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             {/* Left: Logo & Copyright */}
@@ -752,7 +765,7 @@ export default function DashboardPage() {
       </footer>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-bottom">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-50 safe-area-bottom">
         <div className="flex items-center justify-around h-16 px-1">
           {mobileMainLinks.map((link) => (
             <Link
@@ -760,8 +773,8 @@ export default function DashboardPage() {
               href={link.href}
               className={`flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors
                 ${link.href === '/dashboard' 
-                  ? 'text-indigo-600' 
-                  : 'text-gray-400 hover:text-indigo-600'
+                  ? 'text-sky-600 dark:text-sky-400' 
+                  : 'text-gray-400 hover:text-sky-600 dark:hover:text-sky-400'
                 }`}
             >
               <link.icon className="w-5 h-5" />
@@ -774,7 +787,7 @@ export default function DashboardPage() {
             <button
               onClick={() => setMoreMenuOpen(!moreMenuOpen)}
               className={`flex flex-col items-center justify-center gap-1 w-full py-2 rounded-lg transition-colors
-                ${moreMenuOpen ? 'text-indigo-600' : 'text-gray-400 hover:text-indigo-600'}`}
+                ${moreMenuOpen ? 'text-sky-600 dark:text-sky-400' : 'text-gray-400 hover:text-sky-600 dark:hover:text-sky-400'}`}
             >
               <MoreHorizontal className="w-5 h-5" />
               <span className="text-[10px] font-medium leading-none">
@@ -797,8 +810,8 @@ export default function DashboardPage() {
                       key={link.href}
                       href={link.href}
                       onClick={() => setMoreMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 
-                                 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 
+                                 hover:bg-sky-50 dark:hover:bg-gray-700 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
                     >
                       <link.icon className="w-5 h-5" />
                       <span className="font-medium">{link.label}</span>
