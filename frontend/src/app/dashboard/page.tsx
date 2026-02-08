@@ -21,19 +21,70 @@ import {
   Heart,
   Home,
   MoreHorizontal,
+  ArrowUpRight,
+  Flag,
+  User,
+  Loader2,
 } from 'lucide-react';
+
+interface DashboardTask {
+  id: string;
+  title: string;
+  status: string;
+  priority?: string;
+  dueDate?: string;
+  assignedUser?: { name: string };
+  goal?: { title: string };
+}
+
+interface DashboardGoal {
+  id: string;
+  title: string;
+  type: string;
+  status: string;
+  progress: number;
+  owner?: { name: string };
+}
+
+interface DashboardLeave {
+  id: string;
+  type: string;
+  status: string;
+  startDate: string;
+  endDate: string;
+  user?: { name: string };
+}
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user, loading, logout, isAuthenticated } = useAuth();
   const { t, language, setLanguage, isRTL } = useLanguage();
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [tasks, setTasks] = useState<DashboardTask[]>([]);
+  const [goals, setGoals] = useState<DashboardGoal[]>([]);
+  const [leaves, setLeaves] = useState<DashboardLeave[]>([]);
+  const [dashboardLoading, setDashboardLoading] = useState(true);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       router.replace('/login');
     }
   }, [loading, isAuthenticated, router]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    fetch('/api/dashboard', { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => res.ok ? res.json() : Promise.reject())
+      .then((data) => {
+        setTasks(data.tasks || []);
+        setGoals(data.goals || []);
+        setLeaves(data.leaves || []);
+      })
+      .catch(() => {})
+      .finally(() => setDashboardLoading(false));
+  }, [isAuthenticated]);
 
   if (loading) {
     return (
@@ -81,10 +132,10 @@ export default function DashboardPage() {
   ];
 
   const stats = [
-    { label: isRTL ? 'المهام' : 'Tasks', value: '0', icon: CheckSquare, color: 'bg-blue-500', href: '/tasks' },
-    { label: isRTL ? 'الأهداف' : 'Goals', value: '0', icon: Target, color: 'bg-green-500', href: '/goals' },
-    { label: isRTL ? 'مؤشرات الأداء' : 'KPIs', value: '0', icon: TrendingUp, color: 'bg-purple-500', href: '/kpis' },
-    { label: isRTL ? 'الفريق' : 'Team', value: '1', icon: Users, color: 'bg-orange-500', href: '/team' },
+    { label: isRTL ? 'المهام' : 'Tasks', value: String(tasks.length), icon: CheckSquare, color: 'bg-blue-500', href: '/tasks' },
+    { label: isRTL ? 'الأهداف' : 'Goals', value: String(goals.length), icon: Target, color: 'bg-emerald-500', href: '/goals' },
+    { label: isRTL ? 'الإجازات' : 'Leaves', value: String(leaves.length), icon: CalendarDays, color: 'bg-amber-500', href: '/leaves' },
+    { label: isRTL ? 'مؤشرات الأداء' : 'KPIs', value: '—', icon: TrendingUp, color: 'bg-purple-500', href: '/kpis' },
   ];
 
   return (
@@ -172,12 +223,12 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">
+        {/* Welcome + gradient */}
+        <div className="rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 p-6 sm:p-8 mb-8 text-white shadow-xl">
+          <h2 className="text-2xl sm:text-3xl font-bold">
             {t.dashboard.welcome}، {user.name} 👋
           </h2>
-          <p className="text-gray-500 mt-1">{t.dashboard.overview}</p>
+          <p className="mt-1 text-indigo-100">{t.dashboard.overview}</p>
         </div>
 
         {/* Stats */}
@@ -186,22 +237,148 @@ export default function DashboardPage() {
             <Link
               key={index}
               href={stat.href}
-              className="card flex items-center gap-4 hover:shadow-md transition-shadow group"
+              className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 flex items-center gap-4 p-4 transition-all duration-200 group"
             >
-              <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center 
-                              group-hover:scale-110 transition-transform`}>
+              <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform`}>
                 <stat.icon className="w-6 h-6 text-white" />
               </div>
-              <div className="flex-1">
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                <p className="text-sm text-gray-500">{stat.label}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-2xl font-bold text-gray-900 tabular-nums">{dashboardLoading ? '...' : stat.value}</p>
+                <p className="text-sm text-gray-500 truncate">{stat.label}</p>
               </div>
-              {isRTL 
-                ? <ChevronLeft className="w-5 h-5 text-gray-300 group-hover:text-gray-500" />
-                : <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-500" />
-              }
+              {isRTL ? <ChevronLeft className="w-5 h-5 text-gray-300 shrink-0" /> : <ChevronRight className="w-5 h-5 text-gray-300 shrink-0" />}
             </Link>
           ))}
+        </div>
+
+        {/* Tasks, Goals, Leaves - 3 columns on desktop */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Tasks */}
+          <section className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center">
+                  <CheckSquare className="w-5 h-5 text-blue-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900">{isRTL ? 'المهام' : 'Tasks'}</h3>
+              </div>
+              <Link href="/tasks" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                {isRTL ? 'عرض الكل' : 'View all'}
+                <ArrowUpRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="p-4 min-h-[200px]">
+              {dashboardLoading ? (
+                <div className="flex items-center justify-center h-40 text-gray-400">
+                  <Loader2 className="w-8 h-8 animate-spin" />
+                </div>
+              ) : tasks.length === 0 ? (
+                <p className="text-sm text-gray-400 py-8 text-center">{isRTL ? 'لا توجد مهام' : 'No tasks yet'}</p>
+              ) : (
+                <ul className="space-y-3">
+                  {tasks.slice(0, 5).map((task) => (
+                    <li key={task.id}>
+                      <Link href="/tasks" className="block p-3 rounded-xl hover:bg-gray-50 transition-colors group">
+                        <p className="font-medium text-gray-900 group-hover:text-indigo-600 truncate">{task.title}</p>
+                        <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs text-gray-500">
+                          <span className={`px-2 py-0.5 rounded-full ${task.status === 'done' ? 'bg-green-100 text-green-700' : task.status === 'in_progress' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
+                            {task.status === 'done' ? (isRTL ? 'مكتملة' : 'Done') : task.status === 'in_progress' ? (isRTL ? 'قيد العمل' : 'In progress') : (isRTL ? 'جديدة' : 'To do')}
+                          </span>
+                          {task.dueDate && <span>{new Date(task.dueDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}</span>}
+                          {task.goal?.title && <span className="flex items-center gap-0.5"><Target className="w-3 h-3" /> {task.goal.title}</span>}
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </section>
+
+          {/* Goals */}
+          <section className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center">
+                  <Target className="w-5 h-5 text-emerald-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900">{isRTL ? 'الأهداف' : 'Goals'}</h3>
+              </div>
+              <Link href="/goals" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                {isRTL ? 'عرض الكل' : 'View all'}
+                <ArrowUpRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="p-4 min-h-[200px]">
+              {dashboardLoading ? (
+                <div className="flex items-center justify-center h-40 text-gray-400">
+                  <Loader2 className="w-8 h-8 animate-spin" />
+                </div>
+              ) : goals.length === 0 ? (
+                <p className="text-sm text-gray-400 py-8 text-center">{isRTL ? 'لا توجد أهداف' : 'No goals yet'}</p>
+              ) : (
+                <ul className="space-y-3">
+                  {goals.slice(0, 5).map((goal) => (
+                    <li key={goal.id}>
+                      <Link href="/goals" className="block p-3 rounded-xl hover:bg-gray-50 transition-colors group">
+                        <p className="font-medium text-gray-900 group-hover:text-emerald-600 truncate">{goal.title}</p>
+                        <div className="mt-2 flex items-center gap-2">
+                          <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${Math.min(goal.progress || 0, 100)}%` }} />
+                          </div>
+                          <span className="text-xs font-medium text-gray-600 tabular-nums">{goal.progress ?? 0}%</span>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">{goal.owner?.name} · {goal.type}</p>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </section>
+
+          {/* Leaves */}
+          <section className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-lg bg-amber-100 flex items-center justify-center">
+                  <CalendarDays className="w-5 h-5 text-amber-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900">{isRTL ? 'الإجازات' : 'Leaves'}</h3>
+              </div>
+              <Link href="/leaves" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                {isRTL ? 'عرض الكل' : 'View all'}
+                <ArrowUpRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="p-4 min-h-[200px]">
+              {dashboardLoading ? (
+                <div className="flex items-center justify-center h-40 text-gray-400">
+                  <Loader2 className="w-8 h-8 animate-spin" />
+                </div>
+              ) : leaves.length === 0 ? (
+                <p className="text-sm text-gray-400 py-8 text-center">{isRTL ? 'لا توجد إجازات' : 'No leaves yet'}</p>
+              ) : (
+                <ul className="space-y-3">
+                  {leaves.slice(0, 5).map((leave) => (
+                    <li key={leave.id}>
+                      <Link href="/leaves" className="block p-3 rounded-xl hover:bg-gray-50 transition-colors group">
+                        <p className="font-medium text-gray-900 group-hover:text-amber-600">
+                          {leave.user?.name ?? (isRTL ? 'إجازة' : 'Leave')} · {leave.type}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {new Date(leave.startDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')} → {new Date(leave.endDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
+                        </p>
+                        <span className={`inline-block mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${leave.status === 'approved' ? 'bg-green-100 text-green-700' : leave.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
+                          {leave.status === 'approved' ? (isRTL ? 'معتمدة' : 'Approved') : leave.status === 'rejected' ? (isRTL ? 'مرفوضة' : 'Rejected') : (isRTL ? 'قيد المراجعة' : 'Pending')}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </section>
         </div>
 
         {/* Quick Actions */}
