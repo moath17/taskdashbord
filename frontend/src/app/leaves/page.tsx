@@ -225,10 +225,6 @@ export default function LeavesPage() {
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(leave.type)}`}>
                           {getTypeLabel(leave.type)}
                         </span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(leave.status)}`}>
-                          {getStatusIcon(leave.status)}
-                          {getStatusLabel(leave.status)}
-                        </span>
                         <span className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">
                           {days} {days === 1 ? texts.day : texts.days}
                         </span>
