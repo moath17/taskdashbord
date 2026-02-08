@@ -206,7 +206,6 @@ export default function DashboardPage() {
                 <div className={`text-sm ${isRTL ? 'text-right' : 'text-left'}`}>
                   <p className="font-medium text-gray-900">{user.name}</p>
                   <p className="text-xs text-gray-500">{getRoleLabel(user.role)}</p>
-                  <p className="text-xs text-indigo-600 mt-0.5 italic">{getMotivationalPhrase(isRTL)}</p>
                 </div>
                 <div className="w-9 h-9 bg-indigo-100 rounded-full flex items-center justify-center">
                   <span className="text-indigo-600 font-semibold">
@@ -219,7 +218,6 @@ export default function DashboardPage() {
               <div className="sm:hidden flex items-center gap-2">
                 <div className={`text-sm ${isRTL ? 'text-right' : 'text-left'}`}>
                   <p className="font-medium text-gray-900">{user.name}</p>
-                  <p className="text-[10px] text-indigo-600 italic max-w-[100px] truncate" title={getMotivationalPhrase(isRTL)}>{getMotivationalPhrase(isRTL)}</p>
                 </div>
                 <div className="w-9 h-9 bg-indigo-100 rounded-full flex items-center justify-center shrink-0">
                   <span className="text-indigo-600 font-semibold text-sm">
@@ -266,6 +264,7 @@ export default function DashboardPage() {
             {t.dashboard.welcome}، {user.name} 👋
           </h2>
           <p className="mt-1 text-indigo-100">{t.dashboard.overview}</p>
+          <p className="mt-2 text-white/95 text-sm sm:text-base italic">{getMotivationalPhrase(isRTL)}</p>
         </div>
 
         {/* Stats */}
