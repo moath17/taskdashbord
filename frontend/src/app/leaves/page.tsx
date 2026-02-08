@@ -12,12 +12,11 @@ import {
   ArrowRight,
   Search,
   Loader2,
-  User,
-  Check,
-  X,
-  Clock,
   Trash2,
   Calendar,
+  Clock,
+  Check,
+  X,
   Ban,
 } from 'lucide-react';
 
@@ -44,7 +43,6 @@ export default function LeavesPage() {
   const [leaves, setLeaves] = useState<Leave[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -82,22 +80,6 @@ export default function LeavesPage() {
     setLeaves([result.leave, ...leaves]);
   };
 
-  const handleAction = async (leaveId: string, status: string) => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`/api/leaves/${leaveId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ status }),
-      });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.error);
-      setLeaves(leaves.map(l => l.id === leaveId ? result.leave : l));
-    } catch (err: any) {
-      alert(err.message);
-    }
-  };
-
   const handleDelete = async (leaveId: string) => {
     const msg = isRTL ? 'هل أنت متأكد من الحذف؟' : 'Are you sure?';
     if (!confirm(msg)) return;
@@ -119,20 +101,15 @@ export default function LeavesPage() {
     return Math.ceil(diff / (1000 * 60 * 60 * 24)) + 1;
   };
 
-  const canReview = user?.role === 'owner' || user?.role === 'manager';
-
   const texts = {
     title: isRTL ? 'الإجازات' : 'Leaves',
-    addLeave: isRTL ? 'طلب إجازة' : 'Request Leave',
+    addLeave: isRTL ? 'تسجيل إجازة' : 'Register Leave',
     search: isRTL ? 'بحث...' : 'Search...',
-    all: isRTL ? 'الكل' : 'All',
     pending: isRTL ? 'معلقة' : 'Pending',
     approved: isRTL ? 'مقبولة' : 'Approved',
     rejected: isRTL ? 'مرفوضة' : 'Rejected',
     cancelled: isRTL ? 'ملغاة' : 'Cancelled',
     noLeaves: isRTL ? 'لا توجد إجازات' : 'No leaves found',
-    approve: isRTL ? 'قبول' : 'Approve',
-    reject: isRTL ? 'رفض' : 'Reject',
     days: isRTL ? 'أيام' : 'days',
     day: isRTL ? 'يوم' : 'day',
     reviewedBy: isRTL ? 'بواسطة' : 'Reviewed by',
@@ -184,10 +161,10 @@ export default function LeavesPage() {
   };
 
   const filteredLeaves = leaves.filter(l => {
-    const matchSearch = l.user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        l.reason?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchStatus = filterStatus === 'all' || l.status === filterStatus;
-    return matchSearch && matchStatus;
+    const matchSearch = !searchQuery.trim() ||
+      l.user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      l.reason?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchSearch;
   });
 
   if (authLoading || loading) {
@@ -223,19 +200,10 @@ export default function LeavesPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="relative flex-1 max-w-md">
+        <div className="mb-6">
+          <div className="relative max-w-md">
             <Search className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 ${isRTL ? 'right-3' : 'left-3'}`} />
             <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={texts.search} className={`input ${isRTL ? 'pr-11' : 'pl-11'}`} />
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            {['all', 'pending', 'approved', 'rejected', 'cancelled'].map((s) => (
-              <button key={s} onClick={() => setFilterStatus(s)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                  ${filterStatus === s ? 'bg-amber-100 text-amber-700' : 'bg-white text-gray-600 hover:bg-gray-100'}`}>
-                {s === 'all' ? texts.all : getStatusLabel(s)}
-              </button>
-            ))}
           </div>
         </div>
 
@@ -297,23 +265,12 @@ export default function LeavesPage() {
                       )}
                     </div>
 
-                    {/* Right: Actions */}
-                    <div className="flex items-center gap-2 sm:flex-col">
-                      {canReview && leave.status === 'pending' && leave.userId !== user?.id && (
-                        <>
-                          <button onClick={() => handleAction(leave.id, 'approved')}
-                            className="flex items-center gap-1 px-3 py-2 bg-green-50 text-green-700 hover:bg-green-100 rounded-lg text-sm font-medium transition-colors">
-                            <Check className="w-4 h-4" /> {texts.approve}
-                          </button>
-                          <button onClick={() => handleAction(leave.id, 'rejected')}
-                            className="flex items-center gap-1 px-3 py-2 bg-red-50 text-red-700 hover:bg-red-100 rounded-lg text-sm font-medium transition-colors">
-                            <X className="w-4 h-4" /> {texts.reject}
-                          </button>
-                        </>
-                      )}
-                      {(leave.userId === user?.id || canReview) && leave.status === 'pending' && (
+                    {/* Actions: delete own or (manager) any pending */}
+                    <div className="flex items-center gap-2">
+                      {(leave.userId === user?.id || (user?.role === 'owner' || user?.role === 'manager')) && leave.status === 'pending' && (
                         <button onClick={() => handleDelete(leave.id)}
-                          className="flex items-center gap-1 px-3 py-2 text-gray-500 hover:bg-gray-100 rounded-lg text-sm transition-colors">
+                          className="flex items-center gap-1 px-3 py-2 text-gray-500 hover:bg-gray-100 rounded-lg text-sm transition-colors"
+                          title={isRTL ? 'حذف' : 'Delete'}>
                           <Trash2 className="w-4 h-4" />
                         </button>
                       )}

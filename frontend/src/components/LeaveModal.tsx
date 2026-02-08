@@ -74,15 +74,15 @@ export function LeaveModal({ isOpen, onClose, onSave, leave }: LeaveModalProps) 
   };
 
   const texts = {
-    addTitle: isRTL ? 'طلب إجازة جديدة' : 'New Leave Request',
-    editTitle: isRTL ? 'تعديل طلب الإجازة' : 'Edit Leave Request',
+    addTitle: isRTL ? 'تسجيل إجازة جديدة' : 'Register New Leave',
+    editTitle: isRTL ? 'تعديل تسجيل الإجازة' : 'Edit Leave',
     type: isRTL ? 'نوع الإجازة' : 'Leave Type',
     startDate: isRTL ? 'من تاريخ' : 'From Date',
     endDate: isRTL ? 'إلى تاريخ' : 'To Date',
     reason: isRTL ? 'السبب (اختياري)' : 'Reason (optional)',
     reasonPlaceholder: isRTL ? 'سبب الإجازة...' : 'Reason for leave...',
     save: isRTL ? 'حفظ' : 'Save',
-    submit: isRTL ? 'تقديم الطلب' : 'Submit Request',
+    submit: isRTL ? 'تسجيل الإجازة' : 'Register Leave',
     saving: isRTL ? 'جاري الحفظ...' : 'Saving...',
     cancel: isRTL ? 'إلغاء' : 'Cancel',
     annual: isRTL ? 'سنوية' : 'Annual',
