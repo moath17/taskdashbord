@@ -4,11 +4,13 @@ import { supabase } from '@/lib/supabase';
 import { jsonResponse, errorResponse } from '@/lib/auth';
 import crypto from 'crypto';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+
     const body = await request.json();
     const { email } = body;
 
