@@ -98,6 +98,16 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {/* Forgot Password */}
+            <div className={`flex ${isRTL ? 'justify-start' : 'justify-end'}`}>
+              <Link 
+                href="/forgot-password" 
+                className="text-sm text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
+              >
+                {t.auth.forgotPassword}
+              </Link>
+            </div>
+
             {/* Error */}
             {error && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
