@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -18,6 +18,9 @@ import {
   ChevronRight,
   CalendarDays,
   GraduationCap,
+  Heart,
+  Home,
+  MoreHorizontal,
 } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -52,7 +55,30 @@ export default function DashboardPage() {
     return t.roles[role as keyof typeof t.roles] || role;
   };
 
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const canManageTeam = user?.role === 'owner' || user?.role === 'manager';
+
+  const navLinks = [
+    { label: isRTL ? 'المهام' : 'Tasks', href: '/tasks', icon: CheckSquare },
+    { label: isRTL ? 'الأهداف' : 'Goals', href: '/goals', icon: Target },
+    { label: isRTL ? 'مؤشرات الأداء' : 'KPIs', href: '/kpis', icon: TrendingUp },
+    { label: isRTL ? 'الإجازات' : 'Leaves', href: '/leaves', icon: CalendarDays },
+    { label: isRTL ? 'التدريب' : 'Training', href: '/trainings', icon: GraduationCap },
+    { label: isRTL ? 'الفريق' : 'Team', href: '/team', icon: Users },
+  ];
+
+  // Mobile bottom bar: show first 3 + Home + More
+  const mobileMainLinks = [
+    { label: isRTL ? 'الرئيسية' : 'Home', href: '/dashboard', icon: Home },
+    { label: isRTL ? 'المهام' : 'Tasks', href: '/tasks', icon: CheckSquare },
+    { label: isRTL ? 'الأهداف' : 'Goals', href: '/goals', icon: Target },
+    { label: isRTL ? 'المؤشرات' : 'KPIs', href: '/kpis', icon: TrendingUp },
+  ];
+  const mobileMoreLinks = [
+    { label: isRTL ? 'الإجازات' : 'Leaves', href: '/leaves', icon: CalendarDays },
+    { label: isRTL ? 'التدريب' : 'Training', href: '/trainings', icon: GraduationCap },
+    { label: isRTL ? 'الفريق' : 'Team', href: '/team', icon: Users },
+  ];
 
   const stats = [
     { label: isRTL ? 'المهام' : 'Tasks', value: '0', icon: CheckSquare, color: 'bg-blue-500', href: '/tasks' },
@@ -62,10 +88,11 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Top Bar */}
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center gap-3">
@@ -82,7 +109,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               {/* Language Toggle */}
               <button
                 onClick={toggleLanguage}
@@ -94,7 +121,7 @@ export default function DashboardPage() {
               </button>
 
               {/* User Menu */}
-              <div className="flex items-center gap-3 px-3 py-2 bg-gray-50 rounded-lg">
+              <div className="hidden sm:flex items-center gap-3 px-3 py-2 bg-gray-50 rounded-lg">
                 <div className={`text-sm ${isRTL ? 'text-right' : 'text-left'}`}>
                   <p className="font-medium text-gray-900">{user.name}</p>
                   <p className="text-xs text-gray-500">{getRoleLabel(user.role)}</p>
@@ -104,6 +131,13 @@ export default function DashboardPage() {
                     {user.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
+              </div>
+
+              {/* Mobile Avatar */}
+              <div className="sm:hidden w-9 h-9 bg-indigo-100 rounded-full flex items-center justify-center">
+                <span className="text-indigo-600 font-semibold text-sm">
+                  {user.name.charAt(0).toUpperCase()}
+                </span>
               </div>
 
               {/* Logout */}
@@ -117,11 +151,27 @@ export default function DashboardPage() {
               </button>
             </div>
           </div>
+
+          {/* Desktop Navigation Bar - hidden on mobile */}
+          <nav className="hidden md:flex -mb-px gap-1 overflow-x-auto pb-0">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-500 
+                           hover:text-indigo-600 hover:bg-indigo-50 rounded-t-lg transition-colors 
+                           whitespace-nowrap"
+              >
+                <link.icon className="w-4 h-4" />
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -146,11 +196,10 @@ export default function DashboardPage() {
                 <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
                 <p className="text-sm text-gray-500">{stat.label}</p>
               </div>
-              {stat.href !== '#' && (
-                isRTL 
-                  ? <ChevronLeft className="w-5 h-5 text-gray-300 group-hover:text-gray-500" />
-                  : <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-500" />
-              )}
+              {isRTL 
+                ? <ChevronLeft className="w-5 h-5 text-gray-300 group-hover:text-gray-500" />
+                : <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-500" />
+              }
             </Link>
           ))}
         </div>
@@ -278,26 +327,111 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
+      </main>
 
-        {/* Status Card */}
-        <div className="card bg-gradient-to-br from-teal-50 to-emerald-50 border-teal-100">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
-              <GraduationCap className="w-6 h-6 text-teal-600" />
+      {/* Footer - hidden on mobile (bottom nav takes its place) */}
+      <footer className="hidden md:block bg-white border-t border-gray-200 mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            {/* Left: Logo & Copyright */}
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                <LayoutDashboard className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-700">{t.app.name}</p>
+                <p className="text-xs text-gray-400">
+                  &copy; {new Date().getFullYear()} {isRTL ? 'جميع الحقوق محفوظة' : 'All rights reserved'}
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-1">
-                {isRTL ? 'النظام مكتمل!' : 'System Complete!'}
-              </h3>
-              <p className="text-sm text-gray-600">
-                {isRTL 
-                  ? 'تم إضافة جميع الميزات: المهام، الأهداف، مؤشرات الأداء، الإجازات والتدريب.'
-                  : 'All features added: Tasks, Goals, KPIs, Leaves & Training.'}
-              </p>
+
+            {/* Center: Links */}
+            <div className="flex items-center gap-6 text-sm text-gray-500">
+              <Link href="/tasks" className="hover:text-indigo-600 transition-colors">
+                {isRTL ? 'المهام' : 'Tasks'}
+              </Link>
+              <Link href="/goals" className="hover:text-indigo-600 transition-colors">
+                {isRTL ? 'الأهداف' : 'Goals'}
+              </Link>
+              <Link href="/kpis" className="hover:text-indigo-600 transition-colors">
+                {isRTL ? 'المؤشرات' : 'KPIs'}
+              </Link>
+              <Link href="/team" className="hover:text-indigo-600 transition-colors">
+                {isRTL ? 'الفريق' : 'Team'}
+              </Link>
             </div>
+
+            {/* Right: Made with */}
+            <p className="text-xs text-gray-400 flex items-center gap-1">
+              {isRTL ? 'صنع بـ' : 'Made with'} <Heart className="w-3 h-3 text-red-400 fill-red-400" /> {isRTL ? 'لإدارة أفضل' : 'for better management'}
+            </p>
           </div>
         </div>
-      </main>
+      </footer>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-bottom">
+        <div className="flex items-center justify-around h-16 px-1">
+          {mobileMainLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors
+                ${link.href === '/dashboard' 
+                  ? 'text-indigo-600' 
+                  : 'text-gray-400 hover:text-indigo-600'
+                }`}
+            >
+              <link.icon className="w-5 h-5" />
+              <span className="text-[10px] font-medium leading-none">{link.label}</span>
+            </Link>
+          ))}
+
+          {/* More button */}
+          <div className="relative flex-1">
+            <button
+              onClick={() => setMoreMenuOpen(!moreMenuOpen)}
+              className={`flex flex-col items-center justify-center gap-1 w-full py-2 rounded-lg transition-colors
+                ${moreMenuOpen ? 'text-indigo-600' : 'text-gray-400 hover:text-indigo-600'}`}
+            >
+              <MoreHorizontal className="w-5 h-5" />
+              <span className="text-[10px] font-medium leading-none">
+                {isRTL ? 'المزيد' : 'More'}
+              </span>
+            </button>
+
+            {/* More dropdown - opens upward */}
+            {moreMenuOpen && (
+              <>
+                {/* Backdrop */}
+                <div 
+                  className="fixed inset-0 z-40" 
+                  onClick={() => setMoreMenuOpen(false)} 
+                />
+                <div className={`absolute bottom-full mb-2 z-50 bg-white rounded-xl shadow-xl border border-gray-200 
+                                 py-2 w-48 ${isRTL ? 'left-0' : 'right-0'}`}>
+                  {mobileMoreLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMoreMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 
+                                 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+                    >
+                      <link.icon className="w-5 h-5" />
+                      <span className="font-medium">{link.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      {/* Spacer for mobile bottom nav */}
+      <div className="md:hidden h-16" />
     </div>
   );
 }

@@ -156,3 +156,21 @@ html[dir="rtl"] body {
   background-color: #c7d2fe;
   color: #3730a3;
 }
+
+/* =============================================
+   Safe Area (for phones with notch/home bar)
+   ============================================= */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* =============================================
+   Hide scrollbar utility
+   ============================================= */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
