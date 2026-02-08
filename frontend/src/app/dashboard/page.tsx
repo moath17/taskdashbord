@@ -27,6 +27,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const { user, loading, logout, isAuthenticated } = useAuth();
   const { t, language, setLanguage, isRTL } = useLanguage();
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -55,7 +56,6 @@ export default function DashboardPage() {
     return t.roles[role as keyof typeof t.roles] || role;
   };
 
-  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const canManageTeam = user?.role === 'owner' || user?.role === 'manager';
 
   const navLinks = [
