@@ -14,6 +14,7 @@ import {
   CheckSquare, 
   Target, 
   TrendingUp,
+  TrendingDown,
   Building2,
   ChevronLeft,
   ChevronRight,
@@ -32,6 +33,13 @@ import {
   BarChart3,
   Moon,
   Sun,
+  Zap,
+  Award,
+  Clock,
+  ShieldCheck,
+  Activity,
+  Flame,
+  ListChecks,
 } from 'lucide-react';
 
 interface DashboardTask {
@@ -554,117 +562,404 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* AI Analysis */}
+        {/* AI Analysis - Enhanced */}
         {(() => {
           const isOwnerOrManager = user?.role === 'owner' || user?.role === 'manager';
           const today = new Date().toISOString().slice(0, 10);
           const overdueTasks = tasks.filter((t) => t.dueDate && t.dueDate < today && t.status !== 'done');
           const pendingLeaves = leaves.filter((l) => l.status === 'pending');
           const completedTasks = tasks.filter((t) => t.status === 'done').length;
+          const inProgressTasks = tasks.filter((t) => t.status === 'in_progress').length;
+          const todoTasks = tasks.length - completedTasks - inProgressTasks;
           const avgGoalProgress = goals.length ? Math.round(goals.reduce((a, g) => a + (g.progress ?? 0), 0) / goals.length) : 0;
           const goalsWithNoProgress = goals.filter((g) => (g.progress ?? 0) === 0).length;
           const myTasks = user ? tasks.filter((t) => t.assignedTo === user.id) : [];
           const myCompleted = myTasks.filter((t) => t.status === 'done').length;
+          const myInProgress = myTasks.filter((t) => t.status === 'in_progress').length;
+          const myTodo = myTasks.length - myCompleted - myInProgress;
           const myPerformancePercent = myTasks.length ? Math.round((myCompleted / myTasks.length) * 100) : 0;
-          const suggestions: string[] = [];
-          if (overdueTasks.length > 0) suggestions.push(isRTL ? `لديك ${overdueTasks.length} مهمة متأخرة — راجع قائمة المهام` : `${overdueTasks.length} overdue task(s) — review tasks`);
-          if (goalsWithNoProgress > 0) suggestions.push(isRTL ? `${goalsWithNoProgress} أهداف دون تقدم — حدّث التقدم` : `${goalsWithNoProgress} goal(s) with no progress — update progress`);
-          if (pendingLeaves.length > 0) suggestions.push(isRTL ? `${pendingLeaves.length} إجازة قيد المراجعة` : `${pendingLeaves.length} leave(s) pending review`);
+
+          // Priority distribution
+          const highPriority = tasks.filter((t) => t.priority === 'high' && t.status !== 'done').length;
+          const medPriority = tasks.filter((t) => t.priority === 'medium' && t.status !== 'done').length;
+          const lowPriority = tasks.filter((t) => (!t.priority || t.priority === 'low') && t.status !== 'done').length;
+          const totalActivePriority = highPriority + medPriority + lowPriority || 1;
+
+          // High priority overdue
+          const highPriorityOverdue = overdueTasks.filter((t) => t.priority === 'high').length;
+
+          // Tasks without goals
+          const tasksWithoutGoal = tasks.filter((t) => !t.goal && t.status !== 'done').length;
+
+          // Completed trainings
+          const completedTrainings = trainings.filter((t) => t.status === 'completed').length;
+          const upcomingTrainings = trainings.filter((t) => t.status !== 'completed' && t.status !== 'cancelled').length;
+
+          // Project Health Score (0-100)
+          const completionRate = tasks.length ? (completedTasks / tasks.length) * 100 : 100;
+          const overdueRate = tasks.length ? 100 - (overdueTasks.length / tasks.length) * 100 : 100;
+          const goalRate = avgGoalProgress;
+          const healthScore = Math.round((completionRate * 0.4 + overdueRate * 0.35 + goalRate * 0.25));
+          const healthColor = healthScore >= 75 ? 'text-green-500' : healthScore >= 50 ? 'text-amber-500' : 'text-red-500';
+          const healthBg = healthScore >= 75 ? 'stroke-green-500' : healthScore >= 50 ? 'stroke-amber-500' : 'stroke-red-500';
+          const healthLabel = healthScore >= 75
+            ? (isRTL ? 'ممتاز' : 'Excellent')
+            : healthScore >= 50
+            ? (isRTL ? 'جيد' : 'Good')
+            : (isRTL ? 'يحتاج تحسين' : 'Needs Improvement');
+
+          // Smart suggestions with icons and colors
+          const suggestions: { text: string; icon: 'alert' | 'tip' | 'success' | 'info' }[] = [];
+          if (highPriorityOverdue > 0) suggestions.push({ text: isRTL ? `${highPriorityOverdue} مهمة عالية الأولوية متأخرة — تحتاج اهتمام فوري` : `${highPriorityOverdue} high-priority task(s) overdue — needs immediate attention`, icon: 'alert' });
+          if (overdueTasks.length > 0) suggestions.push({ text: isRTL ? `${overdueTasks.length} مهمة متأخرة — راجع قائمة المهام` : `${overdueTasks.length} overdue task(s) — review your task list`, icon: 'alert' });
+          if (goalsWithNoProgress > 0) suggestions.push({ text: isRTL ? `${goalsWithNoProgress} أهداف بدون تقدم — حدّث التقدم` : `${goalsWithNoProgress} goal(s) with no progress — update them`, icon: 'tip' });
+          if (pendingLeaves.length > 0) suggestions.push({ text: isRTL ? `${pendingLeaves.length} إجازة قيد المراجعة — بانتظار القرار` : `${pendingLeaves.length} leave(s) pending review`, icon: 'info' });
+          if (tasksWithoutGoal > 0) suggestions.push({ text: isRTL ? `${tasksWithoutGoal} مهمة غير مرتبطة بهدف — اربطها لتتبع أفضل` : `${tasksWithoutGoal} task(s) not linked to goals — link them for better tracking`, icon: 'tip' });
+          if (inProgressTasks > 5) suggestions.push({ text: isRTL ? `${inProgressTasks} مهمة قيد العمل — ركّز على إنهاء المهام الحالية` : `${inProgressTasks} tasks in progress — focus on completing current work`, icon: 'tip' });
+          if (upcomingTrainings > 0) suggestions.push({ text: isRTL ? `${upcomingTrainings} دورة تدريبية قادمة — جهّز فريقك` : `${upcomingTrainings} upcoming training(s) — prepare your team`, icon: 'info' });
+          if (completedTasks > 0 && overdueTasks.length === 0) suggestions.push({ text: isRTL ? 'لا توجد مهام متأخرة — أداء ممتاز!' : 'No overdue tasks — excellent performance!', icon: 'success' });
+          if (avgGoalProgress >= 80) suggestions.push({ text: isRTL ? `متوسط تقدم الأهداف ${avgGoalProgress}% — اقتربت من الإنجاز!` : `Goal progress at ${avgGoalProgress}% — almost there!`, icon: 'success' });
+
+          const suggestionStyles = {
+            alert: { bg: 'bg-red-50 dark:bg-red-900/20', border: 'border-red-200 dark:border-red-800', text: 'text-red-700 dark:text-red-300', dot: 'bg-red-500' },
+            tip: { bg: 'bg-amber-50 dark:bg-amber-900/20', border: 'border-amber-200 dark:border-amber-800', text: 'text-amber-700 dark:text-amber-300', dot: 'bg-amber-500' },
+            success: { bg: 'bg-green-50 dark:bg-green-900/20', border: 'border-green-200 dark:border-green-800', text: 'text-green-700 dark:text-green-300', dot: 'bg-green-500' },
+            info: { bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-200 dark:border-blue-800', text: 'text-blue-700 dark:text-blue-300', dot: 'bg-blue-500' },
+          };
+
+          // Circular progress helper
+          const CircularProgress = ({ percent, size = 100, strokeWidth = 8, color }: { percent: number; size?: number; strokeWidth?: number; color: string }) => {
+            const radius = (size - strokeWidth) / 2;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (percent / 100) * circumference;
+            return (
+              <svg width={size} height={size} className="transform -rotate-90">
+                <circle cx={size/2} cy={size/2} r={radius} fill="none" stroke="currentColor" strokeWidth={strokeWidth} className="text-slate-100 dark:text-slate-700" />
+                <circle cx={size/2} cy={size/2} r={radius} fill="none" strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} className={`${color} transition-all duration-1000 ease-out`} />
+              </svg>
+            );
+          };
 
           return (
             <section className="mb-6 sm:mb-8">
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-blue-500" />
-                {isRTL ? 'تحليل ذكي' : 'AI Analysis'}
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 text-white" />
+                </div>
+                {isRTL ? 'التحليل الذكي' : 'Smart Analytics'}
               </h3>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                {isOwnerOrManager ? (
-                  <>
-                    <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4 sm:p-5">
-                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                        <BarChart3 className="w-4 h-4 text-blue-500" />
-                        {isRTL ? 'تحليل عام' : 'Overview'}
+
+              {isOwnerOrManager ? (
+                <div className="space-y-4 sm:space-y-6">
+                  {/* Row 1: Health Score + Priority Distribution + Overview Stats */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    {/* Project Health Score */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5 flex flex-col items-center">
+                      <h4 className="font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2 self-start">
+                        <Activity className="w-4 h-4 text-blue-500" />
+                        {isRTL ? 'مؤشر صحة المشروع' : 'Project Health'}
                       </h4>
-                      <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
-                        <li>{isRTL ? 'المهام' : 'Tasks'}: {tasks.length} ({completedTasks} {isRTL ? 'مكتملة' : 'completed'})</li>
-                        <li>{isRTL ? 'الأهداف' : 'Goals'}: {goals.length} ({isRTL ? 'متوسط التقدم' : 'avg progress'} {avgGoalProgress}%)</li>
-                        <li>{isRTL ? 'الإجازات المعلقة' : 'Pending leaves'}: {pendingLeaves.length}</li>
-                        <li className={overdueTasks.length > 0 ? 'text-amber-600 font-medium' : ''}>{isRTL ? 'مهام متأخرة' : 'Overdue tasks'}: {overdueTasks.length}</li>
-                      </ul>
+                      <div className="relative">
+                        <CircularProgress percent={healthScore} size={120} strokeWidth={10} color={healthBg} />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span className={`text-2xl font-bold tabular-nums ${healthColor}`}>{healthScore}</span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500">/100</span>
+                        </div>
+                      </div>
+                      <p className={`text-sm font-medium mt-3 ${healthColor}`}>{healthLabel}</p>
+                      <div className="mt-3 w-full space-y-1.5 text-xs text-slate-500 dark:text-slate-400">
+                        <div className="flex justify-between"><span>{isRTL ? 'معدل الإنجاز' : 'Completion'}</span><span className="font-medium tabular-nums">{Math.round(completionRate)}%</span></div>
+                        <div className="flex justify-between"><span>{isRTL ? 'الالتزام بالمواعيد' : 'On-time'}</span><span className="font-medium tabular-nums">{Math.round(overdueRate)}%</span></div>
+                        <div className="flex justify-between"><span>{isRTL ? 'تقدم الأهداف' : 'Goals'}</span><span className="font-medium tabular-nums">{goalRate}%</span></div>
+                      </div>
                     </div>
-                    <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4 sm:p-5">
-                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+
+                    {/* Priority Distribution */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
+                      <h4 className="font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                        <Flag className="w-4 h-4 text-blue-500" />
+                        {isRTL ? 'توزيع الأولويات' : 'Priority Distribution'}
+                      </h4>
+                      <div className="space-y-4">
+                        <div>
+                          <div className="flex justify-between text-sm mb-1.5">
+                            <span className="text-red-600 dark:text-red-400 font-medium flex items-center gap-1.5">
+                              <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block" />
+                              {isRTL ? 'عالية' : 'High'}
+                            </span>
+                            <span className="text-slate-600 dark:text-slate-300 font-semibold tabular-nums">{highPriority}</span>
+                          </div>
+                          <div className="h-2.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full transition-all duration-500" style={{ width: `${(highPriority/totalActivePriority)*100}%` }} />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex justify-between text-sm mb-1.5">
+                            <span className="text-amber-600 dark:text-amber-400 font-medium flex items-center gap-1.5">
+                              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+                              {isRTL ? 'متوسطة' : 'Medium'}
+                            </span>
+                            <span className="text-slate-600 dark:text-slate-300 font-semibold tabular-nums">{medPriority}</span>
+                          </div>
+                          <div className="h-2.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full transition-all duration-500" style={{ width: `${(medPriority/totalActivePriority)*100}%` }} />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex justify-between text-sm mb-1.5">
+                            <span className="text-blue-600 dark:text-blue-400 font-medium flex items-center gap-1.5">
+                              <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block" />
+                              {isRTL ? 'منخفضة' : 'Low'}
+                            </span>
+                            <span className="text-slate-600 dark:text-slate-300 font-semibold tabular-nums">{lowPriority}</span>
+                          </div>
+                          <div className="h-2.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full transition-all duration-500" style={{ width: `${(lowPriority/totalActivePriority)*100}%` }} />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700">
+                        <p className="text-xs text-slate-400 dark:text-slate-500">{isRTL ? `إجمالي المهام النشطة: ${totalActivePriority}` : `Total active tasks: ${totalActivePriority}`}</p>
+                      </div>
+                    </div>
+
+                    {/* Overview Stats - Visual cards */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
+                      <h4 className="font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-blue-500" />
+                        {isRTL ? 'ملخص الأداء' : 'Performance Summary'}
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-3 text-center">
+                          <p className="text-2xl font-bold text-green-600 dark:text-green-400 tabular-nums">{completedTasks}</p>
+                          <p className="text-[11px] text-green-600/70 dark:text-green-400/70 mt-0.5">{isRTL ? 'مكتملة' : 'Completed'}</p>
+                        </div>
+                        <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-3 text-center">
+                          <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 tabular-nums">{inProgressTasks}</p>
+                          <p className="text-[11px] text-amber-600/70 dark:text-amber-400/70 mt-0.5">{isRTL ? 'قيد العمل' : 'In Progress'}</p>
+                        </div>
+                        <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-3 text-center">
+                          <p className="text-2xl font-bold text-slate-600 dark:text-slate-300 tabular-nums">{todoTasks}</p>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{isRTL ? 'جديدة' : 'To Do'}</p>
+                        </div>
+                        <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-3 text-center">
+                          <p className="text-2xl font-bold text-red-600 dark:text-red-400 tabular-nums">{overdueTasks.length}</p>
+                          <p className="text-[11px] text-red-600/70 dark:text-red-400/70 mt-0.5">{isRTL ? 'متأخرة' : 'Overdue'}</p>
+                        </div>
+                      </div>
+                      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center gap-2">
+                        <Target className="w-4 h-4 text-blue-500" />
+                        <span className="text-sm text-slate-600 dark:text-slate-300">{isRTL ? 'متوسط تقدم الأهداف' : 'Avg goal progress'}: <strong className="tabular-nums">{avgGoalProgress}%</strong></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 2: Smart Suggestions + Alerts */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                    {/* Smart Suggestions */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
+                      <h4 className="font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                         <Lightbulb className="w-4 h-4 text-amber-500" />
-                        {isRTL ? 'مقترحات ذكية' : 'Suggestions'}
+                        {isRTL ? 'مقترحات ذكية' : 'Smart Suggestions'}
+                        {suggestions.length > 0 && (
+                          <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-full font-medium">{suggestions.length}</span>
+                        )}
                       </h4>
                       {suggestions.length === 0 ? (
-                        <p className="text-sm text-slate-400">{isRTL ? 'لا توجد توصيات حالياً' : 'No recommendations at the moment.'}</p>
-                      ) : (
-                        <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
-                          {suggestions.map((s, i) => (
-                            <li key={i} className="flex items-start gap-2">
-                              <span className="text-blue-500 mt-0.5">•</span>
-                              {s}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                    <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4 sm:p-5">
-                      <h4 className="font-semibold text-red-500 dark:text-red-400 mb-3 flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4" />
-                        {isRTL ? 'تنبيهات إدارية' : 'Alerts'}
-                      </h4>
-                      {overdueTasks.length === 0 && pendingLeaves.length === 0 ? (
-                        <p className="text-sm text-slate-400">{isRTL ? 'لا توجد تنبيهات' : 'No alerts.'}</p>
-                      ) : (
-                        <ul className="space-y-2 text-sm">
-                          {overdueTasks.slice(0, 5).map((t) => (
-                            <li key={t.id} className="text-amber-600 flex items-center gap-2">
-                              <AlertTriangle className="w-4 h-4 shrink-0" />
-                              {isRTL ? 'مهمة متأخرة' : 'Overdue'}: {t.title}
-                            </li>
-                          ))}
-                          {pendingLeaves.length > 0 && (
-                            <li className="text-blue-600 flex items-center gap-2">
-                              <AlertTriangle className="w-4 h-4 shrink-0" />
-                              {isRTL ? 'إجازات قيد المراجعة' : 'Leaves pending review'}: {pendingLeaves.length}
-                            </li>
-                          )}
-                        </ul>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4 sm:p-5">
-                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                        <CheckSquare className="w-4 h-4 text-blue-500" />
-                        {isRTL ? 'حالة المهام' : 'My Tasks'}
-                      </h4>
-                      <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
-                        <li>{isRTL ? 'الإجمالي' : 'Total'}: {myTasks.length}</li>
-                        <li>{isRTL ? 'مكتملة' : 'Done'}: {myCompleted}</li>
-                        <li>{isRTL ? 'قيد العمل' : 'In progress'}: {myTasks.filter((t) => t.status === 'in_progress').length}</li>
-                        <li>{isRTL ? 'جديدة' : 'To do'}: {myTasks.length - myCompleted - myTasks.filter((t) => t.status === 'in_progress').length}</li>
-                      </ul>
-                    </div>
-                    <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4 sm:p-5">
-                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                        <BarChart3 className="w-4 h-4 text-blue-500" />
-                        {isRTL ? 'الأداء' : 'Performance'}
-                      </h4>
-                      <div className="flex items-center gap-3">
-                        <div className="flex-1 h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                          <div className="h-full bg-slate-500 rounded-full transition-all" style={{ width: `${myPerformancePercent}%` }} />
+                        <div className="flex flex-col items-center py-6 text-center">
+                          <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-3">
+                            <ShieldCheck className="w-6 h-6 text-green-500" />
+                          </div>
+                          <p className="text-sm font-medium text-green-600 dark:text-green-400">{isRTL ? 'كل شيء على ما يرام!' : 'Everything looks great!'}</p>
+                          <p className="text-xs text-slate-400 mt-1">{isRTL ? 'لا توجد توصيات حالياً' : 'No recommendations at the moment'}</p>
                         </div>
-                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 tabular-nums">{myPerformancePercent}%</span>
-                      </div>
-                      <p className="text-xs text-slate-500 mt-2">{isRTL ? 'نسبة إنجاز المهام' : 'Task completion rate'}</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {suggestions.slice(0, 6).map((s, i) => (
+                            <div key={i} className={`flex items-start gap-3 p-2.5 rounded-lg border ${suggestionStyles[s.icon].bg} ${suggestionStyles[s.icon].border}`}>
+                              <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${suggestionStyles[s.icon].dot}`} />
+                              <p className={`text-sm ${suggestionStyles[s.icon].text}`}>{s.text}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  </>
-                )}
-              </div>
+
+                    {/* Alerts + Training summary */}
+                    <div className="space-y-4 sm:space-y-6">
+                      {/* Alerts */}
+                      <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
+                        <h4 className="font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 text-red-500" />
+                          {isRTL ? 'تنبيهات إدارية' : 'Alerts'}
+                          {(overdueTasks.length > 0 || pendingLeaves.length > 0) && (
+                            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                          )}
+                        </h4>
+                        {overdueTasks.length === 0 && pendingLeaves.length === 0 ? (
+                          <p className="text-sm text-slate-400 py-2">{isRTL ? 'لا توجد تنبيهات — ممتاز!' : 'No alerts — excellent!'}</p>
+                        ) : (
+                          <ul className="space-y-2 text-sm">
+                            {overdueTasks.slice(0, 4).map((t) => (
+                              <li key={t.id} className="flex items-center gap-2 p-2 bg-red-50 dark:bg-red-900/15 rounded-lg">
+                                <Clock className="w-4 h-4 text-red-500 shrink-0" />
+                                <span className="text-red-700 dark:text-red-300 truncate">{isRTL ? 'متأخرة' : 'Overdue'}: {t.title}</span>
+                                {t.priority === 'high' && <span className="text-[10px] bg-red-200 dark:bg-red-800 text-red-700 dark:text-red-200 px-1.5 py-0.5 rounded-full shrink-0">{isRTL ? 'عالية' : 'HIGH'}</span>}
+                              </li>
+                            ))}
+                            {pendingLeaves.length > 0 && (
+                              <li className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/15 rounded-lg">
+                                <CalendarDays className="w-4 h-4 text-blue-500 shrink-0" />
+                                <span className="text-blue-700 dark:text-blue-300">{isRTL ? 'إجازات قيد المراجعة' : 'Pending leaves'}: {pendingLeaves.length}</span>
+                              </li>
+                            )}
+                          </ul>
+                        )}
+                      </div>
+
+                      {/* Training Summary */}
+                      <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
+                        <h4 className="font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                          <GraduationCap className="w-4 h-4 text-indigo-500" />
+                          {isRTL ? 'ملخص التدريب' : 'Training Summary'}
+                        </h4>
+                        <div className="flex items-center gap-4">
+                          <div className="flex-1 text-center">
+                            <p className="text-xl font-bold text-indigo-600 dark:text-indigo-400 tabular-nums">{completedTrainings}</p>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400">{isRTL ? 'مكتملة' : 'Done'}</p>
+                          </div>
+                          <div className="w-px h-10 bg-slate-200 dark:bg-slate-700" />
+                          <div className="flex-1 text-center">
+                            <p className="text-xl font-bold text-blue-600 dark:text-blue-400 tabular-nums">{upcomingTrainings}</p>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400">{isRTL ? 'قادمة' : 'Upcoming'}</p>
+                          </div>
+                          <div className="w-px h-10 bg-slate-200 dark:bg-slate-700" />
+                          <div className="flex-1 text-center">
+                            <p className="text-xl font-bold text-slate-600 dark:text-slate-300 tabular-nums">{trainings.length}</p>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400">{isRTL ? 'الإجمالي' : 'Total'}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* ===== Employee View ===== */
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {/* My Performance - Circular */}
+                  <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5 flex flex-col items-center">
+                    <h4 className="font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2 self-start">
+                      <Award className="w-4 h-4 text-blue-500" />
+                      {isRTL ? 'أدائي' : 'My Performance'}
+                    </h4>
+                    <div className="relative">
+                      <CircularProgress
+                        percent={myPerformancePercent}
+                        size={110}
+                        strokeWidth={10}
+                        color={myPerformancePercent >= 75 ? 'stroke-green-500' : myPerformancePercent >= 50 ? 'stroke-amber-500' : 'stroke-blue-500'}
+                      />
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-2xl font-bold text-slate-800 dark:text-white tabular-nums">{myPerformancePercent}%</span>
+                      </div>
+                    </div>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-3">{isRTL ? 'نسبة إنجاز المهام' : 'Task completion rate'}</p>
+                    {myPerformancePercent >= 80 && (
+                      <div className="flex items-center gap-1.5 mt-2 text-green-600 dark:text-green-400 text-xs font-medium">
+                        <Flame className="w-3.5 h-3.5" />
+                        {isRTL ? 'أداء رائع!' : 'Great work!'}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* My Tasks Breakdown */}
+                  <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
+                    <h4 className="font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                      <ListChecks className="w-4 h-4 text-blue-500" />
+                      {isRTL ? 'مهامي' : 'My Tasks'}
+                    </h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-slate-600 dark:text-slate-300 flex items-center gap-2">
+                          <span className="w-3 h-3 rounded-full bg-green-500 inline-block" />
+                          {isRTL ? 'مكتملة' : 'Completed'}
+                        </span>
+                        <span className="text-sm font-bold text-slate-800 dark:text-white tabular-nums">{myCompleted}</span>
+                      </div>
+                      <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-500" style={{ width: `${myTasks.length ? (myCompleted/myTasks.length)*100 : 0}%` }} />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-slate-600 dark:text-slate-300 flex items-center gap-2">
+                          <span className="w-3 h-3 rounded-full bg-amber-500 inline-block" />
+                          {isRTL ? 'قيد العمل' : 'In Progress'}
+                        </span>
+                        <span className="text-sm font-bold text-slate-800 dark:text-white tabular-nums">{myInProgress}</span>
+                      </div>
+                      <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full transition-all duration-500" style={{ width: `${myTasks.length ? (myInProgress/myTasks.length)*100 : 0}%` }} />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-slate-600 dark:text-slate-300 flex items-center gap-2">
+                          <span className="w-3 h-3 rounded-full bg-slate-400 inline-block" />
+                          {isRTL ? 'جديدة' : 'To Do'}
+                        </span>
+                        <span className="text-sm font-bold text-slate-800 dark:text-white tabular-nums">{myTodo}</span>
+                      </div>
+                      <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-slate-400 to-slate-300 rounded-full transition-all duration-500" style={{ width: `${myTasks.length ? (myTodo/myTasks.length)*100 : 0}%` }} />
+                      </div>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700">
+                      <p className="text-xs text-slate-400">{isRTL ? `الإجمالي: ${myTasks.length} مهمة` : `Total: ${myTasks.length} tasks`}</p>
+                    </div>
+                  </div>
+
+                  {/* Employee tips */}
+                  <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
+                    <h4 className="font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-amber-500" />
+                      {isRTL ? 'نصائح لك' : 'Tips for You'}
+                    </h4>
+                    <div className="space-y-2">
+                      {myTasks.filter((t) => t.dueDate && t.dueDate < today && t.status !== 'done').length > 0 && (
+                        <div className="flex items-start gap-3 p-2.5 rounded-lg border bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
+                          <span className="w-2 h-2 rounded-full mt-1.5 shrink-0 bg-red-500" />
+                          <p className="text-sm text-red-700 dark:text-red-300">
+                            {isRTL ? `لديك ${myTasks.filter((t) => t.dueDate && t.dueDate < today && t.status !== 'done').length} مهمة متأخرة` : `You have ${myTasks.filter((t) => t.dueDate && t.dueDate < today && t.status !== 'done').length} overdue task(s)`}
+                          </p>
+                        </div>
+                      )}
+                      {myInProgress > 3 && (
+                        <div className="flex items-start gap-3 p-2.5 rounded-lg border bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
+                          <span className="w-2 h-2 rounded-full mt-1.5 shrink-0 bg-amber-500" />
+                          <p className="text-sm text-amber-700 dark:text-amber-300">{isRTL ? 'ركّز على إنهاء المهام الحالية أولاً' : 'Focus on finishing current tasks first'}</p>
+                        </div>
+                      )}
+                      {myPerformancePercent >= 80 && (
+                        <div className="flex items-start gap-3 p-2.5 rounded-lg border bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+                          <span className="w-2 h-2 rounded-full mt-1.5 shrink-0 bg-green-500" />
+                          <p className="text-sm text-green-700 dark:text-green-300">{isRTL ? 'أداؤك ممتاز — استمر!' : 'Excellent performance — keep it up!'}</p>
+                        </div>
+                      )}
+                      {myTasks.length === 0 && (
+                        <div className="flex items-start gap-3 p-2.5 rounded-lg border bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+                          <span className="w-2 h-2 rounded-full mt-1.5 shrink-0 bg-blue-500" />
+                          <p className="text-sm text-blue-700 dark:text-blue-300">{isRTL ? 'لا توجد مهام مسندة إليك حالياً' : 'No tasks assigned to you yet'}</p>
+                        </div>
+                      )}
+                      {myPerformancePercent < 50 && myTasks.length > 0 && (
+                        <div className="flex items-start gap-3 p-2.5 rounded-lg border bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
+                          <span className="w-2 h-2 rounded-full mt-1.5 shrink-0 bg-amber-500" />
+                          <p className="text-sm text-amber-700 dark:text-amber-300">{isRTL ? 'حاول إنجاز مهمة واحدة يومياً لتحسين أدائك' : 'Try completing one task daily to improve'}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
             </section>
           );
         })()}
