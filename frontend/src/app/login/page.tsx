@@ -37,7 +37,7 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md animate-fadeIn">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl mb-4 shadow-lg shadow-indigo-500/20">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl mb-4 shadow-lg shadow-teal-500/20">
             <LogIn className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.auth.login}</h1>
@@ -61,7 +61,7 @@ export default function LoginPage() {
               </div>
             </div>
             <div className={`flex ${isRTL ? 'justify-start' : 'justify-end'}`}>
-              <Link href="/forgot-password" className="text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 font-medium transition-colors">{t.auth.forgotPassword}</Link>
+              <Link href="/forgot-password" className="text-sm text-teal-600 hover:text-teal-700 dark:text-teal-400 font-medium transition-colors">{t.auth.forgotPassword}</Link>
             </div>
             {error && <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg"><p className="text-sm text-red-600 dark:text-red-400">{error}</p></div>}
             <button type="submit" disabled={loading} className="btn btn-primary w-full flex items-center justify-center gap-2">

@@ -166,7 +166,7 @@ export default function TeamPage() {
   const getRoleColor = (role: string) => {
     switch (role) {
       case 'owner': return 'bg-amber-100 text-amber-700';
-      case 'manager': return 'bg-sky-100 text-sky-700';
+      case 'manager': return 'bg-teal-100 text-teal-700';
       default: return 'bg-gray-100 text-gray-700';
     }
   };
@@ -201,7 +201,7 @@ export default function TeamPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 border-4 border-sky-600 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -222,8 +222,8 @@ export default function TeamPage() {
                 {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
               </button>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-sky-100 rounded-xl flex items-center justify-center">
-                  <Users className="w-5 h-5 text-sky-600" />
+                <div className="w-10 h-10 bg-teal-100 rounded-xl flex items-center justify-center">
+                  <Users className="w-5 h-5 text-teal-600" />
                 </div>
                 <h1 className="text-lg font-bold text-gray-900">{texts.title}</h1>
               </div>
@@ -325,7 +325,7 @@ export default function TeamPage() {
 
                   {/* Avatar */}
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-14 h-14 bg-gradient-to-br from-sky-500 to-blue-600 
+                    <div className="w-14 h-14 bg-gradient-to-br from-teal-500 to-emerald-600 
                                     rounded-full flex items-center justify-center text-white 
                                     text-xl font-bold shadow-lg">
                       {member.name.charAt(0).toUpperCase()}
@@ -334,7 +334,7 @@ export default function TeamPage() {
                       <h3 className="font-semibold text-gray-900 truncate">
                         {member.name}
                         {isCurrentUser && (
-                          <span className="text-sky-600 text-sm font-normal mr-1">
+                          <span className="text-teal-600 text-sm font-normal mr-1">
                             {texts.you}
                           </span>
                         )}

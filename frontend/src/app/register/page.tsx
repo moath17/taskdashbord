@@ -49,7 +49,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-blue-50 p-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-emerald-50 p-4 py-8">
       {/* Language Toggle */}
       <button
         onClick={toggleLanguage}
@@ -67,7 +67,7 @@ export default function RegisterPage() {
         {/* Logo & Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 
-                          bg-sky-600 rounded-2xl mb-4 shadow-lg shadow-sky-200">
+                          bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl mb-4 shadow-lg shadow-teal-500/20">
             <Building2 className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">{t.auth.registerOrg}</h1>

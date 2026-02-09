@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 /* =============================================
-   CSS Variables – Slate + Indigo Accent
+   CSS Variables – Slate + Teal/Emerald Accent
    ============================================= */
 :root {
-  --primary: #6366f1;
-  --primary-dark: #4f46e5;
-  --primary-light: #818cf8;
+  --primary: #14b8a6;
+  --primary-dark: #0d9488;
+  --primary-light: #2dd4bf;
   --secondary: #64748b;
   --success: #10b981;
   --warning: #f59e0b;
@@ -56,8 +56,8 @@ html[dir="rtl"] body {
   }
 
   .btn-primary {
-    @apply bg-indigo-600 text-white hover:bg-indigo-700 
-           focus:ring-indigo-500 active:bg-indigo-800
+    @apply bg-teal-600 text-white hover:bg-teal-700 
+           focus:ring-teal-500 active:bg-teal-800
            shadow-sm;
   }
 
@@ -81,7 +81,7 @@ html[dir="rtl"] body {
     @apply w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg 
            bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 
            placeholder-gray-400 dark:placeholder-gray-500
-           focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+           focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent
            transition-all duration-200;
   }
 
@@ -98,7 +98,7 @@ html[dir="rtl"] body {
   .error-text { @apply text-sm text-red-500 mt-1; }
 
   .link {
-    @apply text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 
+    @apply text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 
            font-medium transition-colors duration-200;
   }
 }
@@ -124,7 +124,7 @@ html[dir="rtl"] body {
 .dark ::-webkit-scrollbar-thumb { background: #4b5563; }
 .dark ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
 
-::selection { background-color: #c7d2fe; color: #312e81; }
+::selection { background-color: #ccfbf1; color: #134e4a; }
 
 .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

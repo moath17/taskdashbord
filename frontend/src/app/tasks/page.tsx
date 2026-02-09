@@ -195,7 +195,7 @@ export default function TasksPage() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'low': return 'text-indigo-500';
+      case 'low': return 'text-teal-500';
       case 'medium': return 'text-amber-500';
       case 'high': return 'text-red-500';
       default: return 'text-gray-500';
@@ -247,7 +247,7 @@ export default function TasksPage() {
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
-        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+        <Loader2 className="w-8 h-8 text-teal-500 animate-spin" />
       </div>
     );
   }
@@ -266,8 +266,8 @@ export default function TasksPage() {
                 {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
               </button>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center">
-                  <CheckSquare className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <div className="w-10 h-10 bg-teal-100 dark:bg-teal-900/30 rounded-xl flex items-center justify-center">
+                  <CheckSquare className="w-5 h-5 text-teal-600 dark:text-teal-400" />
                 </div>
                 <h1 className="text-lg font-bold text-gray-900 dark:text-white">{texts.title}</h1>
               </div>
@@ -315,7 +315,7 @@ export default function TasksPage() {
                 onClick={() => setFilterStatus(status)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
                            ${filterStatus === status
-                             ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                             ? 'bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300'
                              : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-800'}`}
               >
                 {status === 'all' ? texts.all : getStatusLabel(status)}
@@ -493,7 +493,7 @@ function TaskCard({ task, isRTL, onEdit, onDelete, onStatusChange, getPriorityCo
 
               {openDropdown === task.id && (
                 <div onClick={(e) => e.stopPropagation()} className={`absolute top-full mt-1 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-800 py-1 min-w-[100px] z-10 ${isRTL ? 'left-0' : 'right-0'}`}>
-                  <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-gray-800 flex items-center gap-2">
+                  <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-teal-50 dark:hover:bg-gray-800 flex items-center gap-2">
                     <Edit2 className="w-3.5 h-3.5" /> {texts.edit}
                   </button>
                   <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="w-full px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2">

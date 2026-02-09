@@ -231,7 +231,7 @@ export function TrainingModal({ isOpen, onClose, onSave, training, members }: Tr
               <button key={m.id} type="button" onClick={() => toggleParticipant(m.id)}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all
                   ${participantIds.includes(m.id)
-                    ? 'bg-sky-100 text-sky-700 border-2 border-sky-300'
+                    ? 'bg-teal-100 text-teal-700 border-2 border-teal-300'
                     : 'bg-white text-gray-600 border-2 border-gray-200 hover:border-gray-300'}`}>
                 {m.name}
               </button>

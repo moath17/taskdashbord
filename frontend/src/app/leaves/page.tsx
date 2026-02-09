@@ -170,7 +170,7 @@ export default function LeavesPage() {
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
+        <Loader2 className="w-8 h-8 text-teal-600 animate-spin" />
       </div>
     );
   }
@@ -233,8 +233,8 @@ export default function LeavesPage() {
                       {/* User */}
                       {leave.user && (
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="w-7 h-7 bg-sky-100 rounded-full flex items-center justify-center">
-                            <span className="text-xs font-semibold text-sky-600">{leave.user.name.charAt(0)}</span>
+                          <div className="w-7 h-7 bg-teal-100 rounded-full flex items-center justify-center">
+                            <span className="text-xs font-semibold text-teal-600">{leave.user.name.charAt(0)}</span>
                           </div>
                           <span className="font-medium text-gray-900 text-sm">{leave.user.name}</span>
                         </div>

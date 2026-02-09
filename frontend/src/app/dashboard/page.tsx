@@ -394,13 +394,13 @@ export default function DashboardPage() {
                       </div>
 
                       {/* التدريب */}
-                      <div className="rounded-xl bg-sky-50 dark:bg-sky-900/20 border border-sky-100 dark:border-sky-800/50 p-3 hover:shadow-md transition-shadow">
+                      <div className="rounded-xl bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800/50 p-3 hover:shadow-md transition-shadow">
                         <div className="flex items-center gap-2 mb-2">
-                          <GraduationCap className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-                          <span className="text-xs font-semibold text-sky-700 dark:text-sky-300">{isRTL ? 'التدريب' : 'Training'}</span>
+                          <GraduationCap className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                          <span className="text-xs font-semibold text-teal-700 dark:text-teal-300">{isRTL ? 'التدريب' : 'Training'}</span>
                         </div>
-                        <p className="text-2xl font-bold text-sky-600 dark:text-sky-400 tabular-nums">{emp.trainings.length}</p>
-                        <p className="text-[10px] text-sky-600/70 dark:text-sky-400/70 mt-1">{isRTL ? 'دورة' : 'course(s)'}</p>
+                        <p className="text-2xl font-bold text-teal-600 dark:text-teal-400 tabular-nums">{emp.trainings.length}</p>
+                        <p className="text-[10px] text-teal-600/70 dark:text-teal-400/70 mt-1">{isRTL ? 'دورة' : 'course(s)'}</p>
                       </div>
                     </div>
                   </div>

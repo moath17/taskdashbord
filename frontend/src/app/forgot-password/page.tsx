@@ -46,12 +46,12 @@ export default function ForgotPasswordPage() {
   // Success state
   if (sent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-purple-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-emerald-50 p-4">
         <div className="w-full max-w-md animate-fadeIn">
           <div className="card text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 
-                            bg-green-100 rounded-full mb-4 mx-auto">
-              <CheckCircle2 className="w-8 h-8 text-green-600" />
+                            bg-emerald-100 rounded-full mb-4 mx-auto">
+              <CheckCircle2 className="w-8 h-8 text-emerald-600" />
             </div>
             <h2 className="text-xl font-bold text-gray-900 mb-2">
               {isRTL ? 'تم إرسال الرابط!' : 'Reset Link Sent!'}
@@ -84,7 +84,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-purple-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-emerald-50 p-4">
       {/* Language Toggle */}
       <button
         onClick={toggleLanguage}
@@ -102,7 +102,7 @@ export default function ForgotPasswordPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 
-                          bg-sky-600 rounded-2xl mb-4 shadow-lg shadow-sky-200">
+                          bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl mb-4 shadow-lg shadow-teal-500/20">
             <KeyRound className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">
@@ -167,8 +167,8 @@ export default function ForgotPasswordPage() {
           <div className="mt-6 pt-6 border-t border-gray-100 text-center">
             <Link 
               href="/login" 
-              className="inline-flex items-center gap-2 text-sm font-medium text-sky-600 
-                         hover:text-sky-700 transition-colors"
+              className="inline-flex items-center gap-2 text-sm font-medium text-teal-600 
+                         hover:text-teal-700 transition-colors"
             >
               {isRTL ? (
                 <>

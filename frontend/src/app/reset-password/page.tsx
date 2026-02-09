@@ -25,7 +25,7 @@ function ResetPasswordForm() {
   // No token provided
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-blue-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-emerald-50 p-4">
         <div className="w-full max-w-md animate-fadeIn">
           <div className="card text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 
@@ -57,12 +57,12 @@ function ResetPasswordForm() {
   // Success state
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-blue-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-emerald-50 p-4">
         <div className="w-full max-w-md animate-fadeIn">
           <div className="card text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 
-                            bg-green-100 rounded-full mb-4 mx-auto">
-              <CheckCircle2 className="w-8 h-8 text-green-600" />
+                            bg-emerald-100 rounded-full mb-4 mx-auto">
+              <CheckCircle2 className="w-8 h-8 text-emerald-600" />
             </div>
             <h2 className="text-xl font-bold text-gray-900 mb-2">
               {isRTL ? 'تم تغيير كلمة المرور!' : 'Password Changed!'}
@@ -121,7 +121,7 @@ function ResetPasswordForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-blue-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-emerald-50 p-4">
       {/* Language Toggle */}
       <button
         onClick={toggleLanguage}
@@ -139,7 +139,7 @@ function ResetPasswordForm() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 
-                          bg-sky-600 rounded-2xl mb-4 shadow-lg shadow-sky-200">
+                          bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl mb-4 shadow-lg shadow-teal-500/20">
             <ShieldCheck className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">
@@ -262,7 +262,7 @@ export default function ResetPasswordPage() {
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 border-4 border-sky-600 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full animate-spin" />
           <span className="text-gray-600">Loading...</span>
         </div>
       </div>
