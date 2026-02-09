@@ -42,21 +42,21 @@ export function Modal({ isOpen, onClose, title, children, maxWidth = 'md' }: Mod
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-sky-950/40 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
       <div
-        className={`relative w-full ${maxWidthClasses[maxWidth]} bg-white dark:bg-gray-800 rounded-2xl shadow-2xl 
-                    animate-fadeIn max-h-[90vh] overflow-hidden flex flex-col`}
+        className={`relative w-full ${maxWidthClasses[maxWidth]} bg-white dark:bg-sky-950 rounded-2xl shadow-2xl shadow-sky-200/50 dark:shadow-sky-900/50
+                    animate-fadeIn max-h-[90vh] overflow-hidden flex flex-col border border-sky-100 dark:border-sky-800`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-sky-100 dark:border-sky-800 bg-sky-50/50 dark:bg-sky-900/50">
+          <h2 className="text-lg font-semibold text-sky-900 dark:text-sky-100">{title}</h2>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            className="p-2 text-sky-300 dark:text-sky-600 hover:text-sky-500 dark:hover:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-800 rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>

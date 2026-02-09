@@ -86,7 +86,7 @@ export default function TasksPage() {
     }
   }, [isAuthenticated]);
 
-  // Close dropdown only when clicking outside the dropdown (ignore clicks inside menu/button)
+  // Close dropdown only when clicking outside the dropdown
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -225,10 +225,10 @@ export default function TasksPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'todo': return 'bg-gray-100 text-gray-700';
-      case 'in_progress': return 'bg-blue-100 text-blue-700';
-      case 'done': return 'bg-green-100 text-green-700';
-      default: return 'bg-gray-100 text-gray-700';
+      case 'todo': return 'bg-sky-50 text-sky-600';
+      case 'in_progress': return 'bg-sky-100 text-sky-700';
+      case 'done': return 'bg-emerald-100 text-emerald-700';
+      default: return 'bg-sky-50 text-sky-600';
     }
   };
 
@@ -243,10 +243,10 @@ export default function TasksPage() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'low': return 'text-slate-500';
+      case 'low': return 'text-sky-400';
       case 'medium': return 'text-amber-500';
       case 'high': return 'text-red-500';
-      default: return 'text-gray-500';
+      default: return 'text-sky-400';
     }
   };
 
@@ -296,31 +296,31 @@ export default function TasksPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-sky-50 dark:bg-sky-950">
+        <Loader2 className="w-8 h-8 text-sky-400 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-sky-50 dark:bg-sky-950">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
+      <header className="bg-white/80 dark:bg-sky-900/80 backdrop-blur-md border-b border-sky-100 dark:border-sky-800 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Back & Title */}
             <div className="flex items-center gap-4">
               <button
                 onClick={() => router.push('/dashboard')}
-                className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="p-2 text-sky-400 dark:text-sky-500 hover:text-sky-600 dark:hover:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-800 rounded-lg transition-colors"
               >
                 {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
               </button>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/50 rounded-xl flex items-center justify-center">
-                  <CheckSquare className="w-5 h-5 text-sky-600 dark:text-sky-400" />
+                <div className="w-10 h-10 bg-sky-100 dark:bg-sky-800 rounded-xl flex items-center justify-center">
+                  <CheckSquare className="w-5 h-5 text-sky-500 dark:text-sky-300" />
                 </div>
-                <h1 className="text-lg font-bold text-gray-900 dark:text-white">{texts.title}</h1>
+                <h1 className="text-lg font-bold text-sky-900 dark:text-sky-100">{texts.title}</h1>
               </div>
             </div>
 
@@ -328,7 +328,7 @@ export default function TasksPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={toggleTheme}
-                className="p-2 text-gray-500 dark:text-gray-400 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="p-2 text-sky-400 dark:text-sky-500 hover:text-sky-600 dark:hover:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-800 rounded-lg transition-colors"
                 title={theme === 'dark' ? (isRTL ? 'الوضع الفاتح' : 'Light') : (isRTL ? 'الوضع الداكن' : 'Dark')}
               >
                 {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -355,7 +355,7 @@ export default function TasksPage() {
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           {/* Search */}
           <div className="relative flex-1 max-w-md">
-            <Search className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400
+            <Search className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-sky-300
                                 ${isRTL ? 'right-3' : 'left-3'}`} />
             <input
               type="text"
@@ -374,8 +374,8 @@ export default function TasksPage() {
                 onClick={() => setFilterStatus(status)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
                            ${filterStatus === status
-                             ? 'bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300'
-                             : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                             ? 'bg-sky-200 dark:bg-sky-700 text-sky-800 dark:text-sky-100'
+                             : 'bg-white dark:bg-sky-900 text-sky-500 dark:text-sky-400 hover:bg-sky-100 dark:hover:bg-sky-800 border border-sky-100 dark:border-sky-800'}`}
               >
                 {status === 'all' ? texts.all : getStatusLabel(status)}
               </button>
@@ -386,14 +386,14 @@ export default function TasksPage() {
         {/* Tasks Kanban View - Desktop */}
         <div className="hidden lg:grid lg:grid-cols-3 gap-6">
           {(['todo', 'in_progress', 'done'] as const).map((status) => (
-            <div key={status} className="bg-gray-100 dark:bg-gray-800 rounded-2xl p-4">
+            <div key={status} className="bg-sky-100/50 dark:bg-sky-900/50 rounded-2xl p-4 border border-sky-100 dark:border-sky-800">
               <div className="flex items-center gap-2 mb-4">
                 <div className={`w-3 h-3 rounded-full ${
-                  status === 'todo' ? 'bg-gray-400' :
-                  status === 'in_progress' ? 'bg-sky-500' : 'bg-green-500'
+                  status === 'todo' ? 'bg-sky-300' :
+                  status === 'in_progress' ? 'bg-sky-500' : 'bg-emerald-400'
                 }`} />
-                <h3 className="font-semibold text-gray-700 dark:text-gray-200">{getStatusLabel(status)}</h3>
-                <span className="text-sm text-gray-500 dark:text-gray-400">({groupedTasks[status].length})</span>
+                <h3 className="font-semibold text-sky-800 dark:text-sky-200">{getStatusLabel(status)}</h3>
+                <span className="text-sm text-sky-500 dark:text-sky-400">({groupedTasks[status].length})</span>
               </div>
 
               <div className="space-y-3">
@@ -413,7 +413,7 @@ export default function TasksPage() {
                 ))}
 
                 {groupedTasks[status].length === 0 && (
-                  <div className="text-center py-8 text-gray-400 dark:text-gray-500 text-sm">
+                  <div className="text-center py-8 text-sky-300 dark:text-sky-600 text-sm">
                     {texts.noTasks}
                   </div>
                 )}
@@ -426,8 +426,8 @@ export default function TasksPage() {
         <div className="lg:hidden space-y-3">
           {filteredTasks.length === 0 ? (
             <div className="card text-center py-12">
-              <CheckSquare className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">{texts.noTasks}</p>
+              <CheckSquare className="w-12 h-12 text-sky-200 mx-auto mb-4" />
+              <p className="text-sky-400">{texts.noTasks}</p>
             </div>
           ) : (
             filteredTasks.map((task) => (
@@ -493,7 +493,7 @@ function TaskCard({
                      task.status === 'in_progress' ? Clock : Circle;
 
   return (
-    <div className="card hover:shadow-md transition-shadow group bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-sky-900 rounded-xl shadow-sm border border-sky-100 dark:border-sky-800 p-4 transition-all duration-200 hover:shadow-md hover:border-sky-200 dark:hover:border-sky-700 group">
       <div className="flex items-start gap-3">
         {/* Status Toggle */}
         <button
@@ -504,8 +504,8 @@ function TaskCard({
             onStatusChange(task.id, nextStatus);
           }}
           className={`mt-0.5 transition-colors shrink-0 ${
-            task.status === 'done' ? 'text-green-500' :
-            task.status === 'in_progress' ? 'text-blue-500' : 'text-gray-300 hover:text-gray-400'
+            task.status === 'done' ? 'text-emerald-400' :
+            task.status === 'in_progress' ? 'text-sky-500' : 'text-sky-200 hover:text-sky-300'
           }`}
         >
           <StatusIcon className="w-5 h-5" />
@@ -520,7 +520,7 @@ function TaskCard({
           }}
         >
           <div className="flex items-start justify-between gap-2">
-            <h4 className={`font-medium text-gray-900 dark:text-white ${task.status === 'done' ? 'line-through text-gray-500 dark:text-gray-400' : ''}`}>
+            <h4 className={`font-medium text-sky-900 dark:text-sky-100 ${task.status === 'done' ? 'line-through text-sky-400 dark:text-sky-500' : ''}`}>
               {task.title}
             </h4>
 
@@ -531,7 +531,7 @@ function TaskCard({
                   e.stopPropagation();
                   setOpenDropdown(openDropdown === task.id ? null : task.id);
                 }}
-                className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="p-1.5 text-sky-300 dark:text-sky-600 hover:text-sky-500 dark:hover:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-800 rounded-lg transition-colors"
               >
                 <MoreVertical className="w-4 h-4" />
               </button>
@@ -539,20 +539,20 @@ function TaskCard({
               {openDropdown === task.id && (
                 <div
                   onClick={(e) => e.stopPropagation()}
-                  className={`absolute top-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg 
-                                border border-gray-200 dark:border-gray-700 py-1 min-w-[100px] z-10
+                  className={`absolute top-full mt-1 bg-white dark:bg-sky-900 rounded-lg shadow-lg 
+                                border border-sky-100 dark:border-sky-800 py-1 min-w-[100px] z-10
                                 ${isRTL ? 'left-0' : 'right-0'}`}
                 >
                   <button
                     onClick={(e) => { e.stopPropagation(); onEdit(); }}
-                    className="w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2"
+                    className="w-full px-3 py-2 text-sm text-sky-700 dark:text-sky-200 hover:bg-sky-50 dark:hover:bg-sky-800 flex items-center gap-2"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                     {texts.edit}
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); onDelete(); }}
-                    className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 
+                    className="w-full px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 
                                flex items-center gap-2"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -564,7 +564,7 @@ function TaskCard({
           </div>
 
           {task.description && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{task.description}</p>
+            <p className="text-sm text-sky-500 dark:text-sky-400 mt-1 line-clamp-2">{task.description}</p>
           )}
 
           {/* Meta */}
@@ -577,7 +577,7 @@ function TaskCard({
 
             {/* Due Date */}
             {task.dueDate && (
-              <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
+              <span className="flex items-center gap-1 text-sky-500 dark:text-sky-400">
                 <Calendar className="w-3.5 h-3.5" />
                 {new Date(task.dueDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
               </span>
@@ -585,7 +585,7 @@ function TaskCard({
 
             {/* Assigned To */}
             {task.assignedUser && (
-              <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
+              <span className="flex items-center gap-1 text-sky-500 dark:text-sky-400">
                 <User className="w-3.5 h-3.5" />
                 {task.assignedUser.name}
               </span>
@@ -593,7 +593,7 @@ function TaskCard({
 
             {/* Goal */}
             {task.goal && (
-              <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
+              <span className="flex items-center gap-1 text-sky-500 dark:text-sky-400">
                 <Target className="w-3.5 h-3.5" />
                 {task.goal.title}
               </span>
@@ -602,9 +602,9 @@ function TaskCard({
             {/* Status Badge - Mobile */}
             {showStatus && (
               <span className={`px-2 py-0.5 rounded-full text-xs font-medium
-                              ${task.status === 'done' ? 'bg-green-100 text-green-700' :
-                                task.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
-                                'bg-gray-100 text-gray-700'}`}>
+                              ${task.status === 'done' ? 'bg-emerald-100 text-emerald-700' :
+                                task.status === 'in_progress' ? 'bg-sky-200 text-sky-700' :
+                                'bg-sky-100 text-sky-600'}`}>
                 {task.status === 'done' ? texts.done :
                  task.status === 'in_progress' ? texts.inProgress : texts.todo}
               </span>
