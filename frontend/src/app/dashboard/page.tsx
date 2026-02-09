@@ -30,8 +30,7 @@ interface DashboardLeave {
 }
 interface DashboardTraining {
   id: string; title: string; type: string; status: string;
-  startDate?: string; endDate?: string; provider?: string; creator?: { name: string };
-  assignedTo?: string; participants?: string[];
+  startDate?: string; endDate?: string; provider?: string; creator?: { id: string; name: string };
 }
 
 /* ── Motivational phrases ── */
@@ -91,8 +90,8 @@ export default function DashboardPage() {
 
   /* ── Employee cards data (grouped by userId to avoid duplicates) ── */
   const employeeCards = useMemo(() => {
-    if (!tasks.length && !goals.length && !leaves.length) return [];
-    const map = new Map<string, { name: string; tasks: DashboardTask[]; goals: DashboardGoal[]; leaves: DashboardLeave[] }>();
+    if (!tasks.length && !goals.length && !leaves.length && !trainings.length) return [];
+    const map = new Map<string, { name: string; tasks: DashboardTask[]; goals: DashboardGoal[]; leaves: DashboardLeave[]; trainings: DashboardTraining[] }>();
 
     // Helper: get or create entry by userId first, fallback to name
     const getEntry = (id: string | undefined, name: string) => {
@@ -100,7 +99,7 @@ export default function DashboardPage() {
       const cleanName = name.trim();
       if (!cleanName && !id) return null;
       const key = id || cleanName.toLowerCase();
-      if (!map.has(key)) map.set(key, { name: cleanName || key, tasks: [], goals: [], leaves: [] });
+      if (!map.has(key)) map.set(key, { name: cleanName || key, tasks: [], goals: [], leaves: [], trainings: [] });
       // Update name if we got a better one
       const entry = map.get(key)!;
       if (cleanName && (!entry.name || entry.name === key)) entry.name = cleanName;
@@ -112,16 +111,20 @@ export default function DashboardPage() {
       if (entry) entry.tasks.push(t);
     });
     goals.forEach(g => {
-      const entry = getEntry(g.ownerId, g.owner?.name || '');
+      const entry = getEntry(g.ownerId ?? g.owner?.id, g.owner?.name || '');
       if (entry) entry.goals.push(g);
     });
     leaves.forEach(l => {
       const entry = getEntry(l.userId, l.user?.name || '');
       if (entry) entry.leaves.push(l);
     });
+    trainings.forEach(tr => {
+      const entry = getEntry(tr.creator?.id, tr.creator?.name || '');
+      if (entry) entry.trainings.push(tr);
+    });
 
     return Array.from(map.entries()).map(([key, d]) => ({ id: key, ...d }));
-  }, [tasks, goals, leaves]);
+  }, [tasks, goals, leaves, trainings]);
 
   if (loading) {
     return (
@@ -336,65 +339,70 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {employeeCards.map(emp => {
                 const empDone = emp.tasks.filter(t => t.status === 'done').length;
+                const empInProg = emp.tasks.filter(t => t.status === 'in_progress').length;
                 const empOverdue = emp.tasks.filter(t => t.dueDate && t.dueDate < today && t.status !== 'done').length;
                 const empPct = emp.tasks.length ? Math.round((empDone / emp.tasks.length) * 100) : 0;
                 const empGoalAvg = emp.goals.length ? Math.round(emp.goals.reduce((a, g) => a + (g.progress ?? 0), 0) / emp.goals.length) : 0;
                 return (
-                  <div key={emp.id} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5 hover:shadow-md transition-all">
-                    {/* Name + Avatar */}
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-teal-400 to-emerald-500 rounded-full flex items-center justify-center shadow-sm">
-                        <span className="text-white font-bold text-sm">{emp.name.charAt(0).toUpperCase()}</span>
+                  <div key={emp.id} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden hover:shadow-lg hover:border-teal-200 dark:hover:border-teal-800 transition-all duration-300">
+                    {/* الاسم في الأعلى */}
+                    <div className={`flex items-center gap-3 p-4 bg-gradient-to-r from-teal-500/10 to-emerald-500/10 dark:from-teal-900/30 dark:to-emerald-900/30 border-b border-gray-100 dark:border-gray-800 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                      <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md shrink-0">
+                        <span className="text-white font-bold text-lg">{emp.name.charAt(0).toUpperCase()}</span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-gray-900 dark:text-white truncate">{emp.name}</p>
+                        <p className="font-bold text-gray-900 dark:text-white truncate">{emp.name}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {emp.tasks.length} {isRTL ? 'مهمة' : 'tasks'} · {emp.goals.length} {isRTL ? 'هدف' : 'goals'}
+                          {empPct}% {isRTL ? 'إنجاز' : 'completed'}
                         </p>
                       </div>
-                      {/* Mini ring */}
-                      <div className="relative shrink-0">
-                        <Ring pct={empPct} size={44} sw={4} cls={empPct >= 75 ? 'stroke-emerald-500' : empPct >= 50 ? 'stroke-amber-500' : 'stroke-teal-500'} />
-                        <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-gray-700 dark:text-gray-300">{empPct}%</span>
-                      </div>
                     </div>
 
-                    {/* Stats grid */}
-                    <div className="grid grid-cols-3 gap-2 text-center mb-3">
-                      <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg py-2">
-                        <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">{empDone}</p>
-                        <p className="text-[10px] text-emerald-600/70 dark:text-emerald-400/60">{isRTL ? 'مكتملة' : 'Done'}</p>
+                    {/* أربع لوحات: المهام · الأهداف · الإجازات · التدريب */}
+                    <div className="p-4 grid grid-cols-2 gap-3">
+                      {/* المهام */}
+                      <div className="rounded-xl bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800/50 p-3 hover:shadow-md transition-shadow">
+                        <div className="flex items-center gap-2 mb-2">
+                          <CheckSquare className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                          <span className="text-xs font-semibold text-teal-700 dark:text-teal-300">{isRTL ? 'المهام' : 'Tasks'}</span>
+                        </div>
+                        <div className="space-y-1 text-xs">
+                          <p className="flex justify-between"><span className="text-emerald-600 dark:text-emerald-400">{isRTL ? 'مكتملة' : 'Done'}</span><span className="font-bold tabular-nums">{empDone}</span></p>
+                          <p className="flex justify-between"><span className="text-amber-600 dark:text-amber-400">{isRTL ? 'جارية' : 'Active'}</span><span className="font-bold tabular-nums">{empInProg}</span></p>
+                          <p className="flex justify-between"><span className={empOverdue ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}>{isRTL ? 'متأخرة' : 'Late'}</span><span className={`font-bold tabular-nums ${empOverdue ? 'text-red-600 dark:text-red-400' : ''}`}>{empOverdue}</span></p>
+                        </div>
                       </div>
-                      <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg py-2">
-                        <p className="text-sm font-bold text-amber-600 dark:text-amber-400 tabular-nums">{emp.tasks.filter(t => t.status === 'in_progress').length}</p>
-                        <p className="text-[10px] text-amber-600/70 dark:text-amber-400/60">{isRTL ? 'جارية' : 'Active'}</p>
+
+                      {/* الأهداف */}
+                      <div className="rounded-xl bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-800/50 p-3 hover:shadow-md transition-shadow">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Target className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                          <span className="text-xs font-semibold text-violet-700 dark:text-violet-300">{isRTL ? 'الأهداف' : 'Goals'}</span>
+                        </div>
+                        <p className="text-2xl font-bold text-violet-600 dark:text-violet-400 tabular-nums">{empGoalAvg}%</p>
+                        <p className="text-[10px] text-violet-600/70 dark:text-violet-400/70 mt-1">{emp.goals.length} {isRTL ? 'هدف' : 'goal(s)'}</p>
                       </div>
-                      <div className={`rounded-lg py-2 ${empOverdue > 0 ? 'bg-red-50 dark:bg-red-900/20' : 'bg-gray-50 dark:bg-gray-800'}`}>
-                        <p className={`text-sm font-bold tabular-nums ${empOverdue > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}`}>{empOverdue}</p>
-                        <p className={`text-[10px] ${empOverdue > 0 ? 'text-red-600/70 dark:text-red-400/60' : 'text-gray-500/70 dark:text-gray-400/60'}`}>{isRTL ? 'متأخرة' : 'Late'}</p>
+
+                      {/* الإجازات */}
+                      <div className="rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/50 p-3 hover:shadow-md transition-shadow">
+                        <div className="flex items-center gap-2 mb-2">
+                          <CalendarDays className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                          <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">{isRTL ? 'الإجازات' : 'Leaves'}</span>
+                        </div>
+                        <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 tabular-nums">{emp.leaves.length}</p>
+                        <p className="text-[10px] text-amber-600/70 dark:text-amber-400/70 mt-1">{isRTL ? 'إجازة مسجلة' : 'recorded'}</p>
+                      </div>
+
+                      {/* التدريب */}
+                      <div className="rounded-xl bg-sky-50 dark:bg-sky-900/20 border border-sky-100 dark:border-sky-800/50 p-3 hover:shadow-md transition-shadow">
+                        <div className="flex items-center gap-2 mb-2">
+                          <GraduationCap className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+                          <span className="text-xs font-semibold text-sky-700 dark:text-sky-300">{isRTL ? 'التدريب' : 'Training'}</span>
+                        </div>
+                        <p className="text-2xl font-bold text-sky-600 dark:text-sky-400 tabular-nums">{emp.trainings.length}</p>
+                        <p className="text-[10px] text-sky-600/70 dark:text-sky-400/70 mt-1">{isRTL ? 'دورة' : 'course(s)'}</p>
                       </div>
                     </div>
-
-                    {/* Goal progress */}
-                    {emp.goals.length > 0 && (
-                      <div className="mb-3">
-                        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
-                          <span className="flex items-center gap-1"><Target className="w-3 h-3" />{isRTL ? 'الأهداف' : 'Goals'}</span>
-                          <span className="font-medium tabular-nums">{empGoalAvg}%</span>
-                        </div>
-                        <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                          <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500" style={{ width: `${empGoalAvg}%` }} />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Leaves count (توثيق فقط) */}
-                    {emp.leaves.length > 0 && (
-                      <div className="flex items-center gap-2 text-xs">
-                        <CalendarDays className="w-3.5 h-3.5 text-gray-400" />
-                        <span className="text-gray-500 dark:text-gray-400">{emp.leaves.length} {isRTL ? 'إجازة' : 'leave(s)'}</span>
-                      </div>
-                    )}
                   </div>
                 );
               })}

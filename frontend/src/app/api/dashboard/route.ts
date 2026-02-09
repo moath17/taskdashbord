@@ -105,6 +105,7 @@ export async function GET(request: NextRequest) {
       progress: g.progress ?? 0,
       startDate: g.start_date,
       endDate: g.end_date,
+      ownerId: g.owner_id ?? g.owner?.id,
       owner: g.owner ? { id: g.owner.id, name: g.owner.name } : null,
       createdAt: g.created_at,
     }));
