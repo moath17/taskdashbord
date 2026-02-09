@@ -88,28 +88,38 @@ export default function DashboardPage() {
       .finally(() => setDashboardLoading(false));
   }, [isAuthenticated]);
 
-  /* ── Employee cards data ── */
+  /* ── Employee cards data (grouped by userId to avoid duplicates) ── */
   const employeeCards = useMemo(() => {
     if (!tasks.length && !goals.length && !leaves.length) return [];
     const map = new Map<string, { name: string; tasks: DashboardTask[]; goals: DashboardGoal[]; leaves: DashboardLeave[] }>();
+
+    // Helper: get or create entry by userId first, fallback to name
+    const getEntry = (id: string | undefined, name: string) => {
+      if ((!id && !name) || name === '—') return null;
+      const cleanName = name.trim();
+      if (!cleanName && !id) return null;
+      const key = id || cleanName.toLowerCase();
+      if (!map.has(key)) map.set(key, { name: cleanName || key, tasks: [], goals: [], leaves: [] });
+      // Update name if we got a better one
+      const entry = map.get(key)!;
+      if (cleanName && (!entry.name || entry.name === key)) entry.name = cleanName;
+      return entry;
+    };
+
     tasks.forEach(t => {
-      if (!t.assignedTo) return;
-      if (!map.has(t.assignedTo)) map.set(t.assignedTo, { name: t.assignedUser?.name || '—', tasks: [], goals: [], leaves: [] });
-      map.get(t.assignedTo)!.tasks.push(t);
+      const entry = getEntry(t.assignedTo, t.assignedUser?.name || '');
+      if (entry) entry.tasks.push(t);
     });
     goals.forEach(g => {
-      const id = g.ownerId || g.owner?.name;
-      if (!id) return;
-      if (!map.has(id)) map.set(id, { name: g.owner?.name || '—', tasks: [], goals: [], leaves: [] });
-      map.get(id)!.goals.push(g);
+      const entry = getEntry(g.ownerId, g.owner?.name || '');
+      if (entry) entry.goals.push(g);
     });
     leaves.forEach(l => {
-      const id = l.userId || l.user?.name;
-      if (!id) return;
-      if (!map.has(id)) map.set(id, { name: l.user?.name || '—', tasks: [], goals: [], leaves: [] });
-      map.get(id)!.leaves.push(l);
+      const entry = getEntry(l.userId, l.user?.name || '');
+      if (entry) entry.leaves.push(l);
     });
-    return Array.from(map.entries()).map(([id, d]) => ({ id, ...d }));
+
+    return Array.from(map.entries()).map(([key, d]) => ({ id: key, ...d }));
   }, [tasks, goals, leaves]);
 
   if (loading) {
