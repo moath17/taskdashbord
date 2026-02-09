@@ -127,10 +127,10 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-emerald-50 dark:bg-gray-950">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-          <span className="text-emerald-700 dark:text-emerald-300">{t.app.loading}</span>
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <span className="text-green-700 dark:text-green-300">{t.app.loading}</span>
         </div>
       </div>
     );
@@ -170,27 +170,27 @@ export default function DashboardPage() {
   ];
 
   const stats = [
-    { label: isRTL ? 'المهام' : 'Tasks', value: String(tasks.length), icon: CheckSquare, color: 'bg-emerald-500', href: '/tasks' },
-    { label: isRTL ? 'الأهداف' : 'Goals', value: String(goals.length), icon: Target, color: 'bg-teal-500', href: '/goals' },
+    { label: isRTL ? 'المهام' : 'Tasks', value: String(tasks.length), icon: CheckSquare, color: 'bg-blue-600', href: '/tasks' },
+    { label: isRTL ? 'الأهداف' : 'Goals', value: String(goals.length), icon: Target, color: 'bg-blue-500', href: '/goals' },
     { label: isRTL ? 'الإجازات' : 'Leaves', value: String(leaves.length), icon: CalendarDays, color: 'bg-amber-500', href: '/leaves' },
-    { label: isRTL ? 'التدريب' : 'Training', value: String(trainings.length), icon: GraduationCap, color: 'bg-cyan-500', href: '/trainings' },
+    { label: isRTL ? 'التدريب' : 'Training', value: String(trainings.length), icon: GraduationCap, color: 'bg-indigo-500', href: '/trainings' },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
       {/* Header */}
-      <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50 shadow-sm">
+      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top Bar */}
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-md shadow-emerald-200 dark:shadow-emerald-900/50">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20 dark:shadow-blue-900/30">
                 <LayoutDashboard className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="font-bold text-gray-900 dark:text-white">{t.app.name}</h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                <h1 className="font-bold text-slate-900 dark:text-white">{t.app.name}</h1>
+                <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
                   <Building2 className="w-3 h-3" />
                   {user.organizationName}
                 </p>
@@ -202,8 +202,8 @@ export default function DashboardPage() {
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 
-                           hover:bg-emerald-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 
+                           hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
                 title={theme === 'dark' ? (isRTL ? 'الوضع الفاتح' : 'Light mode') : (isRTL ? 'الوضع الداكن' : 'Dark mode')}
               >
                 {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
@@ -211,20 +211,20 @@ export default function DashboardPage() {
               {/* Language Toggle */}
               <button
                 onClick={toggleLanguage}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 
-                           hover:bg-emerald-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 
+                           hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
               >
                 <Globe className="w-4 h-4" />
                 {language === 'ar' ? 'EN' : 'AR'}
               </button>
 
               {/* User Menu */}
-              <div className="hidden sm:flex items-center gap-3 px-3 py-2 bg-emerald-50 dark:bg-gray-800 rounded-lg border border-emerald-100 dark:border-gray-700">
+              <div className="hidden sm:flex items-center gap-3 px-3 py-2 bg-slate-50 dark:bg-slate-700 rounded-lg border border-blue-100 dark:border-gray-700">
                 <div className={`text-sm ${isRTL ? 'text-right' : 'text-left'}`}>
-                  <p className="font-medium text-gray-900 dark:text-white">{user.name}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{getRoleLabel(user.role)}</p>
+                  <p className="font-medium text-slate-900 dark:text-white">{user.name}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{getRoleLabel(user.role)}</p>
                 </div>
-                <div className="w-9 h-9 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center shadow-sm">
+                <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center shadow-sm">
                   <span className="text-white font-semibold">
                     {user.name.charAt(0).toUpperCase()}
                   </span>
@@ -234,9 +234,9 @@ export default function DashboardPage() {
               {/* Mobile: name + avatar */}
               <div className="sm:hidden flex items-center gap-2">
                 <div className={`text-sm ${isRTL ? 'text-right' : 'text-left'}`}>
-                  <p className="font-medium text-gray-900 dark:text-white">{user.name}</p>
+                  <p className="font-medium text-slate-900 dark:text-white">{user.name}</p>
                 </div>
-                <div className="w-9 h-9 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center shrink-0 shadow-sm">
+                <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center shrink-0 shadow-sm">
                   <span className="text-white font-semibold text-sm">
                     {user.name.charAt(0).toUpperCase()}
                   </span>
@@ -246,7 +246,7 @@ export default function DashboardPage() {
               {/* Logout */}
               <button
                 onClick={logout}
-                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20
+                className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20
                            rounded-lg transition-colors"
                 title={t.auth.logout}
               >
@@ -261,8 +261,8 @@ export default function DashboardPage() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-500 dark:text-gray-400 
-                           hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-gray-800 rounded-t-lg transition-colors 
+                className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-slate-500 dark:text-slate-400 
+                           hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-t-lg transition-colors 
                            whitespace-nowrap"
               >
                 <link.icon className="w-4 h-4" />
@@ -276,11 +276,11 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Welcome banner */}
-        <section className="rounded-2xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 dark:from-emerald-700 dark:via-emerald-800 dark:to-teal-800 p-6 sm:p-8 mb-6 sm:mb-8 text-white shadow-lg shadow-emerald-200/50 dark:shadow-emerald-900/30">
+        <section className="rounded-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 dark:from-blue-800 dark:via-blue-900 dark:to-indigo-900 p-6 sm:p-8 mb-6 sm:mb-8 text-white shadow-lg shadow-blue-500/20/50 dark:shadow-blue-900/20">
           <h2 className="text-2xl sm:text-3xl font-bold">
             {t.dashboard.welcome}، {user.name} 👋
           </h2>
-          <p className="mt-1 text-emerald-100">{t.dashboard.overview}</p>
+          <p className="mt-1 text-blue-100">{t.dashboard.overview}</p>
           <p className="mt-2 text-white/90 text-sm sm:text-base italic">{getMotivationalPhrase(isRTL)}</p>
         </section>
 
@@ -290,16 +290,16 @@ export default function DashboardPage() {
             <Link
               key={index}
               href={stat.href}
-              className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-emerald-200 dark:hover:border-gray-700 flex items-center gap-3 sm:gap-4 p-4 transition-all duration-200 group"
+              className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-blue-200 dark:hover:border-slate-600 flex items-center gap-3 sm:gap-4 p-4 transition-all duration-200 group"
             >
               <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm`}>
                 <stat.icon className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-2xl font-bold text-gray-900 dark:text-white tabular-nums">{dashboardLoading ? '...' : stat.value}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{stat.label}</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white tabular-nums">{dashboardLoading ? '...' : stat.value}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 truncate">{stat.label}</p>
               </div>
-              {isRTL ? <ChevronLeft className="w-5 h-5 text-gray-300 dark:text-gray-600 shrink-0" /> : <ChevronRight className="w-5 h-5 text-gray-300 dark:text-gray-600 shrink-0" />}
+              {isRTL ? <ChevronLeft className="w-5 h-5 text-slate-300 dark:text-slate-600 shrink-0" /> : <ChevronRight className="w-5 h-5 text-slate-300 dark:text-slate-600 shrink-0" />}
             </Link>
           ))}
         </section>
@@ -308,34 +308,34 @@ export default function DashboardPage() {
         <section className="mb-6 sm:mb-8" aria-label={isRTL ? 'المهام والأهداف والإجازات والتدريب' : 'Tasks, Goals, Leaves, Training'}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Tasks */}
-            <article className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-              <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-emerald-50/50 dark:bg-emerald-900/10">
+            <article className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+              <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-slate-50/50 dark:bg-blue-900/10">
                 <div className="flex items-center gap-2">
-                  <div className="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                    <CheckSquare className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  <div className="w-9 h-9 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                    <CheckSquare className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'المهام' : 'Tasks'}</h3>
+                  <h3 className="font-semibold text-slate-900 dark:text-white">{isRTL ? 'المهام' : 'Tasks'}</h3>
                 </div>
-                <Link href="/tasks" className="text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
+                <Link href="/tasks" className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 flex items-center gap-1">
                 {isRTL ? 'عرض الكل' : 'View all'}
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
             </div>
             <div className="p-4 min-h-[180px]">
               {dashboardLoading ? (
-                <div className="flex items-center justify-center h-36 text-gray-300">
+                <div className="flex items-center justify-center h-36 text-slate-300">
                   <Loader2 className="w-8 h-8 animate-spin" />
                 </div>
               ) : tasks.length === 0 ? (
-                <p className="text-sm text-gray-400 dark:text-gray-500 py-6 text-center">{isRTL ? 'لا توجد مهام' : 'No tasks yet'}</p>
+                <p className="text-sm text-slate-400 dark:text-slate-500 py-6 text-center">{isRTL ? 'لا توجد مهام' : 'No tasks yet'}</p>
               ) : (
                 <ul className="space-y-2">
                   {tasks.slice(0, 5).map((task) => (
                     <li key={task.id}>
-                      <Link href="/tasks" className="block p-3 rounded-lg hover:bg-emerald-50 dark:hover:bg-gray-800 transition-colors group">
-                        <p className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 truncate">{task.title}</p>
-                        <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                          <span className={`px-2 py-0.5 rounded-full ${task.status === 'done' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : task.status === 'in_progress' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'}`}>
+                      <Link href="/tasks" className="block p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
+                        <p className="font-medium text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">{task.title}</p>
+                        <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                          <span className={`px-2 py-0.5 rounded-full ${task.status === 'done' ? 'bg-blue-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : task.status === 'in_progress' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'}`}>
                             {task.status === 'done' ? (isRTL ? 'مكتملة' : 'Done') : task.status === 'in_progress' ? (isRTL ? 'قيد العمل' : 'In progress') : (isRTL ? 'جديدة' : 'To do')}
                           </span>
                           {task.dueDate && <span>{new Date(task.dueDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}</span>}
@@ -350,39 +350,39 @@ export default function DashboardPage() {
           </article>
 
           {/* Goals */}
-          <article className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-            <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-teal-50/50 dark:bg-teal-900/10">
+          <article className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-blue-50/50 dark:bg-blue-900/10">
               <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
-                  <Target className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+                <div className="w-9 h-9 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                  <Target className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'الأهداف' : 'Goals'}</h3>
+                <h3 className="font-semibold text-slate-900 dark:text-white">{isRTL ? 'الأهداف' : 'Goals'}</h3>
               </div>
-              <Link href="/goals" className="text-sm font-medium text-teal-600 hover:text-teal-700 dark:text-teal-400 flex items-center gap-1">
+              <Link href="/goals" className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 flex items-center gap-1">
                 {isRTL ? 'عرض الكل' : 'View all'}
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
             </div>
             <div className="p-4 min-h-[180px]">
               {dashboardLoading ? (
-                <div className="flex items-center justify-center h-36 text-gray-300">
+                <div className="flex items-center justify-center h-36 text-slate-300">
                   <Loader2 className="w-8 h-8 animate-spin" />
                 </div>
               ) : goals.length === 0 ? (
-                <p className="text-sm text-gray-400 dark:text-gray-500 py-6 text-center">{isRTL ? 'لا توجد أهداف' : 'No goals yet'}</p>
+                <p className="text-sm text-slate-400 dark:text-slate-500 py-6 text-center">{isRTL ? 'لا توجد أهداف' : 'No goals yet'}</p>
               ) : (
                 <ul className="space-y-2">
                   {goals.slice(0, 5).map((goal) => (
                     <li key={goal.id}>
-                      <Link href="/goals" className="block p-3 rounded-lg hover:bg-teal-50 dark:hover:bg-gray-800 transition-colors group">
-                        <p className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-teal-600 dark:group-hover:text-teal-400 truncate">{goal.title}</p>
+                      <Link href="/goals" className="block p-3 rounded-lg hover:bg-teal-50 dark:hover:bg-slate-800 transition-colors group">
+                        <p className="font-medium text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">{goal.title}</p>
                         <div className="mt-2 flex items-center gap-2">
-                          <div className="flex-1 h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                            <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${Math.min(goal.progress || 0, 100)}%` }} />
+                          <div className="flex-1 h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div className="h-full bg-slate-500 rounded-full transition-all" style={{ width: `${Math.min(goal.progress || 0, 100)}%` }} />
                           </div>
-                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400 tabular-nums">{goal.progress ?? 0}%</span>
+                          <span className="text-xs font-medium text-slate-600 dark:text-slate-400 tabular-nums">{goal.progress ?? 0}%</span>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{goal.owner?.name} · {goal.type}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{goal.owner?.name} · {goal.type}</p>
                       </Link>
                     </li>
                   ))}
@@ -392,13 +392,13 @@ export default function DashboardPage() {
           </article>
 
           {/* Leaves */}
-          <article className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-            <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-amber-50/50 dark:bg-amber-900/10">
+          <article className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-amber-50/50 dark:bg-amber-900/10">
               <div className="flex items-center gap-2">
                 <div className="w-9 h-9 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
                   <CalendarDays className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                 </div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'الإجازات' : 'Leaves'}</h3>
+                <h3 className="font-semibold text-slate-900 dark:text-white">{isRTL ? 'الإجازات' : 'Leaves'}</h3>
               </div>
               <Link href="/leaves" className="text-sm font-medium text-amber-600 hover:text-amber-700 dark:text-amber-400 flex items-center gap-1">
                 {isRTL ? 'عرض الكل' : 'View all'}
@@ -407,23 +407,23 @@ export default function DashboardPage() {
             </div>
             <div className="p-4 min-h-[180px]">
               {dashboardLoading ? (
-                <div className="flex items-center justify-center h-36 text-gray-300">
+                <div className="flex items-center justify-center h-36 text-slate-300">
                   <Loader2 className="w-8 h-8 animate-spin" />
                 </div>
               ) : leaves.length === 0 ? (
-                <p className="text-sm text-gray-400 dark:text-gray-500 py-6 text-center">{isRTL ? 'لا توجد إجازات' : 'No leaves yet'}</p>
+                <p className="text-sm text-slate-400 dark:text-slate-500 py-6 text-center">{isRTL ? 'لا توجد إجازات' : 'No leaves yet'}</p>
               ) : (
                 <ul className="space-y-2">
                   {leaves.slice(0, 5).map((leave) => (
                     <li key={leave.id}>
-                      <Link href="/leaves" className="block p-3 rounded-lg hover:bg-amber-50 dark:hover:bg-gray-800 transition-colors group">
-                        <p className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-amber-600 dark:group-hover:text-amber-400">
+                      <Link href="/leaves" className="block p-3 rounded-lg hover:bg-amber-50 dark:hover:bg-slate-800 transition-colors group">
+                        <p className="font-medium text-slate-900 dark:text-slate-100 group-hover:text-amber-600 dark:group-hover:text-amber-400">
                           {leave.user?.name ?? (isRTL ? 'إجازة' : 'Leave')} · {leave.type}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                           {new Date(leave.startDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')} → {new Date(leave.endDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
                         </p>
-                        <span className={`inline-block mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${leave.status === 'approved' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : leave.status === 'rejected' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300' : 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300'}`}>
+                        <span className={`inline-block mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${leave.status === 'approved' ? 'bg-blue-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : leave.status === 'rejected' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300' : 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300'}`}>
                           {leave.status === 'approved' ? (isRTL ? 'معتمدة' : 'Approved') : leave.status === 'rejected' ? (isRTL ? 'مرفوضة' : 'Rejected') : (isRTL ? 'قيد المراجعة' : 'Pending')}
                         </span>
                       </Link>
@@ -435,43 +435,43 @@ export default function DashboardPage() {
           </article>
 
           {/* Training */}
-          <article className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-            <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-cyan-50/50 dark:bg-cyan-900/10">
+          <article className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-indigo-50/50 dark:bg-indigo-900/10">
               <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-lg bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center">
-                  <GraduationCap className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+                <div className="w-9 h-9 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                  <GraduationCap className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 </div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'التدريب' : 'Training'}</h3>
+                <h3 className="font-semibold text-slate-900 dark:text-white">{isRTL ? 'التدريب' : 'Training'}</h3>
               </div>
-              <Link href="/trainings" className="text-sm font-medium text-cyan-600 hover:text-cyan-700 dark:text-cyan-400 flex items-center gap-1">
+              <Link href="/trainings" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 flex items-center gap-1">
                 {isRTL ? 'عرض الكل' : 'View all'}
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
             </div>
             <div className="p-4 min-h-[180px]">
               {dashboardLoading ? (
-                <div className="flex items-center justify-center h-36 text-gray-300">
+                <div className="flex items-center justify-center h-36 text-slate-300">
                   <Loader2 className="w-8 h-8 animate-spin" />
                 </div>
               ) : trainings.length === 0 ? (
-                <p className="text-sm text-gray-400 dark:text-gray-500 py-6 text-center">{isRTL ? 'لا يوجد تدريب' : 'No trainings yet'}</p>
+                <p className="text-sm text-slate-400 dark:text-slate-500 py-6 text-center">{isRTL ? 'لا يوجد تدريب' : 'No trainings yet'}</p>
               ) : (
                 <ul className="space-y-2">
                   {trainings.slice(0, 5).map((training) => (
                     <li key={training.id}>
-                      <Link href="/trainings" className="block p-3 rounded-lg hover:bg-cyan-50 dark:hover:bg-gray-800 transition-colors group">
-                        <p className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 truncate">{training.title}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <Link href="/trainings" className="block p-3 rounded-lg hover:bg-indigo-50 dark:hover:bg-slate-800 transition-colors group">
+                        <p className="font-medium text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 truncate">{training.title}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                           {training.creator?.name ?? ''} {training.type ? `· ${training.type}` : ''}
                         </p>
                         {(training.startDate || training.endDate) && (
-                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                          <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
                             {training.startDate && new Date(training.startDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
                             {training.startDate && training.endDate ? ' → ' : ''}
                             {training.endDate && new Date(training.endDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
                           </p>
                         )}
-                        <span className={`inline-block mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${training.status === 'completed' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : training.status === 'cancelled' ? 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' : 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300'}`}>
+                        <span className={`inline-block mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${training.status === 'completed' ? 'bg-blue-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : training.status === 'cancelled' ? 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400' : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'}`}>
                           {training.status === 'completed' ? (isRTL ? 'مكتمل' : 'Completed') : training.status === 'cancelled' ? (isRTL ? 'ملغى' : 'Cancelled') : (isRTL ? 'قادم' : 'Upcoming')}
                         </span>
                       </Link>
@@ -486,68 +486,68 @@ export default function DashboardPage() {
 
         {/* Quick Actions */}
         <section className="mb-6 sm:mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3 sm:mb-4">
             {isRTL ? 'إجراءات سريعة' : 'Quick Actions'}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            <Link href="/tasks" className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 flex items-center gap-4 p-4 hover:shadow-md hover:border-emerald-200 dark:hover:border-gray-700 transition-all group">
-              <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                <CheckSquare className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+            <Link href="/tasks" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-blue-200 dark:hover:border-slate-600 transition-all group">
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                <CheckSquare className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="min-w-0">
-                <p className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'إدارة المهام' : 'Manage Tasks'}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{isRTL ? 'إنشاء وتتبع المهام' : 'Create and track tasks'}</p>
+                <p className="font-semibold text-slate-900 dark:text-white">{isRTL ? 'إدارة المهام' : 'Manage Tasks'}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{isRTL ? 'إنشاء وتتبع المهام' : 'Create and track tasks'}</p>
               </div>
             </Link>
 
-            <Link href="/goals" className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 flex items-center gap-4 p-4 hover:shadow-md hover:border-teal-200 dark:hover:border-gray-700 transition-all group">
-              <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/30 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                <Target className="w-6 h-6 text-teal-600 dark:text-teal-400" />
+            <Link href="/goals" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-blue-200 dark:hover:border-slate-600 transition-all group">
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Target className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="min-w-0">
-                <p className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'إدارة الأهداف' : 'Manage Goals'}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{isRTL ? 'تتبع الأهداف السنوية والربعية' : 'Track annual and quarterly goals'}</p>
+                <p className="font-semibold text-slate-900 dark:text-white">{isRTL ? 'إدارة الأهداف' : 'Manage Goals'}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{isRTL ? 'تتبع الأهداف السنوية والربعية' : 'Track annual and quarterly goals'}</p>
               </div>
             </Link>
 
-            <Link href="/kpis" className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 flex items-center gap-4 p-4 hover:shadow-md hover:border-emerald-200 dark:hover:border-gray-700 transition-all group">
-              <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                <TrendingUp className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+            <Link href="/kpis" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-blue-200 dark:hover:border-slate-600 transition-all group">
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="min-w-0">
-                <p className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'مؤشرات الأداء' : 'KPIs'}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{isRTL ? 'تتبع وقياس الأداء' : 'Track and measure performance'}</p>
+                <p className="font-semibold text-slate-900 dark:text-white">{isRTL ? 'مؤشرات الأداء' : 'KPIs'}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{isRTL ? 'تتبع وقياس الأداء' : 'Track and measure performance'}</p>
               </div>
             </Link>
 
-            <Link href="/leaves" className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 flex items-center gap-4 p-4 hover:shadow-md hover:border-amber-200 dark:hover:border-gray-700 transition-all group">
+            <Link href="/leaves" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-amber-200 dark:hover:border-slate-600 transition-all group">
               <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
                 <CalendarDays className="w-6 h-6 text-amber-600 dark:text-amber-400" />
               </div>
               <div className="min-w-0">
-                <p className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'الإجازات' : 'Leaves'}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{isRTL ? 'طلب وإدارة الإجازات' : 'Request and manage leaves'}</p>
+                <p className="font-semibold text-slate-900 dark:text-white">{isRTL ? 'الإجازات' : 'Leaves'}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{isRTL ? 'طلب وإدارة الإجازات' : 'Request and manage leaves'}</p>
               </div>
             </Link>
 
-            <Link href="/trainings" className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 flex items-center gap-4 p-4 hover:shadow-md hover:border-cyan-200 dark:hover:border-gray-700 transition-all group">
-              <div className="w-12 h-12 bg-cyan-100 dark:bg-cyan-900/30 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                <GraduationCap className="w-6 h-6 text-cyan-600 dark:text-cyan-400" />
+            <Link href="/trainings" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-indigo-200 dark:hover:border-slate-600 transition-all group">
+              <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                <GraduationCap className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
               </div>
               <div className="min-w-0">
-                <p className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'التدريب' : 'Training'}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{isRTL ? 'الدورات والورش التدريبية' : 'Courses and workshops'}</p>
+                <p className="font-semibold text-slate-900 dark:text-white">{isRTL ? 'التدريب' : 'Training'}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{isRTL ? 'الدورات والورش التدريبية' : 'Courses and workshops'}</p>
               </div>
             </Link>
 
             {canManageTeam && (
-              <Link href="/team" className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 flex items-center gap-4 p-4 hover:shadow-md hover:border-emerald-200 dark:hover:border-gray-700 transition-all group">
-                <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                  <Users className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+              <Link href="/team" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-blue-200 dark:hover:border-slate-600 transition-all group">
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'إدارة الفريق' : 'Manage Team'}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{isRTL ? 'إضافة وإدارة أعضاء الفريق' : 'Add and manage team members'}</p>
+                  <p className="font-semibold text-slate-900 dark:text-white">{isRTL ? 'إدارة الفريق' : 'Manage Team'}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{isRTL ? 'إضافة وإدارة أعضاء الفريق' : 'Add and manage team members'}</p>
                 </div>
               </Link>
             )}
@@ -573,50 +573,50 @@ export default function DashboardPage() {
 
           return (
             <section className="mb-6 sm:mb-8">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-emerald-500" />
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-blue-500" />
                 {isRTL ? 'تحليل ذكي' : 'AI Analysis'}
               </h3>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 {isOwnerOrManager ? (
                   <>
-                    <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 sm:p-5">
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                        <BarChart3 className="w-4 h-4 text-emerald-500" />
+                    <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4 sm:p-5">
+                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-blue-500" />
                         {isRTL ? 'تحليل عام' : 'Overview'}
                       </h4>
-                      <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                      <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
                         <li>{isRTL ? 'المهام' : 'Tasks'}: {tasks.length} ({completedTasks} {isRTL ? 'مكتملة' : 'completed'})</li>
                         <li>{isRTL ? 'الأهداف' : 'Goals'}: {goals.length} ({isRTL ? 'متوسط التقدم' : 'avg progress'} {avgGoalProgress}%)</li>
                         <li>{isRTL ? 'الإجازات المعلقة' : 'Pending leaves'}: {pendingLeaves.length}</li>
                         <li className={overdueTasks.length > 0 ? 'text-amber-600 font-medium' : ''}>{isRTL ? 'مهام متأخرة' : 'Overdue tasks'}: {overdueTasks.length}</li>
                       </ul>
                     </div>
-                    <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 sm:p-5">
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                    <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4 sm:p-5">
+                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
                         <Lightbulb className="w-4 h-4 text-amber-500" />
                         {isRTL ? 'مقترحات ذكية' : 'Suggestions'}
                       </h4>
                       {suggestions.length === 0 ? (
-                        <p className="text-sm text-gray-400">{isRTL ? 'لا توجد توصيات حالياً' : 'No recommendations at the moment.'}</p>
+                        <p className="text-sm text-slate-400">{isRTL ? 'لا توجد توصيات حالياً' : 'No recommendations at the moment.'}</p>
                       ) : (
-                        <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                        <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
                           {suggestions.map((s, i) => (
                             <li key={i} className="flex items-start gap-2">
-                              <span className="text-emerald-500 mt-0.5">•</span>
+                              <span className="text-blue-500 mt-0.5">•</span>
                               {s}
                             </li>
                           ))}
                         </ul>
                       )}
                     </div>
-                    <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 sm:p-5">
+                    <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4 sm:p-5">
                       <h4 className="font-semibold text-red-500 dark:text-red-400 mb-3 flex items-center gap-2">
                         <AlertTriangle className="w-4 h-4" />
                         {isRTL ? 'تنبيهات إدارية' : 'Alerts'}
                       </h4>
                       {overdueTasks.length === 0 && pendingLeaves.length === 0 ? (
-                        <p className="text-sm text-gray-400">{isRTL ? 'لا توجد تنبيهات' : 'No alerts.'}</p>
+                        <p className="text-sm text-slate-400">{isRTL ? 'لا توجد تنبيهات' : 'No alerts.'}</p>
                       ) : (
                         <ul className="space-y-2 text-sm">
                           {overdueTasks.slice(0, 5).map((t) => (
@@ -626,7 +626,7 @@ export default function DashboardPage() {
                             </li>
                           ))}
                           {pendingLeaves.length > 0 && (
-                            <li className="text-emerald-600 flex items-center gap-2">
+                            <li className="text-blue-600 flex items-center gap-2">
                               <AlertTriangle className="w-4 h-4 shrink-0" />
                               {isRTL ? 'إجازات قيد المراجعة' : 'Leaves pending review'}: {pendingLeaves.length}
                             </li>
@@ -637,30 +637,30 @@ export default function DashboardPage() {
                   </>
                 ) : (
                   <>
-                    <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 sm:p-5">
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                        <CheckSquare className="w-4 h-4 text-emerald-500" />
+                    <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4 sm:p-5">
+                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                        <CheckSquare className="w-4 h-4 text-blue-500" />
                         {isRTL ? 'حالة المهام' : 'My Tasks'}
                       </h4>
-                      <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                      <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
                         <li>{isRTL ? 'الإجمالي' : 'Total'}: {myTasks.length}</li>
                         <li>{isRTL ? 'مكتملة' : 'Done'}: {myCompleted}</li>
                         <li>{isRTL ? 'قيد العمل' : 'In progress'}: {myTasks.filter((t) => t.status === 'in_progress').length}</li>
                         <li>{isRTL ? 'جديدة' : 'To do'}: {myTasks.length - myCompleted - myTasks.filter((t) => t.status === 'in_progress').length}</li>
                       </ul>
                     </div>
-                    <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 sm:p-5">
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                        <BarChart3 className="w-4 h-4 text-emerald-500" />
+                    <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4 sm:p-5">
+                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-blue-500" />
                         {isRTL ? 'الأداء' : 'Performance'}
                       </h4>
                       <div className="flex items-center gap-3">
-                        <div className="flex-1 h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                          <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${myPerformancePercent}%` }} />
+                        <div className="flex-1 h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                          <div className="h-full bg-slate-500 rounded-full transition-all" style={{ width: `${myPerformancePercent}%` }} />
                         </div>
-                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 tabular-nums">{myPerformancePercent}%</span>
+                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 tabular-nums">{myPerformancePercent}%</span>
                       </div>
-                      <p className="text-xs text-gray-500 mt-2">{isRTL ? 'نسبة إنجاز المهام' : 'Task completion rate'}</p>
+                      <p className="text-xs text-slate-500 mt-2">{isRTL ? 'نسبة إنجاز المهام' : 'Task completion rate'}</p>
                     </div>
                   </>
                 )}
@@ -671,29 +671,29 @@ export default function DashboardPage() {
       </main>
 
       {/* Footer */}
-      <footer className="hidden md:block bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 mt-auto">
+      <footer className="hidden md:block bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center">
                 <LayoutDashboard className="w-4 h-4 text-white" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">{t.app.name}</p>
-                <p className="text-xs text-gray-400">
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{t.app.name}</p>
+                <p className="text-xs text-slate-400">
                   &copy; {new Date().getFullYear()} {isRTL ? 'جميع الحقوق محفوظة' : 'All rights reserved'}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
-              <Link href="/tasks" className="hover:text-emerald-600 transition-colors">{isRTL ? 'المهام' : 'Tasks'}</Link>
-              <Link href="/goals" className="hover:text-emerald-600 transition-colors">{isRTL ? 'الأهداف' : 'Goals'}</Link>
-              <Link href="/kpis" className="hover:text-emerald-600 transition-colors">{isRTL ? 'المؤشرات' : 'KPIs'}</Link>
-              <Link href="/team" className="hover:text-emerald-600 transition-colors">{isRTL ? 'الفريق' : 'Team'}</Link>
+            <div className="flex items-center gap-6 text-sm text-slate-500 dark:text-slate-400">
+              <Link href="/tasks" className="hover:text-blue-600 transition-colors">{isRTL ? 'المهام' : 'Tasks'}</Link>
+              <Link href="/goals" className="hover:text-blue-600 transition-colors">{isRTL ? 'الأهداف' : 'Goals'}</Link>
+              <Link href="/kpis" className="hover:text-blue-600 transition-colors">{isRTL ? 'المؤشرات' : 'KPIs'}</Link>
+              <Link href="/team" className="hover:text-blue-600 transition-colors">{isRTL ? 'الفريق' : 'Team'}</Link>
             </div>
 
-            <p className="text-xs text-gray-400 flex items-center gap-1">
+            <p className="text-xs text-slate-400 flex items-center gap-1">
               {isRTL ? 'صنع بـ' : 'Made with'} <Heart className="w-3 h-3 text-red-400 fill-red-400" /> {isRTL ? 'لإدارة أفضل' : 'for better management'}
             </p>
           </div>
@@ -701,7 +701,7 @@ export default function DashboardPage() {
       </footer>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 z-50 safe-area-bottom">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 z-50 safe-area-bottom">
         <div className="flex items-center justify-around h-16 px-1">
           {mobileMainLinks.map((link) => (
             <Link
@@ -709,8 +709,8 @@ export default function DashboardPage() {
               href={link.href}
               className={`flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors
                 ${link.href === '/dashboard' 
-                  ? 'text-emerald-600 dark:text-emerald-400' 
-                  : 'text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400'
+                  ? 'text-blue-600 dark:text-blue-400' 
+                  : 'text-slate-400 hover:text-blue-600 dark:hover:text-blue-400'
                 }`}
             >
               <link.icon className="w-5 h-5" />
@@ -722,7 +722,7 @@ export default function DashboardPage() {
             <button
               onClick={() => setMoreMenuOpen(!moreMenuOpen)}
               className={`flex flex-col items-center justify-center gap-1 w-full py-2 rounded-lg transition-colors
-                ${moreMenuOpen ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400'}`}
+                ${moreMenuOpen ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 hover:text-blue-600 dark:hover:text-blue-400'}`}
             >
               <MoreHorizontal className="w-5 h-5" />
               <span className="text-[10px] font-medium leading-none">{isRTL ? 'المزيد' : 'More'}</span>
@@ -731,15 +731,15 @@ export default function DashboardPage() {
             {moreMenuOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setMoreMenuOpen(false)} />
-                <div className={`absolute bottom-full mb-2 z-50 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800
+                <div className={`absolute bottom-full mb-2 z-50 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700
                                  py-2 w-48 ${isRTL ? 'left-0' : 'right-0'}`}>
                   {mobileMoreLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
                       onClick={() => setMoreMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 
-                                 hover:bg-emerald-50 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 
+                                 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                     >
                       <link.icon className="w-5 h-5" />
                       <span className="font-medium">{link.label}</span>
