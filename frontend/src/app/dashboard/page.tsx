@@ -11,8 +11,9 @@ import {
   Building2, ChevronLeft, ChevronRight, CalendarDays, GraduationCap, Heart, Home,
   MoreHorizontal, ArrowUpRight, Flag, User, Loader2, Sparkles, Lightbulb,
   AlertTriangle, BarChart3, Moon, Sun, Zap, Award, Clock, ShieldCheck,
-  Activity, Flame, ListChecks,
+  Activity, Flame, ListChecks, CheckCircle2, AlertCircle, Download,
 } from 'lucide-react';
+import DailyQuote from '@/components/DailyQuote';
 
 /* ── Types ── */
 interface DashboardTask {
@@ -126,7 +127,7 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
           <span className="text-gray-600 dark:text-gray-300">{t.app.loading}</span>
         </div>
       </div>
@@ -158,8 +159,8 @@ export default function DashboardPage() {
   ];
 
   const stats = [
-    { label: isRTL ? 'المهام' : 'Tasks', value: tasks.length, icon: CheckSquare, color: 'bg-indigo-500', href: '/tasks' },
-    { label: isRTL ? 'الأهداف' : 'Goals', value: goals.length, icon: Target, color: 'bg-violet-500', href: '/goals' },
+    { label: isRTL ? 'المهام' : 'Tasks', value: tasks.length, icon: CheckSquare, color: 'bg-teal-500', href: '/tasks' },
+    { label: isRTL ? 'الأهداف' : 'Goals', value: goals.length, icon: Target, color: 'bg-emerald-500', href: '/goals' },
     { label: isRTL ? 'الإجازات' : 'Leaves', value: leaves.length, icon: CalendarDays, color: 'bg-amber-500', href: '/leaves' },
     { label: isRTL ? 'التدريب' : 'Training', value: trainings.length, icon: GraduationCap, color: 'bg-teal-500', href: '/trainings' },
   ];
@@ -204,9 +205,9 @@ export default function DashboardPage() {
     alert: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300',
     tip: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300',
     ok: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300',
-    info: 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300',
+    info: 'bg-teal-50 dark:bg-teal-900/20 border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300',
   };
-  const sDot = { alert: 'bg-red-500', tip: 'bg-amber-500', ok: 'bg-emerald-500', info: 'bg-indigo-500' };
+  const sDot = { alert: 'bg-red-500', tip: 'bg-amber-500', ok: 'bg-emerald-500', info: 'bg-teal-500' };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
@@ -215,7 +216,7 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+              <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-teal-500/20">
                 <LayoutDashboard className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -235,13 +236,13 @@ export default function DashboardPage() {
                   <p className="font-medium text-gray-900 dark:text-white">{user.name}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">{t.roles[user.role as keyof typeof t.roles] || user.role}</p>
                 </div>
-                <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-full flex items-center justify-center">
+                <div className="w-9 h-9 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-full flex items-center justify-center">
                   <span className="text-white font-semibold">{user.name.charAt(0).toUpperCase()}</span>
                 </div>
               </div>
               <div className="sm:hidden flex items-center gap-2">
                 <p className="font-medium text-sm text-gray-900 dark:text-white">{user.name}</p>
-                <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-full flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-full flex items-center justify-center shrink-0">
                   <span className="text-white font-semibold text-sm">{user.name.charAt(0).toUpperCase()}</span>
                 </div>
               </div>
@@ -252,7 +253,7 @@ export default function DashboardPage() {
           </div>
           <nav className="hidden md:flex -mb-px gap-1 overflow-x-auto pb-0">
             {navLinks.map(l => (
-              <Link key={l.href} href={l.href} className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-lg transition-colors whitespace-nowrap">
+              <Link key={l.href} href={l.href} className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-lg transition-colors whitespace-nowrap">
                 <l.icon className="w-4 h-4" />{l.label}
               </Link>
             ))}
@@ -264,35 +265,115 @@ export default function DashboardPage() {
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
         {/* Welcome */}
-        <section className="rounded-2xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-700 dark:from-indigo-800 dark:via-indigo-900 dark:to-violet-900 p-6 sm:p-8 mb-6 sm:mb-8 text-white shadow-lg shadow-indigo-500/20">
-          <h2 className="text-2xl sm:text-3xl font-bold">{t.dashboard.welcome}، {user.name} 👋</h2>
-          <p className="mt-1 text-indigo-200">{t.dashboard.overview}</p>
-          <p className="mt-2 text-white/80 text-sm italic">{getPhrase(isRTL)}</p>
+        <section className="rounded-2xl bg-gradient-to-r from-teal-600 via-teal-500 to-emerald-500 dark:from-teal-800 dark:via-teal-700 dark:to-emerald-700 p-6 sm:p-8 mb-6 sm:mb-8 text-white shadow-lg shadow-teal-500/20 relative overflow-hidden">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-bold flex items-center gap-2 flex-wrap">
+                ☀️ {t.dashboard.welcome}، {user.name}! 🔗
+              </h2>
+              <p className="mt-2 text-white/80 text-sm">
+                {isRTL ? `مساء الخير ${user.name}! 🚀 جاهز ليوم متميز؟ لنصنع أهدافاً ونحقق الإنجازات` : `Good day ${user.name}! 🚀 Ready for a productive day? Let's set goals and achieve!`}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2.5 text-center">
+                <p className="text-[10px] text-white/70 font-medium">{isRTL ? 'الأداء' : 'Performance'}</p>
+                <p className="text-lg font-bold">{tasks.length ? ((completedTasks/tasks.length)*100).toFixed(1) : '0.0'}%</p>
+              </div>
+              <button className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-white/30 transition-colors flex items-center gap-2">
+                <Download className="w-4 h-4" />
+                {isRTL ? 'تصدير' : 'Export'}
+              </button>
+            </div>
+          </div>
+          <p className="mt-3 text-white/70 text-sm italic">{getPhrase(isRTL)}</p>
         </section>
 
-        {/* Stats */}
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
-          {stats.map((s, i) => (
-            <Link key={i} href={s.href} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 hover:shadow-md hover:border-indigo-200 dark:hover:border-gray-600 flex items-center gap-3 sm:gap-4 p-4 transition-all group">
-              <div className={`w-12 h-12 ${s.color} rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm`}>
-                <s.icon className="w-6 h-6 text-white" />
+        {/* KPI Cards */}
+        <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          {[
+            { label: isRTL ? 'إجمالي المهام' : 'Total Tasks', value: dashboardLoading ? '...' : tasks.length, subtitle: isRTL ? 'جميع المهام المسندة' : 'All assigned tasks', icon: ListChecks, iconBg: 'bg-purple-100 dark:bg-purple-900/30', iconColor: 'text-purple-600 dark:text-purple-400' },
+            { label: isRTL ? 'مكتملة' : 'Completed', value: dashboardLoading ? '...' : completedTasks, subtitle: tasks.length ? `${Math.round((completedTasks/tasks.length)*100)}%` : '0%', icon: CheckCircle2, iconBg: 'bg-emerald-100 dark:bg-emerald-900/30', iconColor: 'text-emerald-600 dark:text-emerald-400' },
+            { label: isRTL ? 'قيد التنفيذ' : 'In Progress', value: dashboardLoading ? '...' : inProgressTasks, subtitle: isRTL ? 'عمل نشط' : 'Active work', icon: Zap, iconBg: 'bg-blue-100 dark:bg-blue-900/30', iconColor: 'text-blue-600 dark:text-blue-400' },
+            { label: isRTL ? 'متأخرة' : 'Delayed', value: dashboardLoading ? '...' : overdueTasks.length, subtitle: isRTL ? 'تحتاج اهتمام' : 'Needs attention', icon: AlertCircle, iconBg: 'bg-orange-100 dark:bg-orange-900/30', iconColor: 'text-orange-600 dark:text-orange-400' },
+            { label: isRTL ? 'نسبة النجاح' : 'Success Rate', value: dashboardLoading ? '...' : `${tasks.length ? ((completedTasks/tasks.length)*100).toFixed(1) : '0.0'}%`, subtitle: isRTL ? 'كفاءة الفريق' : 'Team efficiency', icon: Award, iconBg: 'bg-rose-100 dark:bg-rose-900/30', iconColor: 'text-rose-600 dark:text-rose-400' },
+          ].map((card, i) => (
+            <div key={i} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 hover:shadow-md transition-all duration-200">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{card.label}</p>
+                <div className={`w-10 h-10 ${card.iconBg} rounded-xl flex items-center justify-center`}>
+                  <card.icon className={`w-5 h-5 ${card.iconColor}`} />
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-2xl font-bold text-gray-900 dark:text-white tabular-nums">{dashboardLoading ? '...' : s.value}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{s.label}</p>
-              </div>
-              {isRTL ? <ChevronLeft className="w-5 h-5 text-gray-300 dark:text-gray-600 shrink-0" /> : <ChevronRight className="w-5 h-5 text-gray-300 dark:text-gray-600 shrink-0" />}
-            </Link>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white tabular-nums">{card.value}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{card.subtitle}</p>
+            </div>
           ))}
+        </section>
+
+        {/* ── Quick Overview ── */}
+        <div className="text-center mb-4">
+          <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-widest uppercase">── {isRTL ? 'نظرة سريعة' : 'QUICK OVERVIEW'} ──</p>
+        </div>
+        <section className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          {[
+            { label: isRTL ? 'مهام جديدة' : 'New Tasks', value: dashboardLoading ? '...' : tasks.filter(t => t.status !== 'done' && t.status !== 'in_progress').length, bg: 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800', icon: Target, iconColor: 'text-emerald-500 dark:text-emerald-400' },
+            { label: isRTL ? 'الموظفون النشطون' : 'Active Employees', value: dashboardLoading ? '...' : employeeCards.length, bg: 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800', icon: Users, iconColor: 'text-blue-500 dark:text-blue-400' },
+            { label: isRTL ? 'خطط معلقة' : 'Pending Plans', value: dashboardLoading ? '...' : goals.filter(g => g.status !== 'completed').length, bg: 'bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800', icon: TrendingUp, iconColor: 'text-rose-500 dark:text-rose-400' },
+          ].map((card, i) => (
+            <div key={i} className={`rounded-xl p-5 ${card.bg} transition-all duration-200 hover:shadow-md`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{card.label}</p>
+                  <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1 tabular-nums">{card.value}</p>
+                </div>
+                <card.icon className={`w-8 h-8 ${card.iconColor} opacity-60`} />
+              </div>
+            </div>
+          ))}
+        </section>
+
+        {/* ── Daily Inspiration & News ── */}
+        <div className="text-center mb-4">
+          <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-widest uppercase">💡 {isRTL ? 'إلهام يومي وأخبار' : 'DAILY INSPIRATION & NEWS'}</p>
+        </div>
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6 sm:mb-8">
+          <DailyQuote />
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 overflow-hidden">
+            <div className={`flex items-center gap-3 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <div className="w-10 h-10 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center shrink-0">
+                <Globe className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+              </div>
+              <div className={isRTL ? 'text-right' : ''}>
+                <h3 className="font-bold text-gray-900 dark:text-white text-sm">{isRTL ? '🚀 أخبار التقنية والذكاء الاصطناعي' : '🚀 Tech & AI News'}</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{isRTL ? 'آخر التحديثات في عالم البيانات' : 'Latest updates in the data world'}</p>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div className={`flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
+                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                  <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{isRTL ? 'كلود يقدم ميزة التفكير المعمق' : 'Claude introduces deep thinking'}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{isRTL ? 'أنثروبيك تطلق كلود بإمكانيات التفكير المعمق لحل المشاكل المعقدة' : 'Anthropic launches Claude with deep thinking capabilities'}</p>
+                  <div className={`flex items-center gap-2 mt-1.5 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <span className="text-[10px] text-gray-400">Anthropic</span>
+                    <span className="text-[10px] bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded">AI</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* ══ Employee Cards (Manager/Owner only) ══ */}
         {canManage && employeeCards.length > 0 && (
           <section className="mb-6 sm:mb-8">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-              <Users className="w-5 h-5 text-indigo-500" />
+              <Users className="w-5 h-5 text-teal-500" />
               {isRTL ? 'حالة الموظفين' : 'Team Overview'}
-              <span className="text-xs bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-full">{employeeCards.length}</span>
+              <span className="text-xs bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 px-2 py-0.5 rounded-full">{employeeCards.length}</span>
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {employeeCards.map(emp => {
@@ -306,7 +387,7 @@ export default function DashboardPage() {
                   <div key={emp.id} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5 hover:shadow-md transition-all">
                     {/* Name + Avatar */}
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-indigo-400 to-violet-500 rounded-full flex items-center justify-center shadow-sm">
+                      <div className="w-10 h-10 bg-gradient-to-br from-teal-400 to-emerald-500 rounded-full flex items-center justify-center shadow-sm">
                         <span className="text-white font-bold text-sm">{emp.name.charAt(0).toUpperCase()}</span>
                       </div>
                       <div className="flex-1 min-w-0">
@@ -317,7 +398,7 @@ export default function DashboardPage() {
                       </div>
                       {/* Mini ring */}
                       <div className="relative shrink-0">
-                        <Ring pct={empPct} size={44} sw={4} cls={empPct >= 75 ? 'stroke-emerald-500' : empPct >= 50 ? 'stroke-amber-500' : 'stroke-indigo-500'} />
+                        <Ring pct={empPct} size={44} sw={4} cls={empPct >= 75 ? 'stroke-emerald-500' : empPct >= 50 ? 'stroke-amber-500' : 'stroke-teal-500'} />
                         <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-gray-700 dark:text-gray-300">{empPct}%</span>
                       </div>
                     </div>
@@ -346,7 +427,7 @@ export default function DashboardPage() {
                           <span className="font-medium tabular-nums">{empGoalAvg}%</span>
                         </div>
                         <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                          <div className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full transition-all duration-500" style={{ width: `${empGoalAvg}%` }} />
+                          <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500" style={{ width: `${empGoalAvg}%` }} />
                         </div>
                       </div>
                     )}
@@ -373,17 +454,17 @@ export default function DashboardPage() {
             <article className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
               <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center"><CheckSquare className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /></div>
+                  <div className="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center"><CheckSquare className="w-4 h-4 text-teal-600 dark:text-teal-400" /></div>
                   <h3 className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'المهام' : 'Tasks'}</h3>
                 </div>
-                <Link href="/tasks" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 flex items-center gap-1">{isRTL ? 'الكل' : 'View all'}<ArrowUpRight className="w-4 h-4" /></Link>
+                <Link href="/tasks" className="text-sm font-medium text-teal-600 hover:text-teal-700 dark:text-teal-400 flex items-center gap-1">{isRTL ? 'الكل' : 'View all'}<ArrowUpRight className="w-4 h-4" /></Link>
               </div>
               <div className="p-4 min-h-[160px]">
                 {dashboardLoading ? <div className="flex items-center justify-center h-32"><Loader2 className="w-7 h-7 animate-spin text-gray-300" /></div>
                 : tasks.length === 0 ? <p className="text-sm text-gray-400 py-6 text-center">{isRTL ? 'لا توجد مهام' : 'No tasks yet'}</p>
                 : <ul className="space-y-1.5">{tasks.slice(0, 5).map(task => (
                     <li key={task.id}><Link href="/tasks" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
-                      <p className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 truncate">{task.title}</p>
+                      <p className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-teal-600 dark:group-hover:text-teal-400 truncate">{task.title}</p>
                       <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                         <span className={`px-2 py-0.5 rounded-full ${task.status==='done' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : task.status==='in_progress' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'}`}>
                           {task.status==='done' ? (isRTL?'مكتملة':'Done') : task.status==='in_progress' ? (isRTL?'قيد العمل':'In progress') : (isRTL?'جديدة':'To do')}
@@ -400,19 +481,19 @@ export default function DashboardPage() {
             <article className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
               <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center"><Target className="w-4 h-4 text-violet-600 dark:text-violet-400" /></div>
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center"><Target className="w-4 h-4 text-emerald-600 dark:text-violet-400" /></div>
                   <h3 className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'الأهداف' : 'Goals'}</h3>
                 </div>
-                <Link href="/goals" className="text-sm font-medium text-violet-600 hover:text-violet-700 dark:text-violet-400 flex items-center gap-1">{isRTL ? 'الكل' : 'View all'}<ArrowUpRight className="w-4 h-4" /></Link>
+                <Link href="/goals" className="text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-violet-400 flex items-center gap-1">{isRTL ? 'الكل' : 'View all'}<ArrowUpRight className="w-4 h-4" /></Link>
               </div>
               <div className="p-4 min-h-[160px]">
                 {dashboardLoading ? <div className="flex items-center justify-center h-32"><Loader2 className="w-7 h-7 animate-spin text-gray-300" /></div>
                 : goals.length === 0 ? <p className="text-sm text-gray-400 py-6 text-center">{isRTL ? 'لا توجد أهداف' : 'No goals yet'}</p>
                 : <ul className="space-y-1.5">{goals.slice(0, 5).map(goal => (
                     <li key={goal.id}><Link href="/goals" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
-                      <p className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-violet-600 dark:group-hover:text-violet-400 truncate">{goal.title}</p>
+                      <p className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-violet-400 truncate">{goal.title}</p>
                       <div className="mt-2 flex items-center gap-2">
-                        <div className="flex-1 h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full transition-all" style={{ width: `${Math.min(goal.progress||0, 100)}%` }} /></div>
+                        <div className="flex-1 h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all" style={{ width: `${Math.min(goal.progress||0, 100)}%` }} /></div>
                         <span className="text-xs font-medium text-gray-600 dark:text-gray-400 tabular-nums">{goal.progress??0}%</span>
                       </div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{goal.owner?.name} · {goal.type}</p>
@@ -477,12 +558,12 @@ export default function DashboardPage() {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{isRTL ? 'إجراءات سريعة' : 'Quick Actions'}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {[
-              { href: '/tasks', icon: CheckSquare, color: 'bg-indigo-100 dark:bg-indigo-900/30', iClr: 'text-indigo-600 dark:text-indigo-400', label: isRTL ? 'إدارة المهام' : 'Manage Tasks', desc: isRTL ? 'إنشاء وتتبع المهام' : 'Create and track tasks' },
-              { href: '/goals', icon: Target, color: 'bg-violet-100 dark:bg-violet-900/30', iClr: 'text-violet-600 dark:text-violet-400', label: isRTL ? 'إدارة الأهداف' : 'Manage Goals', desc: isRTL ? 'تتبع الأهداف' : 'Track goals' },
-              { href: '/kpis', icon: TrendingUp, color: 'bg-indigo-100 dark:bg-indigo-900/30', iClr: 'text-indigo-600 dark:text-indigo-400', label: isRTL ? 'مؤشرات الأداء' : 'KPIs', desc: isRTL ? 'قياس الأداء' : 'Measure performance' },
+              { href: '/tasks', icon: CheckSquare, color: 'bg-teal-100 dark:bg-teal-900/30', iClr: 'text-teal-600 dark:text-teal-400', label: isRTL ? 'إدارة المهام' : 'Manage Tasks', desc: isRTL ? 'إنشاء وتتبع المهام' : 'Create and track tasks' },
+              { href: '/goals', icon: Target, color: 'bg-emerald-100 dark:bg-emerald-900/30', iClr: 'text-emerald-600 dark:text-violet-400', label: isRTL ? 'إدارة الأهداف' : 'Manage Goals', desc: isRTL ? 'تتبع الأهداف' : 'Track goals' },
+              { href: '/kpis', icon: TrendingUp, color: 'bg-teal-100 dark:bg-teal-900/30', iClr: 'text-teal-600 dark:text-teal-400', label: isRTL ? 'مؤشرات الأداء' : 'KPIs', desc: isRTL ? 'قياس الأداء' : 'Measure performance' },
               { href: '/leaves', icon: CalendarDays, color: 'bg-amber-100 dark:bg-amber-900/30', iClr: 'text-amber-600 dark:text-amber-400', label: isRTL ? 'الإجازات' : 'Leaves', desc: isRTL ? 'طلب وإدارة الإجازات' : 'Request and manage' },
               { href: '/trainings', icon: GraduationCap, color: 'bg-teal-100 dark:bg-teal-900/30', iClr: 'text-teal-600 dark:text-teal-400', label: isRTL ? 'التدريب' : 'Training', desc: isRTL ? 'الدورات والورش' : 'Courses & workshops' },
-              ...(canManage ? [{ href: '/team', icon: Users, color: 'bg-indigo-100 dark:bg-indigo-900/30', iClr: 'text-indigo-600 dark:text-indigo-400', label: isRTL ? 'الفريق' : 'Team', desc: isRTL ? 'إدارة أعضاء الفريق' : 'Manage members' }] : []),
+              ...(canManage ? [{ href: '/team', icon: Users, color: 'bg-teal-100 dark:bg-teal-900/30', iClr: 'text-teal-600 dark:text-teal-400', label: isRTL ? 'الفريق' : 'Team', desc: isRTL ? 'إدارة أعضاء الفريق' : 'Manage members' }] : []),
             ].map(a => (
               <Link key={a.href} href={a.href} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 flex items-center gap-4 p-4 hover:shadow-md transition-all group">
                 <div className={`w-11 h-11 ${a.color} rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform`}><a.icon className={`w-5 h-5 ${a.iClr}`} /></div>
@@ -495,7 +576,7 @@ export default function DashboardPage() {
         {/* ══ Smart Analytics ══ */}
         <section className="mb-6 sm:mb-8">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center"><Sparkles className="w-4 h-4 text-white" /></div>
+            <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-lg flex items-center justify-center"><Sparkles className="w-4 h-4 text-white" /></div>
             {isRTL ? 'التحليل الذكي' : 'Smart Analytics'}
           </h3>
 
@@ -504,7 +585,7 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Health */}
                 <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5 flex flex-col items-center">
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2 self-start"><Activity className="w-4 h-4 text-indigo-500" />{isRTL ? 'صحة المشروع' : 'Project Health'}</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2 self-start"><Activity className="w-4 h-4 text-teal-500" />{isRTL ? 'صحة المشروع' : 'Project Health'}</h4>
                   <div className="relative"><Ring pct={health} size={110} sw={10} cls={hStroke} /><div className="absolute inset-0 flex flex-col items-center justify-center"><span className={`text-2xl font-bold ${hClr}`}>{health}</span><span className="text-[10px] text-gray-400">/100</span></div></div>
                   <p className={`text-sm font-medium mt-3 ${hClr}`}>{hLabel}</p>
                   <div className="mt-3 w-full space-y-1 text-xs text-gray-500 dark:text-gray-400">
@@ -516,7 +597,7 @@ export default function DashboardPage() {
 
                 {/* Priority */}
                 <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2"><Flag className="w-4 h-4 text-indigo-500" />{isRTL ? 'الأولويات' : 'Priorities'}</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2"><Flag className="w-4 h-4 text-teal-500" />{isRTL ? 'الأولويات' : 'Priorities'}</h4>
                   {[
                     { label: isRTL ? 'عالية' : 'High', count: hp, clr: 'bg-red-500', dot: 'bg-red-500', text: 'text-red-600 dark:text-red-400' },
                     { label: isRTL ? 'متوسطة' : 'Medium', count: mp, clr: 'bg-amber-500', dot: 'bg-amber-500', text: 'text-amber-600 dark:text-amber-400' },
@@ -531,7 +612,7 @@ export default function DashboardPage() {
 
                 {/* Summary */}
                 <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2"><BarChart3 className="w-4 h-4 text-indigo-500" />{isRTL ? 'ملخص المهام' : 'Task Summary'}</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2"><BarChart3 className="w-4 h-4 text-teal-500" />{isRTL ? 'ملخص المهام' : 'Task Summary'}</h4>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-3 text-center"><p className="text-xl font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">{completedTasks}</p><p className="text-[10px] text-emerald-600/70">{isRTL ? 'مكتملة' : 'Done'}</p></div>
                     <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3 text-center"><p className="text-xl font-bold text-amber-600 dark:text-amber-400 tabular-nums">{inProgressTasks}</p><p className="text-[10px] text-amber-600/70">{isRTL ? 'جارية' : 'Active'}</p></div>
@@ -544,7 +625,7 @@ export default function DashboardPage() {
               {/* Suggestions + Alerts */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2"><Lightbulb className="w-4 h-4 text-amber-500" />{isRTL ? 'مقترحات' : 'Suggestions'}{suggestions.length > 0 && <span className="text-xs bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-full">{suggestions.length}</span>}</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2"><Lightbulb className="w-4 h-4 text-amber-500" />{isRTL ? 'مقترحات' : 'Suggestions'}{suggestions.length > 0 && <span className="text-xs bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 px-2 py-0.5 rounded-full">{suggestions.length}</span>}</h4>
                   {suggestions.length === 0 ? (
                     <div className="flex flex-col items-center py-4 text-center"><ShieldCheck className="w-10 h-10 text-emerald-400 mb-2" /><p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">{isRTL ? 'كل شيء على ما يرام!' : 'All good!'}</p></div>
                   ) : (
@@ -570,13 +651,13 @@ export default function DashboardPage() {
             /* ── Employee Analytics ── */
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5 flex flex-col items-center">
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2 self-start"><Award className="w-4 h-4 text-indigo-500" />{isRTL ? 'أدائي' : 'My Performance'}</h4>
-                <div className="relative"><Ring pct={myPct} size={100} sw={8} cls={myPct >= 75 ? 'stroke-emerald-500' : myPct >= 50 ? 'stroke-amber-500' : 'stroke-indigo-500'} /><div className="absolute inset-0 flex items-center justify-center"><span className="text-xl font-bold text-gray-800 dark:text-white">{myPct}%</span></div></div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2 self-start"><Award className="w-4 h-4 text-teal-500" />{isRTL ? 'أدائي' : 'My Performance'}</h4>
+                <div className="relative"><Ring pct={myPct} size={100} sw={8} cls={myPct >= 75 ? 'stroke-emerald-500' : myPct >= 50 ? 'stroke-amber-500' : 'stroke-teal-500'} /><div className="absolute inset-0 flex items-center justify-center"><span className="text-xl font-bold text-gray-800 dark:text-white">{myPct}%</span></div></div>
                 <p className="text-sm text-gray-500 mt-3">{isRTL ? 'نسبة الإنجاز' : 'Completion rate'}</p>
                 {myPct >= 80 && <p className="text-xs text-emerald-500 font-medium mt-1 flex items-center gap-1"><Flame className="w-3 h-3" />{isRTL ? 'أداء رائع!' : 'Great work!'}</p>}
               </div>
               <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2"><ListChecks className="w-4 h-4 text-indigo-500" />{isRTL ? 'مهامي' : 'My Tasks'}</h4>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2"><ListChecks className="w-4 h-4 text-teal-500" />{isRTL ? 'مهامي' : 'My Tasks'}</h4>
                 {[
                   { label: isRTL?'مكتملة':'Done', count: myDone, clr: 'bg-emerald-500', bg: 'bg-emerald-500' },
                   { label: isRTL?'جارية':'Active', count: myInProg, clr: 'bg-amber-500', bg: 'bg-amber-500' },
@@ -595,7 +676,7 @@ export default function DashboardPage() {
                   {myTasks.filter(t => t.dueDate && t.dueDate < today && t.status !== 'done').length > 0 && <div className={`flex items-start gap-3 p-2.5 rounded-lg border ${sStyle.alert}`}><span className="w-2 h-2 rounded-full mt-1.5 bg-red-500 shrink-0" /><p className="text-sm">{isRTL ? `${myTasks.filter(t=>t.dueDate&&t.dueDate<today&&t.status!=='done').length} مهمة متأخرة` : `${myTasks.filter(t=>t.dueDate&&t.dueDate<today&&t.status!=='done').length} overdue`}</p></div>}
                   {myPct >= 80 && <div className={`flex items-start gap-3 p-2.5 rounded-lg border ${sStyle.ok}`}><span className="w-2 h-2 rounded-full mt-1.5 bg-emerald-500 shrink-0" /><p className="text-sm">{isRTL ? 'أداء ممتاز — استمر!' : 'Excellent — keep it up!'}</p></div>}
                   {myPct < 50 && myTasks.length > 0 && <div className={`flex items-start gap-3 p-2.5 rounded-lg border ${sStyle.tip}`}><span className="w-2 h-2 rounded-full mt-1.5 bg-amber-500 shrink-0" /><p className="text-sm">{isRTL ? 'أنجز مهمة يومياً لتحسين أدائك' : 'Complete one task daily to improve'}</p></div>}
-                  {myTasks.length === 0 && <div className={`flex items-start gap-3 p-2.5 rounded-lg border ${sStyle.info}`}><span className="w-2 h-2 rounded-full mt-1.5 bg-indigo-500 shrink-0" /><p className="text-sm">{isRTL ? 'لا مهام حالياً' : 'No tasks assigned yet'}</p></div>}
+                  {myTasks.length === 0 && <div className={`flex items-start gap-3 p-2.5 rounded-lg border ${sStyle.info}`}><span className="w-2 h-2 rounded-full mt-1.5 bg-teal-500 shrink-0" /><p className="text-sm">{isRTL ? 'لا مهام حالياً' : 'No tasks assigned yet'}</p></div>}
                 </div>
               </div>
             </div>
@@ -608,13 +689,13 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center"><LayoutDashboard className="w-4 h-4 text-white" /></div>
+              <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-lg flex items-center justify-center"><LayoutDashboard className="w-4 h-4 text-white" /></div>
               <div><p className="text-sm font-semibold text-gray-700 dark:text-gray-200">{t.app.name}</p><p className="text-xs text-gray-400">&copy; {new Date().getFullYear()} {isRTL ? 'جميع الحقوق محفوظة' : 'All rights reserved'}</p></div>
             </div>
             <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
-              <Link href="/tasks" className="hover:text-indigo-600 transition-colors">{isRTL ? 'المهام' : 'Tasks'}</Link>
-              <Link href="/goals" className="hover:text-indigo-600 transition-colors">{isRTL ? 'الأهداف' : 'Goals'}</Link>
-              <Link href="/kpis" className="hover:text-indigo-600 transition-colors">{isRTL ? 'المؤشرات' : 'KPIs'}</Link>
+              <Link href="/tasks" className="hover:text-teal-600 transition-colors">{isRTL ? 'المهام' : 'Tasks'}</Link>
+              <Link href="/goals" className="hover:text-teal-600 transition-colors">{isRTL ? 'الأهداف' : 'Goals'}</Link>
+              <Link href="/kpis" className="hover:text-teal-600 transition-colors">{isRTL ? 'المؤشرات' : 'KPIs'}</Link>
             </div>
             <p className="text-xs text-gray-400 flex items-center gap-1">{isRTL ? 'صنع بـ' : 'Made with'}<Heart className="w-3 h-3 text-red-400 fill-red-400" />{isRTL ? 'لإدارة أفضل' : 'for better management'}</p>
           </div>
@@ -625,16 +706,16 @@ export default function DashboardPage() {
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 z-50 safe-area-bottom">
         <div className="flex items-center justify-around h-16 px-1">
           {mobileMain.map(l => (
-            <Link key={l.href} href={l.href} className={`flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors ${l.href === '/dashboard' ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400'}`}>
+            <Link key={l.href} href={l.href} className={`flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors ${l.href === '/dashboard' ? 'text-teal-600 dark:text-teal-400' : 'text-gray-400 hover:text-teal-600 dark:hover:text-teal-400'}`}>
               <l.icon className="w-5 h-5" /><span className="text-[10px] font-medium leading-none">{l.label}</span>
             </Link>
           ))}
           <div className="relative flex-1">
-            <button onClick={() => setMoreMenuOpen(!moreMenuOpen)} className={`flex flex-col items-center justify-center gap-1 w-full py-2 rounded-lg transition-colors ${moreMenuOpen ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400'}`}>
+            <button onClick={() => setMoreMenuOpen(!moreMenuOpen)} className={`flex flex-col items-center justify-center gap-1 w-full py-2 rounded-lg transition-colors ${moreMenuOpen ? 'text-teal-600 dark:text-teal-400' : 'text-gray-400 hover:text-teal-600 dark:hover:text-teal-400'}`}>
               <MoreHorizontal className="w-5 h-5" /><span className="text-[10px] font-medium leading-none">{isRTL ? 'المزيد' : 'More'}</span>
             </button>
             {moreMenuOpen && (<><div className="fixed inset-0 z-40" onClick={() => setMoreMenuOpen(false)} /><div className={`absolute bottom-full mb-2 z-50 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-2 w-48 ${isRTL ? 'left-0' : 'right-0'}`}>
-              {mobileMore.map(l => (<Link key={l.href} href={l.href} onClick={() => setMoreMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"><l.icon className="w-5 h-5" /><span className="font-medium">{l.label}</span></Link>))}
+              {mobileMore.map(l => (<Link key={l.href} href={l.href} onClick={() => setMoreMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"><l.icon className="w-5 h-5" /><span className="font-medium">{l.label}</span></Link>))}
             </div></>)}
           </div>
         </div>

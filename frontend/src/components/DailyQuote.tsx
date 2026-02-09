@@ -53,25 +53,25 @@ export default function DailyQuote() {
   const isArabic = todayQuote.lang === 'ar';
 
   return (
-    <div className={`bg-white rounded-xl shadow-sm border border-gray-200 p-6 overflow-hidden transition-all duration-200 ease-out hover:shadow-md ${
-      isArabic ? 'border-r-4 border-r-sky-500' : 'border-l-4 border-l-sky-500'
+    <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 p-6 overflow-hidden transition-all duration-200 ease-out hover:shadow-md ${
+      isArabic ? 'border-r-4 border-r-teal-500' : 'border-l-4 border-l-teal-500'
     }`}>
       <div className={`flex items-start gap-4 ${isArabic ? 'flex-row-reverse text-right' : ''}`}>
-        <div className="rounded-full p-3 flex-shrink-0 bg-sky-50">
-          <Sparkles className="w-6 h-6 text-sky-600" />
+        <div className="rounded-full p-3 flex-shrink-0 bg-teal-50 dark:bg-teal-900/30">
+          <Sparkles className="w-6 h-6 text-teal-600 dark:text-teal-400" />
         </div>
         <div className="flex-1">
           <div className={`flex items-center gap-2 mb-2 ${isArabic ? 'flex-row-reverse justify-end' : ''}`}>
-            <Quote className={`w-4 h-4 text-sky-500 ${isArabic ? 'rotate-180' : ''}`} />
-            <h3 className="text-sm font-bold text-gray-900">
+            <Quote className={`w-4 h-4 text-teal-500 ${isArabic ? 'rotate-180' : ''}`} />
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white">
               {isArabic ? '✨ إلهام اليوم' : '✨ Daily Inspiration'}
             </h3>
           </div>
-          <p className={`text-base leading-relaxed font-medium text-gray-700 ${isArabic ? 'text-lg' : 'italic'}`} style={isArabic ? { fontFamily: 'Tahoma, Arial, sans-serif' } : {}}>
-            "{todayQuote.text}"
+          <p className={`text-base leading-relaxed font-medium text-gray-700 dark:text-gray-300 ${isArabic ? 'text-lg' : 'italic'}`} style={isArabic ? { fontFamily: 'Tahoma, Arial, sans-serif' } : {}}>
+            &ldquo;{todayQuote.text}&rdquo;
           </p>
           {todayQuote.author && (
-            <p className="text-xs mt-2 text-sky-600">
+            <p className="text-xs mt-2 text-teal-600 dark:text-teal-400">
               — {todayQuote.author}
             </p>
           )}
