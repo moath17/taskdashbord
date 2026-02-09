@@ -127,10 +127,10 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-sky-50 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 border-4 border-sky-600 border-t-transparent rounded-full animate-spin" />
-          <span className="text-sky-700 dark:text-gray-300">{t.app.loading}</span>
+          <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+          <span className="text-indigo-700 dark:text-gray-300">{t.app.loading}</span>
         </div>
       </div>
     );
@@ -171,22 +171,22 @@ export default function DashboardPage() {
   ];
 
   const stats = [
-    { label: isRTL ? 'المهام' : 'Tasks', value: String(tasks.length), icon: CheckSquare, color: 'bg-blue-500', href: '/tasks' },
+    { label: isRTL ? 'المهام' : 'Tasks', value: String(tasks.length), icon: CheckSquare, color: 'bg-indigo-500', href: '/tasks' },
     { label: isRTL ? 'الأهداف' : 'Goals', value: String(goals.length), icon: Target, color: 'bg-emerald-500', href: '/goals' },
     { label: isRTL ? 'الإجازات' : 'Leaves', value: String(leaves.length), icon: CalendarDays, color: 'bg-amber-500', href: '/leaves' },
     { label: isRTL ? 'التدريب' : 'Training', value: String(trainings.length), icon: GraduationCap, color: 'bg-teal-500', href: '/trainings' },
   ];
 
   return (
-    <div className="min-h-screen bg-sky-50 dark:bg-gray-900 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top Bar */}
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-sky-600 dark:bg-sky-500 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-indigo-600 dark:bg-indigo-500 rounded-xl flex items-center justify-center shadow">
                 <LayoutDashboard className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -204,7 +204,7 @@ export default function DashboardPage() {
               <button
                 onClick={toggleTheme}
                 className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 
-                           hover:bg-sky-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                           hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
                 title={theme === 'dark' ? (isRTL ? 'الوضع الفاتح' : 'Light mode') : (isRTL ? 'الوضع الداكن' : 'Dark mode')}
               >
                 {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -213,20 +213,20 @@ export default function DashboardPage() {
               <button
                 onClick={toggleLanguage}
                 className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 
-                           hover:bg-sky-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                           hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 <Globe className="w-4 h-4" />
                 {language === 'ar' ? 'EN' : 'AR'}
               </button>
 
               {/* User Menu */}
-              <div className="hidden sm:flex items-center gap-3 px-3 py-2 bg-sky-50 dark:bg-gray-700 rounded-lg">
+              <div className="hidden sm:flex items-center gap-3 px-3 py-2 bg-indigo-50 dark:bg-gray-700 rounded-lg">
                 <div className={`text-sm ${isRTL ? 'text-right' : 'text-left'}`}>
                   <p className="font-medium text-gray-900 dark:text-white">{user.name}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">{getRoleLabel(user.role)}</p>
                 </div>
-                <div className="w-9 h-9 bg-sky-200 dark:bg-sky-600 rounded-full flex items-center justify-center">
-                  <span className="text-sky-700 dark:text-white font-semibold">
+                <div className="w-9 h-9 bg-indigo-200 dark:bg-indigo-600 rounded-full flex items-center justify-center">
+                  <span className="text-indigo-700 dark:text-white font-semibold">
                     {user.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -237,8 +237,8 @@ export default function DashboardPage() {
                 <div className={`text-sm ${isRTL ? 'text-right' : 'text-left'}`}>
                   <p className="font-medium text-gray-900 dark:text-white">{user.name}</p>
                 </div>
-                <div className="w-9 h-9 bg-sky-200 dark:bg-sky-600 rounded-full flex items-center justify-center shrink-0">
-                  <span className="text-sky-700 dark:text-white font-semibold text-sm">
+                <div className="w-9 h-9 bg-indigo-200 dark:bg-indigo-600 rounded-full flex items-center justify-center shrink-0">
+                  <span className="text-indigo-700 dark:text-white font-semibold text-sm">
                     {user.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -263,7 +263,7 @@ export default function DashboardPage() {
                 key={link.href}
                 href={link.href}
                 className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-500 dark:text-gray-400 
-                           hover:text-sky-600 dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-gray-700 rounded-t-lg transition-colors 
+                           hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-t-lg transition-colors 
                            whitespace-nowrap"
               >
                 <link.icon className="w-4 h-4" />
@@ -275,23 +275,23 @@ export default function DashboardPage() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome + gradient (blue, calm) */}
-        <div className="rounded-2xl bg-gradient-to-br from-sky-400 via-sky-500 to-blue-600 dark:from-sky-600 dark:via-blue-700 dark:to-sky-800 p-6 sm:p-8 mb-8 text-white shadow-xl">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {/* Welcome banner */}
+        <section className="rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 dark:from-indigo-600 dark:via-indigo-700 dark:to-violet-800 p-6 sm:p-8 mb-6 sm:mb-8 text-white shadow-lg">
           <h2 className="text-2xl sm:text-3xl font-bold">
             {t.dashboard.welcome}، {user.name} 👋
           </h2>
-          <p className="mt-1 text-sky-100">{t.dashboard.overview}</p>
+          <p className="mt-1 text-indigo-100">{t.dashboard.overview}</p>
           <p className="mt-2 text-white/95 text-sm sm:text-base italic">{getMotivationalPhrase(isRTL)}</p>
-        </div>
+        </section>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {/* Stats - 4 cards in a row */}
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8" aria-label={isRTL ? 'إحصائيات' : 'Statistics'}>
           {stats.map((stat, index) => (
             <Link
               key={index}
               href={stat.href}
-              className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm hover:shadow-md hover:border-sky-200 dark:hover:border-gray-600 flex items-center gap-4 p-4 transition-all duration-200 group"
+              className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-gray-600 flex items-center gap-3 sm:gap-4 p-4 transition-all duration-200 group"
             >
               <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform`}>
                 <stat.icon className="w-6 h-6 text-white" />
@@ -305,37 +305,38 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Tasks, Goals, Leaves, Training - 2x2 on large */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Tasks */}
-          <section className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-sky-100 dark:border-gray-700 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-lg bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center">
-                  <CheckSquare className="w-5 h-5 text-sky-600 dark:text-sky-400" />
+        {/* Content sections: Tasks, Goals, Leaves, Training */}
+        <section className="mb-6 sm:mb-8" aria-label={isRTL ? 'المهام والأهداف والإجازات والتدريب' : 'Tasks, Goals, Leaves, Training'}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            {/* Tasks */}
+            <article className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+              <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-9 h-9 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center">
+                    <CheckSquare className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'المهام' : 'Tasks'}</h3>
                 </div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'المهام' : 'Tasks'}</h3>
-              </div>
-              <Link href="/tasks" className="text-sm font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 flex items-center gap-1">
+                <Link href="/tasks" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 flex items-center gap-1">
                 {isRTL ? 'عرض الكل' : 'View all'}
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="p-4 min-h-[200px]">
+            <div className="p-4 min-h-[180px]">
               {dashboardLoading ? (
-                <div className="flex items-center justify-center h-40 text-gray-400">
+                <div className="flex items-center justify-center h-36 text-gray-400">
                   <Loader2 className="w-8 h-8 animate-spin" />
                 </div>
               ) : tasks.length === 0 ? (
-                <p className="text-sm text-gray-400 py-8 text-center">{isRTL ? 'لا توجد مهام' : 'No tasks yet'}</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500 py-6 text-center">{isRTL ? 'لا توجد مهام' : 'No tasks yet'}</p>
               ) : (
-                <ul className="space-y-3">
+                <ul className="space-y-2">
                   {tasks.slice(0, 5).map((task) => (
                     <li key={task.id}>
-                      <Link href="/tasks" className="block p-3 rounded-xl hover:bg-gray-50 transition-colors group">
-                        <p className="font-medium text-gray-900 group-hover:text-indigo-600 truncate">{task.title}</p>
-                        <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs text-gray-500">
-                          <span className={`px-2 py-0.5 rounded-full ${task.status === 'done' ? 'bg-green-100 text-green-700' : task.status === 'in_progress' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
+                      <Link href="/tasks" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                        <p className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 truncate">{task.title}</p>
+                        <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                          <span className={`px-2 py-0.5 rounded-full ${task.status === 'done' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' : task.status === 'in_progress' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}`}>
                             {task.status === 'done' ? (isRTL ? 'مكتملة' : 'Done') : task.status === 'in_progress' ? (isRTL ? 'قيد العمل' : 'In progress') : (isRTL ? 'جديدة' : 'To do')}
                           </span>
                           {task.dueDate && <span>{new Date(task.dueDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}</span>}
@@ -347,128 +348,131 @@ export default function DashboardPage() {
                 </ul>
               )}
             </div>
-          </section>
+          </article>
 
           {/* Goals */}
-          <section className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-sky-100 dark:border-gray-700 flex items-center justify-between">
+          <article className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+            <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center">
                   <Target className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <h3 className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'الأهداف' : 'Goals'}</h3>
               </div>
-              <Link href="/goals" className="text-sm font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 flex items-center gap-1">
+              <Link href="/goals" className="text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
                 {isRTL ? 'عرض الكل' : 'View all'}
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="p-4 min-h-[200px]">
+            <div className="p-4 min-h-[180px]">
               {dashboardLoading ? (
-                <div className="flex items-center justify-center h-40 text-gray-400">
+                <div className="flex items-center justify-center h-36 text-gray-400">
                   <Loader2 className="w-8 h-8 animate-spin" />
                 </div>
               ) : goals.length === 0 ? (
-                <p className="text-sm text-gray-400 py-8 text-center">{isRTL ? 'لا توجد أهداف' : 'No goals yet'}</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500 py-6 text-center">{isRTL ? 'لا توجد أهداف' : 'No goals yet'}</p>
               ) : (
-                <ul className="space-y-3">
+                <ul className="space-y-2">
                   {goals.slice(0, 5).map((goal) => (
                     <li key={goal.id}>
-                      <Link href="/goals" className="block p-3 rounded-xl hover:bg-gray-50 transition-colors group">
-                        <p className="font-medium text-gray-900 group-hover:text-emerald-600 truncate">{goal.title}</p>
+                      <Link href="/goals" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                        <p className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 truncate">{goal.title}</p>
                         <div className="mt-2 flex items-center gap-2">
-                          <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div className="flex-1 h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                             <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${Math.min(goal.progress || 0, 100)}%` }} />
                           </div>
-                          <span className="text-xs font-medium text-gray-600 tabular-nums">{goal.progress ?? 0}%</span>
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400 tabular-nums">{goal.progress ?? 0}%</span>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">{goal.owner?.name} · {goal.type}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{goal.owner?.name} · {goal.type}</p>
                       </Link>
                     </li>
                   ))}
                 </ul>
               )}
             </div>
-          </section>
+          </article>
 
           {/* Leaves */}
-          <section className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-sky-100 dark:border-gray-700 flex items-center justify-between">
+          <article className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+            <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-9 h-9 rounded-lg bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center">
                   <CalendarDays className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                 </div>
                 <h3 className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'الإجازات' : 'Leaves'}</h3>
               </div>
-              <Link href="/leaves" className="text-sm font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 flex items-center gap-1">
+              <Link href="/leaves" className="text-sm font-medium text-amber-600 hover:text-amber-700 dark:text-amber-400 flex items-center gap-1">
                 {isRTL ? 'عرض الكل' : 'View all'}
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="p-4 min-h-[200px]">
+            <div className="p-4 min-h-[180px]">
               {dashboardLoading ? (
-                <div className="flex items-center justify-center h-40 text-gray-400">
+                <div className="flex items-center justify-center h-36 text-gray-400">
                   <Loader2 className="w-8 h-8 animate-spin" />
                 </div>
               ) : leaves.length === 0 ? (
-                <p className="text-sm text-gray-400 py-8 text-center">{isRTL ? 'لا توجد إجازات' : 'No leaves yet'}</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500 py-6 text-center">{isRTL ? 'لا توجد إجازات' : 'No leaves yet'}</p>
               ) : (
-                <ul className="space-y-3">
+                <ul className="space-y-2">
                   {leaves.slice(0, 5).map((leave) => (
                     <li key={leave.id}>
-                      <Link href="/leaves" className="block p-3 rounded-xl hover:bg-gray-50 transition-colors group">
-                        <p className="font-medium text-gray-900 group-hover:text-amber-600">
+                      <Link href="/leaves" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                        <p className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-amber-600 dark:group-hover:text-amber-400">
                           {leave.user?.name ?? (isRTL ? 'إجازة' : 'Leave')} · {leave.type}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                           {new Date(leave.startDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')} → {new Date(leave.endDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
                         </p>
+                        <span className={`inline-block mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${leave.status === 'approved' ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300' : leave.status === 'rejected' ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300'}`}>
+                          {leave.status === 'approved' ? (isRTL ? 'معتمدة' : 'Approved') : leave.status === 'rejected' ? (isRTL ? 'مرفوضة' : 'Rejected') : (isRTL ? 'قيد المراجعة' : 'Pending')}
+                        </span>
                       </Link>
                     </li>
                   ))}
                 </ul>
               )}
             </div>
-          </section>
+          </article>
 
           {/* Training */}
-          <section className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-sky-100 dark:border-gray-700 flex items-center justify-between">
+          <article className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+            <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-9 h-9 rounded-lg bg-teal-100 dark:bg-teal-900/50 flex items-center justify-center">
                   <GraduationCap className="w-5 h-5 text-teal-600 dark:text-teal-400" />
                 </div>
                 <h3 className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'التدريب' : 'Training'}</h3>
               </div>
-              <Link href="/trainings" className="text-sm font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 flex items-center gap-1">
+              <Link href="/trainings" className="text-sm font-medium text-teal-600 hover:text-teal-700 dark:text-teal-400 flex items-center gap-1">
                 {isRTL ? 'عرض الكل' : 'View all'}
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="p-4 min-h-[200px]">
+            <div className="p-4 min-h-[180px]">
               {dashboardLoading ? (
-                <div className="flex items-center justify-center h-40 text-gray-400">
+                <div className="flex items-center justify-center h-36 text-gray-400">
                   <Loader2 className="w-8 h-8 animate-spin" />
                 </div>
               ) : trainings.length === 0 ? (
-                <p className="text-sm text-gray-400 py-8 text-center">{isRTL ? 'لا يوجد تدريب' : 'No trainings yet'}</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500 py-6 text-center">{isRTL ? 'لا يوجد تدريب' : 'No trainings yet'}</p>
               ) : (
-                <ul className="space-y-3">
+                <ul className="space-y-2">
                   {trainings.slice(0, 5).map((training) => (
                     <li key={training.id}>
-                      <Link href="/trainings" className="block p-3 rounded-xl hover:bg-gray-50 transition-colors group">
-                        <p className="font-medium text-gray-900 group-hover:text-teal-600 truncate">{training.title}</p>
-                        <p className="text-xs text-gray-500 mt-1">
+                      <Link href="/trainings" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                        <p className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-teal-600 dark:group-hover:text-teal-400 truncate">{training.title}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                           {training.creator?.name ?? ''} {training.type ? `· ${training.type}` : ''}
                         </p>
                         {(training.startDate || training.endDate) && (
-                          <p className="text-xs text-gray-400 mt-0.5">
+                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                             {training.startDate && new Date(training.startDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
                             {training.startDate && training.endDate ? ' → ' : ''}
                             {training.endDate && new Date(training.endDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
                           </p>
                         )}
-                        <span className={`inline-block mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${training.status === 'completed' ? 'bg-green-100 text-green-700' : training.status === 'cancelled' ? 'bg-gray-100 text-gray-600' : 'bg-teal-100 text-teal-700'}`}>
+                        <span className={`inline-block mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${training.status === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' : training.status === 'cancelled' ? 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300' : 'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300'}`}>
                           {training.status === 'completed' ? (isRTL ? 'مكتمل' : 'Completed') : training.status === 'cancelled' ? (isRTL ? 'ملغى' : 'Cancelled') : (isRTL ? 'قادم' : 'Upcoming')}
                         </span>
                       </Link>
@@ -477,132 +481,97 @@ export default function DashboardPage() {
                 </ul>
               )}
             </div>
-          </section>
-        </div>
+          </article>
+          </div>
+        </section>
 
         {/* Quick Actions */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <section className="mb-6 sm:mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
             {isRTL ? 'إجراءات سريعة' : 'Quick Actions'}
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             <Link
               href="/tasks"
-              className="card flex items-center gap-4 hover:shadow-md hover:border-blue-200 
-                         transition-all group border-2 border-transparent"
+              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-indigo-200 dark:hover:border-gray-600 transition-all group"
             >
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center 
-                              group-hover:bg-blue-200 transition-colors">
-                <CheckSquare className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                <CheckSquare className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
               </div>
-              <div>
-                <p className="font-semibold text-gray-900">
-                  {isRTL ? 'إدارة المهام' : 'Manage Tasks'}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {isRTL ? 'إنشاء وتتبع المهام' : 'Create and track tasks'}
-                </p>
+              <div className="min-w-0">
+                <p className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'إدارة المهام' : 'Manage Tasks'}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{isRTL ? 'إنشاء وتتبع المهام' : 'Create and track tasks'}</p>
               </div>
             </Link>
 
             <Link
               href="/goals"
-              className="card flex items-center gap-4 hover:shadow-md hover:border-green-200 
-                         transition-all group border-2 border-transparent"
+              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-emerald-200 dark:hover:border-gray-600 transition-all group"
             >
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center 
-                              group-hover:bg-green-200 transition-colors">
-                <Target className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Target className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <div>
-                <p className="font-semibold text-gray-900">
-                  {isRTL ? 'إدارة الأهداف' : 'Manage Goals'}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {isRTL ? 'تتبع الأهداف السنوية والربعية' : 'Track annual and quarterly goals'}
-                </p>
+              <div className="min-w-0">
+                <p className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'إدارة الأهداف' : 'Manage Goals'}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{isRTL ? 'تتبع الأهداف السنوية والربعية' : 'Track annual and quarterly goals'}</p>
               </div>
             </Link>
 
             <Link
               href="/kpis"
-              className="card flex items-center gap-4 hover:shadow-md hover:border-purple-200 
-                         transition-all group border-2 border-transparent"
+              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-violet-200 dark:hover:border-gray-600 transition-all group"
             >
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center 
-                              group-hover:bg-purple-200 transition-colors">
-                <TrendingUp className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 bg-violet-100 dark:bg-violet-900/50 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                <TrendingUp className="w-6 h-6 text-violet-600 dark:text-violet-400" />
               </div>
-              <div>
-                <p className="font-semibold text-gray-900">
-                  {isRTL ? 'مؤشرات الأداء' : 'KPIs'}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {isRTL ? 'تتبع وقياس الأداء' : 'Track and measure performance'}
-                </p>
+              <div className="min-w-0">
+                <p className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'مؤشرات الأداء' : 'KPIs'}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{isRTL ? 'تتبع وقياس الأداء' : 'Track and measure performance'}</p>
               </div>
             </Link>
 
             <Link
               href="/leaves"
-              className="card flex items-center gap-4 hover:shadow-md hover:border-amber-200 
-                         transition-all group border-2 border-transparent"
+              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-amber-200 dark:hover:border-gray-600 transition-all group"
             >
-              <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center 
-                              group-hover:bg-amber-200 transition-colors">
-                <CalendarDays className="w-6 h-6 text-amber-600" />
+              <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/50 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                <CalendarDays className="w-6 h-6 text-amber-600 dark:text-amber-400" />
               </div>
-              <div>
-                <p className="font-semibold text-gray-900">
-                  {isRTL ? 'الإجازات' : 'Leaves'}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {isRTL ? 'طلب وإدارة الإجازات' : 'Request and manage leaves'}
-                </p>
+              <div className="min-w-0">
+                <p className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'الإجازات' : 'Leaves'}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{isRTL ? 'طلب وإدارة الإجازات' : 'Request and manage leaves'}</p>
               </div>
             </Link>
 
             <Link
               href="/trainings"
-              className="card flex items-center gap-4 hover:shadow-md hover:border-teal-200 
-                         transition-all group border-2 border-transparent"
+              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-teal-200 dark:hover:border-gray-600 transition-all group"
             >
-              <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center 
-                              group-hover:bg-teal-200 transition-colors">
-                <GraduationCap className="w-6 h-6 text-teal-600" />
+              <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/50 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                <GraduationCap className="w-6 h-6 text-teal-600 dark:text-teal-400" />
               </div>
-              <div>
-                <p className="font-semibold text-gray-900">
-                  {isRTL ? 'التدريب' : 'Training'}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {isRTL ? 'الدورات والورش التدريبية' : 'Courses and workshops'}
-                </p>
+              <div className="min-w-0">
+                <p className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'التدريب' : 'Training'}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{isRTL ? 'الدورات والورش التدريبية' : 'Courses and workshops'}</p>
               </div>
             </Link>
 
             {canManageTeam && (
               <Link
                 href="/team"
-                className="card flex items-center gap-4 hover:shadow-md hover:border-indigo-200 
-                           transition-all group border-2 border-transparent"
+                className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-indigo-200 dark:hover:border-gray-600 transition-all group"
               >
-                <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center 
-                                group-hover:bg-indigo-200 transition-colors">
-                  <Users className="w-6 h-6 text-indigo-600" />
+                <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <Users className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                 </div>
-                <div>
-                  <p className="font-semibold text-gray-900">
-                    {isRTL ? 'إدارة الفريق' : 'Manage Team'}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {isRTL ? 'إضافة وإدارة أعضاء الفريق' : 'Add and manage team members'}
-                  </p>
+                <div className="min-w-0">
+                  <p className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'إدارة الفريق' : 'Manage Team'}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{isRTL ? 'إضافة وإدارة أعضاء الفريق' : 'Add and manage team members'}</p>
                 </div>
               </Link>
             )}
           </div>
-        </div>
+        </section>
 
         {/* AI Analysis - derived from existing data, no DB changes */}
         {(() => {
@@ -622,16 +591,16 @@ export default function DashboardPage() {
           if (pendingLeaves.length > 0) suggestions.push(isRTL ? `${pendingLeaves.length} إجازة قيد المراجعة` : `${pendingLeaves.length} leave(s) pending review`);
 
           return (
-            <section className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-sky-500" />
+            <section className="mb-6 sm:mb-8">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
                 {isRTL ? 'تحليل ذكي' : 'AI Analysis'}
               </h3>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 {isOwnerOrManager ? (
                   <>
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm p-5">
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-sky-600 dark:text-sky-400">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-4 sm:p-5">
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
                         <BarChart3 className="w-4 h-4" />
                         {isRTL ? 'تحليل عام' : 'Overview'}
                       </h4>
@@ -642,7 +611,7 @@ export default function DashboardPage() {
                         <li className={overdueTasks.length > 0 ? 'text-amber-600 font-medium' : ''}>{isRTL ? 'مهام متأخرة' : 'Overdue tasks'}: {overdueTasks.length}</li>
                       </ul>
                     </div>
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm p-5">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-4 sm:p-5">
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-amber-600 dark:text-amber-400">
                         <Lightbulb className="w-4 h-4" />
                         {isRTL ? 'مقترحات ذكية' : 'Suggestions'}
@@ -660,7 +629,7 @@ export default function DashboardPage() {
                         </ul>
                       )}
                     </div>
-                    <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm p-5">
+                    <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-4 sm:p-5">
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-red-600 dark:text-red-400">
                         <AlertTriangle className="w-4 h-4" />
                         {isRTL ? 'تنبيهات إدارية' : 'Alerts'}
@@ -687,19 +656,19 @@ export default function DashboardPage() {
                   </>
                 ) : (
                   <>
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm p-5">
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-sky-600 dark:text-sky-400">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-4 sm:p-5">
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
                         <CheckSquare className="w-4 h-4" />
                         {isRTL ? 'حالة المهام' : 'My Tasks'}
                       </h4>
-                      <ul className="space-y-2 text-sm text-gray-600">
+                      <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                         <li>{isRTL ? 'الإجمالي' : 'Total'}: {myTasks.length}</li>
                         <li>{isRTL ? 'مكتملة' : 'Done'}: {myCompleted}</li>
                         <li>{isRTL ? 'قيد العمل' : 'In progress'}: {myTasks.filter((t) => t.status === 'in_progress').length}</li>
                         <li>{isRTL ? 'جديدة' : 'To do'}: {myTasks.length - myCompleted - myTasks.filter((t) => t.status === 'in_progress').length}</li>
                       </ul>
                     </div>
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm p-5">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-4 sm:p-5">
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
                         <BarChart3 className="w-4 h-4" />
                         {isRTL ? 'الأداء' : 'Performance'}
@@ -723,10 +692,10 @@ export default function DashboardPage() {
       {/* Footer - hidden on mobile (bottom nav takes its place) */}
       <footer className="hidden md:block bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             {/* Left: Logo & Copyright */}
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-indigo-600 dark:bg-indigo-500 rounded-lg flex items-center justify-center">
                 <LayoutDashboard className="w-4 h-4 text-white" />
               </div>
               <div>
@@ -770,8 +739,8 @@ export default function DashboardPage() {
               href={link.href}
               className={`flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors
                 ${link.href === '/dashboard' 
-                  ? 'text-sky-600 dark:text-sky-400' 
-                  : 'text-gray-400 hover:text-sky-600 dark:hover:text-sky-400'
+                  ? 'text-indigo-600 dark:text-indigo-400' 
+                  : 'text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400'
                 }`}
             >
               <link.icon className="w-5 h-5" />
@@ -784,7 +753,7 @@ export default function DashboardPage() {
             <button
               onClick={() => setMoreMenuOpen(!moreMenuOpen)}
               className={`flex flex-col items-center justify-center gap-1 w-full py-2 rounded-lg transition-colors
-                ${moreMenuOpen ? 'text-sky-600 dark:text-sky-400' : 'text-gray-400 hover:text-sky-600 dark:hover:text-sky-400'}`}
+                ${moreMenuOpen ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400'}`}
             >
               <MoreHorizontal className="w-5 h-5" />
               <span className="text-[10px] font-medium leading-none">
@@ -808,7 +777,7 @@ export default function DashboardPage() {
                       href={link.href}
                       onClick={() => setMoreMenuOpen(false)}
                       className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 
-                                 hover:bg-sky-50 dark:hover:bg-gray-700 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
+                                 hover:bg-indigo-50 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                     >
                       <link.icon className="w-5 h-5" />
                       <span className="font-medium">{link.label}</span>

@@ -83,9 +83,13 @@ export default function TasksPage() {
     }
   }, [isAuthenticated]);
 
-  // Close dropdown on outside click
+  // Close dropdown only when clicking outside the dropdown (ignore clicks inside menu/button)
   useEffect(() => {
-    const handleClick = () => setOpenDropdown(null);
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('[data-dropdown="task-menu"]')) return;
+      setOpenDropdown(null);
+    };
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
   }, []);
@@ -501,33 +505,35 @@ function TaskCard({
             </h4>
 
             {/* Actions */}
-            <div className="relative">
+            <div className="relative" data-dropdown="task-menu">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setOpenDropdown(openDropdown === task.id ? null : task.id);
                 }}
                 className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 
-                           rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                           rounded-lg transition-colors opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
               >
                 <MoreVertical className="w-4 h-4" />
               </button>
 
               {openDropdown === task.id && (
-                <div className={`absolute top-full mt-1 bg-white rounded-lg shadow-lg 
-                                border border-gray-200 py-1 min-w-[100px] z-10
-                                ${isRTL ? 'left-0' : 'right-0'}`}>
+                <div
+                  onClick={(e) => e.nativeEvent.stopPropagation()}
+                  className={`absolute top-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg 
+                                border border-gray-200 dark:border-gray-700 py-1 min-w-[100px] z-10
+                                ${isRTL ? 'left-0' : 'right-0'}`}
+                >
                   <button
                     onClick={onEdit}
-                    className="w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 
-                               flex items-center gap-2"
+                    className="w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                     {texts.edit}
                   </button>
                   <button
                     onClick={onDelete}
-                    className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 
+                    className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 
                                flex items-center gap-2"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
