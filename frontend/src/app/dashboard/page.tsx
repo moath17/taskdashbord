@@ -169,7 +169,6 @@ export default function DashboardPage() {
   const completedTasks = tasks.filter(t => t.status === 'done').length;
   const inProgressTasks = tasks.filter(t => t.status === 'in_progress').length;
   const overdueTasks = tasks.filter(t => t.dueDate && t.dueDate < today && t.status !== 'done');
-  const pendingLeaves = leaves.filter(l => l.status === 'pending');
   const avgGoalProgress = goals.length ? Math.round(goals.reduce((a, g) => a + (g.progress ?? 0), 0) / goals.length) : 0;
 
   // Health
@@ -197,7 +196,6 @@ export default function DashboardPage() {
   if (overdueTasks.filter(t => t.priority === 'high').length > 0) suggestions.push({ text: isRTL ? `${overdueTasks.filter(t=>t.priority==='high').length} مهمة عالية الأولوية متأخرة` : `${overdueTasks.filter(t=>t.priority==='high').length} high-priority overdue`, type: 'alert' });
   if (overdueTasks.length > 0) suggestions.push({ text: isRTL ? `${overdueTasks.length} مهمة متأخرة — راجع المهام` : `${overdueTasks.length} overdue — review tasks`, type: 'alert' });
   if (goals.filter(g => (g.progress??0) === 0).length > 0) suggestions.push({ text: isRTL ? `${goals.filter(g=>(g.progress??0)===0).length} أهداف بدون تقدم` : `${goals.filter(g=>(g.progress??0)===0).length} goals with no progress`, type: 'tip' });
-  if (pendingLeaves.length > 0) suggestions.push({ text: isRTL ? `${pendingLeaves.length} إجازة قيد المراجعة` : `${pendingLeaves.length} pending leave(s)`, type: 'info' });
   if (tasks.filter(t => !t.goal && t.status !== 'done').length > 0) suggestions.push({ text: isRTL ? `${tasks.filter(t=>!t.goal&&t.status!=='done').length} مهمة بدون هدف` : `${tasks.filter(t=>!t.goal&&t.status!=='done').length} task(s) not linked to goals`, type: 'tip' });
   if (completedTasks > 0 && overdueTasks.length === 0) suggestions.push({ text: isRTL ? 'لا مهام متأخرة — أداء ممتاز!' : 'No overdue tasks — great job!', type: 'ok' });
 
@@ -341,8 +339,6 @@ export default function DashboardPage() {
                 const empOverdue = emp.tasks.filter(t => t.dueDate && t.dueDate < today && t.status !== 'done').length;
                 const empPct = emp.tasks.length ? Math.round((empDone / emp.tasks.length) * 100) : 0;
                 const empGoalAvg = emp.goals.length ? Math.round(emp.goals.reduce((a, g) => a + (g.progress ?? 0), 0) / emp.goals.length) : 0;
-                const empPendingLeaves = emp.leaves.filter(l => l.status === 'pending').length;
-                const empApprovedLeaves = emp.leaves.filter(l => l.status === 'approved').length;
                 return (
                   <div key={emp.id} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5 hover:shadow-md transition-all">
                     {/* Name + Avatar */}
@@ -392,12 +388,11 @@ export default function DashboardPage() {
                       </div>
                     )}
 
-                    {/* Leaves & badge */}
+                    {/* Leaves count (توثيق فقط) */}
                     {emp.leaves.length > 0 && (
                       <div className="flex items-center gap-2 text-xs">
                         <CalendarDays className="w-3.5 h-3.5 text-gray-400" />
-                        {empApprovedLeaves > 0 && <span className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-1.5 py-0.5 rounded">{empApprovedLeaves} {isRTL ? 'معتمدة' : 'approved'}</span>}
-                        {empPendingLeaves > 0 && <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-1.5 py-0.5 rounded">{empPendingLeaves} {isRTL ? 'معلقة' : 'pending'}</span>}
+                        <span className="text-gray-500 dark:text-gray-400">{emp.leaves.length} {isRTL ? 'إجازة' : 'leave(s)'}</span>
                       </div>
                     )}
                   </div>
@@ -478,9 +473,6 @@ export default function DashboardPage() {
                     <li key={leave.id}><Link href="/leaves" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
                       <p className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-amber-600 dark:group-hover:text-amber-400">{leave.user?.name ?? (isRTL?'إجازة':'Leave')} · {leave.type}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{new Date(leave.startDate).toLocaleDateString(isRTL?'ar-SA':'en-US')} → {new Date(leave.endDate).toLocaleDateString(isRTL?'ar-SA':'en-US')}</p>
-                      <span className={`inline-block mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${leave.status==='approved' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : leave.status==='rejected' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300' : 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300'}`}>
-                        {leave.status==='approved' ? (isRTL?'معتمدة':'Approved') : leave.status==='rejected' ? (isRTL?'مرفوضة':'Rejected') : (isRTL?'قيد المراجعة':'Pending')}
-                      </span>
                     </Link></li>
                   ))}</ul>}
               </div>
@@ -595,13 +587,12 @@ export default function DashboardPage() {
                   )}
                 </div>
                 <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2"><AlertTriangle className="w-4 h-4 text-red-500" />{isRTL ? 'تنبيهات' : 'Alerts'}{(overdueTasks.length > 0 || pendingLeaves.length > 0) && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />}</h4>
-                  {overdueTasks.length === 0 && pendingLeaves.length === 0 ? (
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2"><AlertTriangle className="w-4 h-4 text-red-500" />{isRTL ? 'تنبيهات' : 'Alerts'}{overdueTasks.length > 0 && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />}</h4>
+                  {overdueTasks.length === 0 ? (
                     <p className="text-sm text-gray-400 py-2">{isRTL ? 'لا تنبيهات' : 'No alerts'}</p>
                   ) : (
                     <ul className="space-y-2 text-sm">
                       {overdueTasks.slice(0, 4).map(t => (<li key={t.id} className="flex items-center gap-2 p-2 bg-red-50 dark:bg-red-900/15 rounded-lg"><Clock className="w-4 h-4 text-red-500 shrink-0" /><span className="text-red-700 dark:text-red-300 truncate">{t.title}</span>{t.priority==='high' && <span className="text-[10px] bg-red-200 dark:bg-red-800 text-red-700 dark:text-red-200 px-1.5 py-0.5 rounded-full shrink-0">{isRTL?'عالية':'HIGH'}</span>}</li>))}
-                      {pendingLeaves.length > 0 && <li className="flex items-center gap-2 p-2 bg-amber-50 dark:bg-amber-900/15 rounded-lg"><CalendarDays className="w-4 h-4 text-amber-500 shrink-0" /><span className="text-amber-700 dark:text-amber-300">{isRTL ? 'إجازات معلقة' : 'Pending leaves'}: {pendingLeaves.length}</span></li>}
                     </ul>
                   )}
                 </div>

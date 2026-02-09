@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -26,7 +27,10 @@ import {
   Moon,
   Sun,
   GripVertical,
+  BarChart3,
 } from 'lucide-react';
+
+const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 interface Task {
   id: string;
@@ -320,12 +324,42 @@ export default function TasksPage() {
           </div>
         </div>
 
+        {/* Chart - توزيع المهام */}
+        <section className="mb-6">
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm">
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-teal-500" />
+              {isRTL ? 'توزيع المهام' : 'Task Distribution'}
+            </h3>
+            <div className="h-[220px]">
+              <Chart
+                type="donut"
+                height={220}
+                series={[groupedTasks.todo.length, groupedTasks.in_progress.length, groupedTasks.done.length]}
+                options={{
+                  chart: { fontFamily: 'inherit' },
+                  labels: [texts.todo, texts.inProgress, texts.done],
+                  colors: ['#9ca3af', '#f59e0b', '#10b981'],
+                  legend: { position: 'bottom' },
+                  plotOptions: { pie: { donut: { size: '60%', labels: { show: true, total: { show: true } } } } },
+                  dataLabels: { enabled: true },
+                }}
+              />
+            </div>
+          </div>
+        </section>
+
         {/* Kanban - Desktop (Drag & Drop) */}
+        <div className="hidden lg:block mb-2">
+          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+            {isRTL ? 'اسحب المهمة وأفلتها في العمود المناسب لتحديث حالتها' : 'Drag and drop tasks between columns to update status'}
+          </p>
+        </div>
         <div className="hidden lg:grid lg:grid-cols-3 gap-6">
           {(['todo', 'in_progress', 'done'] as const).map((status) => (
             <div
               key={status}
-              onDragOver={(e) => { e.preventDefault(); setDragOverColumn(status); }}
+              onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setDragOverColumn(status); }}
               onDragLeave={() => setDragOverColumn(null)}
               onDrop={(e) => {
                 e.preventDefault();
@@ -335,10 +369,10 @@ export default function TasksPage() {
                 setDraggingTaskId(null);
                 if (taskId && fromStatus !== status) handleStatusChange(taskId, status);
               }}
-              className={`rounded-2xl p-4 border-2 border-dashed transition-all duration-200 min-h-[200px] ${
+              className={`rounded-2xl p-5 border-2 transition-all duration-300 ease-out min-h-[220px] ${
                 dragOverColumn === status
-                  ? 'bg-teal-50 dark:bg-teal-900/20 border-teal-400 dark:border-teal-600 scale-[1.01] shadow-lg'
-                  : 'bg-gray-100 dark:bg-gray-900/50 border-gray-200 dark:border-gray-800 border-solid'
+                  ? 'bg-teal-50 dark:bg-teal-900/20 border-teal-500 dark:border-teal-500 scale-[1.02] shadow-xl shadow-teal-500/10'
+                  : 'bg-gray-100 dark:bg-gray-900/50 border-gray-200 dark:border-gray-800 border-solid hover:border-gray-300 dark:hover:border-gray-700'
               }`}
             >
               <div className="flex items-center gap-2 mb-4">
@@ -355,13 +389,13 @@ export default function TasksPage() {
                   <TaskCard key={task.id} task={task} isRTL={isRTL} onEdit={() => openEditModal(task)} onDelete={() => handleDeleteTask(task.id)} onStatusChange={handleStatusChange} getPriorityColor={getPriorityColor} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} texts={texts} draggable draggingTaskId={draggingTaskId} onDragStart={() => setDraggingTaskId(task.id)} onDragEnd={() => setDraggingTaskId(null)} />
                 ))}
                 {groupedTasks[status].length === 0 && (
-                  <div className={`text-center py-8 text-sm rounded-xl border-2 border-dashed transition-colors ${
+                  <div className={`text-center py-10 px-4 text-sm rounded-xl border-2 border-dashed transition-all duration-300 ${
                     dragOverColumn === status
-                      ? 'text-teal-500 dark:text-teal-400 border-teal-300 dark:border-teal-700 bg-teal-50/50 dark:bg-teal-900/10'
-                      : 'text-gray-400 dark:text-gray-500 border-transparent'
+                      ? 'text-teal-600 dark:text-teal-400 border-teal-400 dark:border-teal-600 bg-teal-50/80 dark:bg-teal-900/20'
+                      : 'text-gray-400 dark:text-gray-500 border-gray-200 dark:border-gray-700'
                   }`}>
                     {dragOverColumn === status
-                      ? (isRTL ? '⬇️ أفلت المهمة هنا' : '⬇️ Drop task here')
+                      ? (isRTL ? 'أفلت المهمة هنا' : 'Drop task here')
                       : texts.noTasks}
                   </div>
                 )}
@@ -413,9 +447,9 @@ function TaskCard({ task, isRTL, onEdit, onDelete, onStatusChange, getPriorityCo
         onDragStart?.();
       }}
       onDragEnd={() => onDragEnd?.()}
-      className={`bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-4 transition-all duration-200 hover:shadow-md hover:border-teal-200 dark:hover:border-gray-600 group ${
+      className={`bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-4 transition-all duration-300 ease-out hover:shadow-md hover:border-teal-200 dark:hover:border-gray-600 group ${
         isDraggable ? 'cursor-grab active:cursor-grabbing' : ''
-      } ${isDragging ? 'opacity-40 scale-95 rotate-1 shadow-xl border-teal-400 dark:border-teal-600' : ''}`}
+      } ${isDragging ? 'opacity-50 scale-95 shadow-xl border-teal-400 dark:border-teal-600 ring-2 ring-teal-200 dark:ring-teal-800' : ''}`}
     >
       <div className="flex items-start gap-3">
         {isDraggable && (
