@@ -334,16 +334,17 @@ export default function TasksPage() {
                 {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
               <button
-              onClick={() => {
-                setOpenDropdown(null);
-                setEditingTask(null);
-                setIsModalOpen(true);
-              }}
-              className="btn btn-primary flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">{texts.addTask}</span>
-            </button>
+                onClick={() => {
+                  setOpenDropdown(null);
+                  setEditingTask(null);
+                  setIsModalOpen(true);
+                }}
+                className="btn btn-primary flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">{texts.addTask}</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
