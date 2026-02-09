@@ -188,10 +188,10 @@ export default function TasksPage() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'low': return 'text-blue-500';
+      case 'low': return 'text-indigo-500';
       case 'medium': return 'text-amber-500';
       case 'high': return 'text-red-500';
-      default: return 'text-slate-500';
+      default: return 'text-gray-500';
     }
   };
 
@@ -239,37 +239,37 @@ export default function TasksPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Header */}
-      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 sticky top-0 z-40 shadow-sm">
+      <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => router.push('/dashboard')}
-                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
               >
                 {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
               </button>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                  <CheckSquare className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center">
+                  <CheckSquare className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 </div>
-                <h1 className="text-lg font-bold text-slate-900 dark:text-white">{texts.title}</h1>
+                <h1 className="text-lg font-bold text-gray-900 dark:text-white">{texts.title}</h1>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
               <button
                 onClick={toggleTheme}
-                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                 title={theme === 'dark' ? (isRTL ? 'الوضع الفاتح' : 'Light') : (isRTL ? 'الوضع الداكن' : 'Dark')}
               >
                 {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5" />}
@@ -291,7 +291,7 @@ export default function TasksPage() {
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1 max-w-md">
-            <Search className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 ${isRTL ? 'right-3' : 'left-3'}`} />
+            <Search className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 ${isRTL ? 'right-3' : 'left-3'}`} />
             <input
               type="text"
               value={searchQuery}
@@ -308,8 +308,8 @@ export default function TasksPage() {
                 onClick={() => setFilterStatus(status)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
                            ${filterStatus === status
-                             ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                             : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
+                             ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                             : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-800'}`}
               >
                 {status === 'all' ? texts.all : getStatusLabel(status)}
               </button>
@@ -320,14 +320,14 @@ export default function TasksPage() {
         {/* Kanban - Desktop */}
         <div className="hidden lg:grid lg:grid-cols-3 gap-6">
           {(['todo', 'in_progress', 'done'] as const).map((status) => (
-            <div key={status} className="bg-slate-100 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-200 dark:border-slate-700">
+            <div key={status} className="bg-gray-100 dark:bg-gray-900/50 rounded-2xl p-4 border border-gray-200 dark:border-gray-800">
               <div className="flex items-center gap-2 mb-4">
                 <div className={`w-3 h-3 rounded-full ${
                   status === 'todo' ? 'bg-gray-400' :
                   status === 'in_progress' ? 'bg-amber-500' : 'bg-green-500'
                 }`} />
-                <h3 className="font-semibold text-slate-700 dark:text-slate-200">{getStatusLabel(status)}</h3>
-                <span className="text-sm text-slate-500 dark:text-slate-400">({groupedTasks[status].length})</span>
+                <h3 className="font-semibold text-gray-700 dark:text-gray-200">{getStatusLabel(status)}</h3>
+                <span className="text-sm text-gray-500 dark:text-gray-400">({groupedTasks[status].length})</span>
               </div>
 
               <div className="space-y-3">
@@ -335,7 +335,7 @@ export default function TasksPage() {
                   <TaskCard key={task.id} task={task} isRTL={isRTL} onEdit={() => openEditModal(task)} onDelete={() => handleDeleteTask(task.id)} onStatusChange={handleStatusChange} getPriorityColor={getPriorityColor} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} texts={texts} />
                 ))}
                 {groupedTasks[status].length === 0 && (
-                  <div className="text-center py-8 text-slate-400 dark:text-slate-500 text-sm">{texts.noTasks}</div>
+                  <div className="text-center py-8 text-gray-400 dark:text-gray-500 text-sm">{texts.noTasks}</div>
                 )}
               </div>
             </div>
@@ -346,8 +346,8 @@ export default function TasksPage() {
         <div className="lg:hidden space-y-3">
           {filteredTasks.length === 0 ? (
             <div className="card text-center py-12">
-              <CheckSquare className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-500">{texts.noTasks}</p>
+              <CheckSquare className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500">{texts.noTasks}</p>
             </div>
           ) : (
             filteredTasks.map((task) => (
@@ -375,7 +375,7 @@ function TaskCard({ task, isRTL, onEdit, onDelete, onStatusChange, getPriorityCo
   const StatusIcon = task.status === 'done' ? CheckCircle2 : task.status === 'in_progress' ? Clock : Circle;
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 p-4 transition-all duration-200 hover:shadow-md hover:border-blue-200 dark:hover:border-slate-600 group">
+    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-4 transition-all duration-200 hover:shadow-md hover:border-indigo-200 dark:hover:border-gray-600 group">
       <div className="flex items-start gap-3">
         <button
           onClick={(e) => {
@@ -384,8 +384,8 @@ function TaskCard({ task, isRTL, onEdit, onDelete, onStatusChange, getPriorityCo
             onStatusChange(task.id, nextStatus);
           }}
           className={`mt-0.5 transition-colors shrink-0 ${
-            task.status === 'done' ? 'text-blue-500' :
-            task.status === 'in_progress' ? 'text-amber-500' : 'text-slate-300 hover:text-slate-400'
+            task.status === 'done' ? 'text-indigo-500' :
+            task.status === 'in_progress' ? 'text-amber-500' : 'text-gray-300 hover:text-gray-400'
           }`}
         >
           <StatusIcon className="w-5 h-5" />
@@ -399,21 +399,21 @@ function TaskCard({ task, isRTL, onEdit, onDelete, onStatusChange, getPriorityCo
           }}
         >
           <div className="flex items-start justify-between gap-2">
-            <h4 className={`font-medium text-slate-900 dark:text-white ${task.status === 'done' ? 'line-through text-slate-400 dark:text-slate-500' : ''}`}>
+            <h4 className={`font-medium text-gray-900 dark:text-white ${task.status === 'done' ? 'line-through text-gray-400 dark:text-gray-500' : ''}`}>
               {task.title}
             </h4>
 
             <div className="relative" data-dropdown="task-menu">
               <button
                 onClick={(e) => { e.stopPropagation(); setOpenDropdown(openDropdown === task.id ? null : task.id); }}
-                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
               >
                 <MoreVertical className="w-4 h-4" />
               </button>
 
               {openDropdown === task.id && (
-                <div onClick={(e) => e.stopPropagation()} className={`absolute top-full mt-1 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-1 min-w-[100px] z-10 ${isRTL ? 'left-0' : 'right-0'}`}>
-                  <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="w-full px-3 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-700 flex items-center gap-2">
+                <div onClick={(e) => e.stopPropagation()} className={`absolute top-full mt-1 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-800 py-1 min-w-[100px] z-10 ${isRTL ? 'left-0' : 'right-0'}`}>
+                  <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-gray-800 flex items-center gap-2">
                     <Edit2 className="w-3.5 h-3.5" /> {texts.edit}
                   </button>
                   <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="w-full px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2">
@@ -425,7 +425,7 @@ function TaskCard({ task, isRTL, onEdit, onDelete, onStatusChange, getPriorityCo
           </div>
 
           {task.description && (
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{task.description}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{task.description}</p>
           )}
 
           <div className="flex flex-wrap items-center gap-3 mt-3 text-xs">
@@ -433,17 +433,17 @@ function TaskCard({ task, isRTL, onEdit, onDelete, onStatusChange, getPriorityCo
               <Flag className="w-3.5 h-3.5" /> {task.priority}
             </span>
             {task.dueDate && (
-              <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                 <Calendar className="w-3.5 h-3.5" /> {new Date(task.dueDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
               </span>
             )}
             {task.assignedUser && (
-              <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                 <User className="w-3.5 h-3.5" /> {task.assignedUser.name}
               </span>
             )}
             {task.goal && (
-              <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                 <Target className="w-3.5 h-3.5" /> {task.goal.title}
               </span>
             )}
@@ -451,7 +451,7 @@ function TaskCard({ task, isRTL, onEdit, onDelete, onStatusChange, getPriorityCo
               <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                 task.status === 'done' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' :
                 task.status === 'in_progress' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' :
-                'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'}`}>
+                'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'}`}>
                 {task.status === 'done' ? texts.done : task.status === 'in_progress' ? texts.inProgress : texts.todo}
               </span>
             )}
