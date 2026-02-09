@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { TaskModal } from '@/components/TaskModal';
+import { useTheme } from '@/context/ThemeContext';
 import {
   CheckSquare,
   Plus,
@@ -14,7 +15,6 @@ import {
   ArrowLeft,
   ArrowRight,
   Search,
-  Filter,
   Clock,
   User,
   Flag,
@@ -23,6 +23,8 @@ import {
   Circle,
   Loader2,
   Target,
+  Moon,
+  Sun,
 } from 'lucide-react';
 
 interface Task {
@@ -52,6 +54,7 @@ export default function TasksPage() {
   const router = useRouter();
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const { isRTL } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
@@ -285,39 +288,54 @@ export default function TasksPage() {
     unassigned: isRTL ? 'غير معين' : 'Unassigned',
   };
 
+  const openEditModal = (task: Task) => {
+    setOpenDropdown(null);
+    setEditingTask(task);
+    setIsModalOpen(true);
+  };
+
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Back & Title */}
             <div className="flex items-center gap-4">
               <button
                 onClick={() => router.push('/dashboard')}
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
               </button>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <CheckSquare className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/50 rounded-xl flex items-center justify-center">
+                  <CheckSquare className="w-5 h-5 text-sky-600 dark:text-sky-400" />
                 </div>
-                <h1 className="text-lg font-bold text-gray-900">{texts.title}</h1>
+                <h1 className="text-lg font-bold text-gray-900 dark:text-white">{texts.title}</h1>
               </div>
             </div>
 
-            {/* Add Button */}
-            <button
+            {/* Theme toggle + Add Button */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleTheme}
+                className="p-2 text-gray-500 dark:text-gray-400 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                title={theme === 'dark' ? (isRTL ? 'الوضع الفاتح' : 'Light') : (isRTL ? 'الوضع الداكن' : 'Dark')}
+              >
+                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
+              <button
               onClick={() => {
+                setOpenDropdown(null);
                 setEditingTask(null);
                 setIsModalOpen(true);
               }}
@@ -355,8 +373,8 @@ export default function TasksPage() {
                 onClick={() => setFilterStatus(status)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
                            ${filterStatus === status
-                             ? 'bg-sky-100 text-sky-700'
-                             : 'bg-white text-gray-600 hover:bg-gray-100'}`}
+                             ? 'bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300'
+                             : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
               >
                 {status === 'all' ? texts.all : getStatusLabel(status)}
               </button>
@@ -367,14 +385,14 @@ export default function TasksPage() {
         {/* Tasks Kanban View - Desktop */}
         <div className="hidden lg:grid lg:grid-cols-3 gap-6">
           {(['todo', 'in_progress', 'done'] as const).map((status) => (
-            <div key={status} className="bg-gray-100 rounded-2xl p-4">
+            <div key={status} className="bg-gray-100 dark:bg-gray-800 rounded-2xl p-4">
               <div className="flex items-center gap-2 mb-4">
                 <div className={`w-3 h-3 rounded-full ${
                   status === 'todo' ? 'bg-gray-400' :
-                  status === 'in_progress' ? 'bg-blue-500' : 'bg-green-500'
+                  status === 'in_progress' ? 'bg-sky-500' : 'bg-green-500'
                 }`} />
-                <h3 className="font-semibold text-gray-700">{getStatusLabel(status)}</h3>
-                <span className="text-sm text-gray-500">({groupedTasks[status].length})</span>
+                <h3 className="font-semibold text-gray-700 dark:text-gray-200">{getStatusLabel(status)}</h3>
+                <span className="text-sm text-gray-500 dark:text-gray-400">({groupedTasks[status].length})</span>
               </div>
 
               <div className="space-y-3">
@@ -383,10 +401,7 @@ export default function TasksPage() {
                     key={task.id}
                     task={task}
                     isRTL={isRTL}
-                    onEdit={() => {
-                      setEditingTask(task);
-                      setIsModalOpen(true);
-                    }}
+                    onEdit={() => openEditModal(task)}
                     onDelete={() => handleDeleteTask(task.id)}
                     onStatusChange={handleStatusChange}
                     getPriorityColor={getPriorityColor}
@@ -397,7 +412,7 @@ export default function TasksPage() {
                 ))}
 
                 {groupedTasks[status].length === 0 && (
-                  <div className="text-center py-8 text-gray-400 text-sm">
+                  <div className="text-center py-8 text-gray-400 dark:text-gray-500 text-sm">
                     {texts.noTasks}
                   </div>
                 )}
@@ -419,10 +434,7 @@ export default function TasksPage() {
                 key={task.id}
                 task={task}
                 isRTL={isRTL}
-                onEdit={() => {
-                  setEditingTask(task);
-                  setIsModalOpen(true);
-                }}
+                onEdit={() => openEditModal(task)}
                 onDelete={() => handleDeleteTask(task.id)}
                 onStatusChange={handleStatusChange}
                 getPriorityColor={getPriorityColor}
@@ -480,16 +492,17 @@ function TaskCard({
                      task.status === 'in_progress' ? Clock : Circle;
 
   return (
-    <div className="card hover:shadow-md transition-shadow group">
+    <div className="card hover:shadow-md transition-shadow group bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
       <div className="flex items-start gap-3">
         {/* Status Toggle */}
         <button
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             const nextStatus = task.status === 'todo' ? 'in_progress' :
                               task.status === 'in_progress' ? 'done' : 'todo';
             onStatusChange(task.id, nextStatus);
           }}
-          className={`mt-0.5 transition-colors ${
+          className={`mt-0.5 transition-colors shrink-0 ${
             task.status === 'done' ? 'text-green-500' :
             task.status === 'in_progress' ? 'text-blue-500' : 'text-gray-300 hover:text-gray-400'
           }`}
@@ -497,10 +510,16 @@ function TaskCard({
           <StatusIcon className="w-5 h-5" />
         </button>
 
-        {/* Content */}
-        <div className="flex-1 min-w-0">
+        {/* Content - click to edit */}
+        <div 
+          className="flex-1 min-w-0 cursor-pointer"
+          onClick={(e) => {
+            if ((e.target as HTMLElement).closest('[data-dropdown="task-menu"]')) return;
+            onEdit();
+          }}
+        >
           <div className="flex items-start justify-between gap-2">
-            <h4 className={`font-medium text-gray-900 ${task.status === 'done' ? 'line-through text-gray-500' : ''}`}>
+            <h4 className={`font-medium text-gray-900 dark:text-white ${task.status === 'done' ? 'line-through text-gray-500 dark:text-gray-400' : ''}`}>
               {task.title}
             </h4>
 
@@ -511,28 +530,27 @@ function TaskCard({
                   e.stopPropagation();
                   setOpenDropdown(openDropdown === task.id ? null : task.id);
                 }}
-                className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 
-                           rounded-lg transition-colors opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
+                className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 <MoreVertical className="w-4 h-4" />
               </button>
 
               {openDropdown === task.id && (
                 <div
-                  onClick={(e) => e.nativeEvent.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
                   className={`absolute top-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg 
                                 border border-gray-200 dark:border-gray-700 py-1 min-w-[100px] z-10
                                 ${isRTL ? 'left-0' : 'right-0'}`}
                 >
                   <button
-                    onClick={onEdit}
+                    onClick={(e) => { e.stopPropagation(); onEdit(); }}
                     className="w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                     {texts.edit}
                   </button>
                   <button
-                    onClick={onDelete}
+                    onClick={(e) => { e.stopPropagation(); onDelete(); }}
                     className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 
                                flex items-center gap-2"
                   >
@@ -545,7 +563,7 @@ function TaskCard({
           </div>
 
           {task.description && (
-            <p className="text-sm text-gray-500 mt-1 line-clamp-2">{task.description}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{task.description}</p>
           )}
 
           {/* Meta */}
@@ -558,7 +576,7 @@ function TaskCard({
 
             {/* Due Date */}
             {task.dueDate && (
-              <span className="flex items-center gap-1 text-gray-500">
+              <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                 <Calendar className="w-3.5 h-3.5" />
                 {new Date(task.dueDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
               </span>
@@ -566,7 +584,7 @@ function TaskCard({
 
             {/* Assigned To */}
             {task.assignedUser && (
-              <span className="flex items-center gap-1 text-gray-500">
+              <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                 <User className="w-3.5 h-3.5" />
                 {task.assignedUser.name}
               </span>
@@ -574,7 +592,7 @@ function TaskCard({
 
             {/* Goal */}
             {task.goal && (
-              <span className="flex items-center gap-1 text-gray-500">
+              <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                 <Target className="w-3.5 h-3.5" />
                 {task.goal.title}
               </span>

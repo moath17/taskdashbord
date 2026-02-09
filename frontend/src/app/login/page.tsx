@@ -4,11 +4,13 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { Mail, Lock, LogIn, Globe } from 'lucide-react';
+import { useTheme } from '@/context/ThemeContext';
+import { Mail, Lock, LogIn, Globe, Moon, Sun } from 'lucide-react';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const { t, language, setLanguage, isRTL } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,19 +36,26 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-purple-50 p-4">
-      {/* Language Toggle */}
-      <button
-        onClick={toggleLanguage}
-        className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 
-                   bg-white rounded-lg shadow-sm border border-gray-200 
-                   hover:bg-gray-50 transition-colors"
-      >
-        <Globe className="w-4 h-4 text-gray-500" />
-        <span className="text-sm font-medium text-gray-700">
-          {language === 'ar' ? 'English' : 'عربي'}
-        </span>
-      </button>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 p-4">
+      {/* Theme + Language Toggle */}
+      <div className={`absolute top-4 flex items-center gap-2 ${isRTL ? 'left-4' : 'right-4'}`}>
+        <button
+          onClick={toggleTheme}
+          className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          title={theme === 'dark' ? (isRTL ? 'الوضع الفاتح' : 'Light') : (isRTL ? 'الوضع الداكن' : 'Dark')}
+        >
+          {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-gray-500" />}
+        </button>
+        <button
+          onClick={toggleLanguage}
+          className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        >
+          <Globe className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            {language === 'ar' ? 'English' : 'عربي'}
+          </span>
+        </button>
+      </div>
 
       <div className="w-full max-w-md animate-fadeIn">
         {/* Logo & Header */}
@@ -55,8 +64,8 @@ export default function LoginPage() {
                           bg-sky-600 rounded-2xl mb-4 shadow-lg shadow-sky-200">
             <LogIn className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">{t.auth.login}</h1>
-          <p className="text-gray-500 mt-2">{t.auth.loginSubtitle}</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.auth.login}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-2">{t.auth.loginSubtitle}</p>
         </div>
 
         {/* Form */}

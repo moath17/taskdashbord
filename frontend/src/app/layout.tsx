@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { Inter, Cairo } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
@@ -19,6 +20,13 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body className={`${inter.variable} ${cairo.variable} antialiased`}>
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var t=localStorage.getItem('theme');var p=window.matchMedia('(prefers-color-scheme: dark)').matches;var d=t||(p?'dark':'light');document.documentElement.classList.toggle('dark',d==='dark');})();`,
+          }}
+        />
         <Providers>
           {children}
         </Providers>
