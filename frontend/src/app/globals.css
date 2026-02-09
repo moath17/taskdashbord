@@ -96,7 +96,7 @@ html[dir="rtl"] body {
 
   /* Cards */
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6;
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all duration-200 ease-out hover:shadow-md;
   }
 
   /* Labels */
