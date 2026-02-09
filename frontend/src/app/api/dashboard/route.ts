@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     const goalsQuery = supabase
       .from('goals')
       .select(`
-        id, title, description, type, status, progress, start_date, end_date, created_at,
+        id, title, description, type, status, progress, start_date, end_date, created_at, owner_id,
         owner:users!goals_owner_id_fkey(id, name)
       `)
       .eq('organization_id', orgId)
