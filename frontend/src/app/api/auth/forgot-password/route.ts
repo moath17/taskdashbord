@@ -130,8 +130,8 @@ export async function POST(request: NextRequest) {
     if (emailError) {
       console.error('Resend email error:', emailError);
       return errorResponse(
-        `Failed to send email: ${emailError.message || 'Unknown error'}. Note: With free Resend plan, you can only send to your Resend account email.`,
-        500
+        'هذه الخدمة تحت الصيانة مؤقتاً. يرجى المحاولة لاحقاً | This service is temporarily under maintenance. Please try again later.',
+        503
       );
     }
 
