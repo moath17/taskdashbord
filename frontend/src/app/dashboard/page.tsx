@@ -22,7 +22,7 @@ interface DashboardTask {
 }
 interface DashboardGoal {
   id: string; title: string; type: string; status: string; progress: number;
-  owner?: { name: string }; ownerId?: string;
+  owner?: { id: string; name: string }; ownerId?: string;
 }
 interface DashboardLeave {
   id: string; type: string; status: string; startDate: string; endDate: string;
