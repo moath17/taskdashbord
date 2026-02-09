@@ -3,29 +3,29 @@
 @tailwind utilities;
 
 /* =============================================
-   CSS Variables – Light Blue Theme
+   CSS Variables – Emerald Theme
    ============================================= */
 :root {
-  --primary: #0ea5e9;
-  --primary-dark: #0284c7;
-  --primary-light: #38bdf8;
+  --primary: #10b981;
+  --primary-dark: #059669;
+  --primary-light: #34d399;
   --secondary: #64748b;
   --success: #22c55e;
   --warning: #f59e0b;
   --danger: #ef4444;
-  --background: #f0f9ff;
+  --background: #f0fdf4;
   --surface: #ffffff;
-  --text: #0c4a6e;
-  --text-secondary: #0369a1;
-  --border: #bae6fd;
+  --text: #064e3b;
+  --text-secondary: #047857;
+  --border: #a7f3d0;
 }
 
 .dark {
-  --background: #0c4a6e;
-  --surface: #075985;
-  --text: #e0f2fe;
-  --text-secondary: #7dd3fc;
-  --border: #0369a1;
+  --background: #022c22;
+  --surface: #064e3b;
+  --text: #d1fae5;
+  --text-secondary: #6ee7b7;
+  --border: #047857;
 }
 
 /* =============================================
@@ -63,14 +63,15 @@ html[dir="rtl"] body {
   }
 
   .btn-primary {
-    @apply bg-sky-500 text-white hover:bg-sky-600 
-           focus:ring-sky-400 active:bg-sky-700
-           shadow-sm shadow-sky-200;
+    @apply bg-emerald-600 text-white hover:bg-emerald-700 
+           focus:ring-emerald-500 active:bg-emerald-800
+           shadow-sm shadow-emerald-200 dark:shadow-emerald-900;
   }
 
   .btn-secondary {
-    @apply bg-sky-50 text-sky-700 hover:bg-sky-100 
-           focus:ring-sky-300 border border-sky-200;
+    @apply bg-emerald-50 text-emerald-700 hover:bg-emerald-100 
+           focus:ring-emerald-400 border border-emerald-200
+           dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700 dark:hover:bg-emerald-900/50;
   }
 
   .btn-danger {
@@ -79,15 +80,16 @@ html[dir="rtl"] body {
   }
 
   .btn-ghost {
-    @apply bg-transparent text-sky-600 hover:bg-sky-50 
-           focus:ring-sky-300;
+    @apply bg-transparent text-emerald-600 hover:bg-emerald-50 
+           focus:ring-emerald-400 dark:text-emerald-400 dark:hover:bg-emerald-900/30;
   }
 
   /* Inputs */
   .input {
-    @apply w-full px-4 py-2.5 border border-sky-200 dark:border-sky-800 rounded-lg 
-           bg-white dark:bg-sky-950 text-sky-900 dark:text-sky-100 placeholder-sky-300 dark:placeholder-sky-600
-           focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent
+    @apply w-full px-4 py-2.5 border border-gray-200 dark:border-emerald-800 rounded-lg 
+           bg-white dark:bg-emerald-950 text-gray-900 dark:text-emerald-100 
+           placeholder-gray-400 dark:placeholder-emerald-600
+           focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent
            transition-all duration-200;
   }
 
@@ -97,13 +99,15 @@ html[dir="rtl"] body {
 
   /* Cards */
   .card {
-    @apply bg-white dark:bg-sky-950 rounded-xl shadow-sm border border-sky-100 dark:border-sky-800 
-           p-6 transition-all duration-200 ease-out hover:shadow-md hover:border-sky-200 dark:hover:border-sky-700;
+    @apply bg-white dark:bg-emerald-950 rounded-xl shadow-sm 
+           border border-gray-100 dark:border-emerald-800 
+           p-6 transition-all duration-200 ease-out 
+           hover:shadow-md hover:border-emerald-200 dark:hover:border-emerald-700;
   }
 
   /* Labels */
   .label {
-    @apply block text-sm font-medium text-sky-800 dark:text-sky-200 mb-1.5;
+    @apply block text-sm font-medium text-gray-700 dark:text-emerald-200 mb-1.5;
   }
 
   /* Error text */
@@ -113,8 +117,8 @@ html[dir="rtl"] body {
 
   /* Links */
   .link {
-    @apply text-sky-500 hover:text-sky-600 font-medium 
-           transition-colors duration-200;
+    @apply text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 
+           font-medium transition-colors duration-200;
   }
 }
 
@@ -139,7 +143,7 @@ html[dir="rtl"] body {
 }
 
 /* =============================================
-   Scrollbar – Light Blue
+   Scrollbar – Emerald
    ============================================= */
 ::-webkit-scrollbar {
   width: 8px;
@@ -147,24 +151,24 @@ html[dir="rtl"] body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f0f9ff;
+  background: #f0fdf4;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #7dd3fc;
+  background: #6ee7b7;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #38bdf8;
+  background: #34d399;
 }
 
 /* =============================================
    Selection
    ============================================= */
 ::selection {
-  background-color: #bae6fd;
-  color: #0c4a6e;
+  background-color: #a7f3d0;
+  color: #064e3b;
 }
 
 /* =============================================
