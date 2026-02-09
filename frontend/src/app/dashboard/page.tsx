@@ -126,6 +126,12 @@ export default function DashboardPage() {
     return Array.from(map.entries()).map(([key, d]) => ({ id: key, ...d }));
   }, [tasks, goals, leaves, trainings]);
 
+  /* استبعاد Owner/Manager من بطاقات الموظفين */
+  const displayedEmployeeCards = useMemo(() => {
+    if (!user) return employeeCards;
+    return employeeCards.filter(emp => emp.id !== user.id);
+  }, [employeeCards, user]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
@@ -267,19 +273,13 @@ export default function DashboardPage() {
 
         {/* Welcome */}
         <section className="rounded-2xl bg-gradient-to-r from-teal-600 via-teal-500 to-emerald-500 dark:from-teal-800 dark:via-teal-700 dark:to-emerald-700 p-6 sm:p-8 mb-6 sm:mb-8 text-white shadow-lg shadow-teal-500/20 relative overflow-hidden">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold flex items-center gap-2 flex-wrap">
-                {t.dashboard.welcome}، {user.name}!
-              </h2>
-              <p className="mt-2 text-white/80 text-sm">
-                {isRTL ? `مساء الخير ${user.name}! جاهز ليوم متميز؟ لنصنع أهدافاً ونحقق الإنجازات` : `Good day ${user.name}! Ready for a productive day? Let's set goals and achieve!`}
-              </p>
-            </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2.5 text-center">
-              <p className="text-[10px] text-white/70 font-medium">{isRTL ? 'صحة المشروع' : 'Project Health'}</p>
-              <p className="text-lg font-bold">{health}%</p>
-            </div>
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-bold flex items-center gap-2 flex-wrap">
+              {t.dashboard.welcome}، {user.name}!
+            </h2>
+            <p className="mt-2 text-white/80 text-sm">
+              {isRTL ? `مساء الخير ${user.name}! جاهز ليوم متميز؟ لنصنع أهدافاً ونحقق الإنجازات` : `Good day ${user.name}! Ready for a productive day? Let's set goals and achieve!`}
+            </p>
           </div>
           <p className="mt-3 text-white/70 text-sm italic">{getPhrase(isRTL)}</p>
         </section>
@@ -313,7 +313,7 @@ export default function DashboardPage() {
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
           {[
             { label: isRTL ? 'مهام جديدة' : 'New Tasks', value: dashboardLoading ? '...' : tasks.filter(t => t.status !== 'done' && t.status !== 'in_progress').length, bg: 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800', icon: Target, iconColor: 'text-emerald-500 dark:text-emerald-400' },
-            { label: isRTL ? 'الموظفون النشطون' : 'Active Employees', value: dashboardLoading ? '...' : employeeCards.length, bg: 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800', icon: Users, iconColor: 'text-blue-500 dark:text-blue-400' },
+            { label: isRTL ? 'الموظفون النشطون' : 'Active Employees', value: dashboardLoading ? '...' : displayedEmployeeCards.length, bg: 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800', icon: Users, iconColor: 'text-blue-500 dark:text-blue-400' },
             { label: isRTL ? 'خطط معلقة' : 'Pending Plans', value: dashboardLoading ? '...' : goals.filter(g => g.status !== 'completed').length, bg: 'bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800', icon: TrendingUp, iconColor: 'text-rose-500 dark:text-rose-400' },
           ].map((card, i) => (
             <div key={i} className={`rounded-xl p-5 ${card.bg} transition-all duration-200 hover:shadow-md`}>
@@ -329,15 +329,15 @@ export default function DashboardPage() {
         </section>
 
         {/* ══ Employee Cards (Manager/Owner only) ══ */}
-        {canManage && employeeCards.length > 0 && (
+        {canManage && displayedEmployeeCards.length > 0 && (
           <section className="mb-6 sm:mb-8">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <Users className="w-5 h-5 text-teal-500" />
               {isRTL ? 'حالة الموظفين' : 'Team Overview'}
-              <span className="text-xs bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 px-2 py-0.5 rounded-full">{employeeCards.length}</span>
+              <span className="text-xs bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 px-2 py-0.5 rounded-full">{displayedEmployeeCards.length}</span>
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {employeeCards.map(emp => {
+              {displayedEmployeeCards.map(emp => {
                 const empDone = emp.tasks.filter(t => t.status === 'done').length;
                 const empInProg = emp.tasks.filter(t => t.status === 'in_progress').length;
                 const empOverdue = emp.tasks.filter(t => t.dueDate && t.dueDate < today && t.status !== 'done').length;
