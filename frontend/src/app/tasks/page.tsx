@@ -25,6 +25,7 @@ import {
   Target,
   Moon,
   Sun,
+  GripVertical,
 } from 'lucide-react';
 
 interface Task {
@@ -66,6 +67,8 @@ export default function TasksPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
+  const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -317,10 +320,27 @@ export default function TasksPage() {
           </div>
         </div>
 
-        {/* Kanban - Desktop */}
+        {/* Kanban - Desktop (Drag & Drop) */}
         <div className="hidden lg:grid lg:grid-cols-3 gap-6">
           {(['todo', 'in_progress', 'done'] as const).map((status) => (
-            <div key={status} className="bg-gray-100 dark:bg-gray-900/50 rounded-2xl p-4 border border-gray-200 dark:border-gray-800">
+            <div
+              key={status}
+              onDragOver={(e) => { e.preventDefault(); setDragOverColumn(status); }}
+              onDragLeave={() => setDragOverColumn(null)}
+              onDrop={(e) => {
+                e.preventDefault();
+                const taskId = e.dataTransfer.getData('taskId');
+                const fromStatus = e.dataTransfer.getData('fromStatus');
+                setDragOverColumn(null);
+                setDraggingTaskId(null);
+                if (taskId && fromStatus !== status) handleStatusChange(taskId, status);
+              }}
+              className={`rounded-2xl p-4 border-2 border-dashed transition-all duration-200 min-h-[200px] ${
+                dragOverColumn === status
+                  ? 'bg-teal-50 dark:bg-teal-900/20 border-teal-400 dark:border-teal-600 scale-[1.01] shadow-lg'
+                  : 'bg-gray-100 dark:bg-gray-900/50 border-gray-200 dark:border-gray-800 border-solid'
+              }`}
+            >
               <div className="flex items-center gap-2 mb-4">
                 <div className={`w-3 h-3 rounded-full ${
                   status === 'todo' ? 'bg-gray-400' :
@@ -332,10 +352,18 @@ export default function TasksPage() {
 
               <div className="space-y-3">
                 {groupedTasks[status].map((task) => (
-                  <TaskCard key={task.id} task={task} isRTL={isRTL} onEdit={() => openEditModal(task)} onDelete={() => handleDeleteTask(task.id)} onStatusChange={handleStatusChange} getPriorityColor={getPriorityColor} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} texts={texts} />
+                  <TaskCard key={task.id} task={task} isRTL={isRTL} onEdit={() => openEditModal(task)} onDelete={() => handleDeleteTask(task.id)} onStatusChange={handleStatusChange} getPriorityColor={getPriorityColor} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} texts={texts} draggable draggingTaskId={draggingTaskId} onDragStart={() => setDraggingTaskId(task.id)} onDragEnd={() => setDraggingTaskId(null)} />
                 ))}
                 {groupedTasks[status].length === 0 && (
-                  <div className="text-center py-8 text-gray-400 dark:text-gray-500 text-sm">{texts.noTasks}</div>
+                  <div className={`text-center py-8 text-sm rounded-xl border-2 border-dashed transition-colors ${
+                    dragOverColumn === status
+                      ? 'text-teal-500 dark:text-teal-400 border-teal-300 dark:border-teal-700 bg-teal-50/50 dark:bg-teal-900/10'
+                      : 'text-gray-400 dark:text-gray-500 border-transparent'
+                  }`}>
+                    {dragOverColumn === status
+                      ? (isRTL ? '⬇️ أفلت المهمة هنا' : '⬇️ Drop task here')
+                      : texts.noTasks}
+                  </div>
                 )}
               </div>
             </div>
@@ -369,14 +397,32 @@ export default function TasksPage() {
   );
 }
 
-function TaskCard({ task, isRTL, onEdit, onDelete, onStatusChange, getPriorityColor, openDropdown, setOpenDropdown, texts, showStatus = false }: {
-  task: Task; isRTL: boolean; onEdit: () => void; onDelete: () => void; onStatusChange: (taskId: string, status: string) => void; getPriorityColor: (priority: string) => string; openDropdown: string | null; setOpenDropdown: (id: string | null) => void; texts: any; showStatus?: boolean;
+function TaskCard({ task, isRTL, onEdit, onDelete, onStatusChange, getPriorityColor, openDropdown, setOpenDropdown, texts, showStatus = false, draggable: isDraggable = false, draggingTaskId, onDragStart, onDragEnd }: {
+  task: Task; isRTL: boolean; onEdit: () => void; onDelete: () => void; onStatusChange: (taskId: string, status: string) => void; getPriorityColor: (priority: string) => string; openDropdown: string | null; setOpenDropdown: (id: string | null) => void; texts: any; showStatus?: boolean; draggable?: boolean; draggingTaskId?: string | null; onDragStart?: () => void; onDragEnd?: () => void;
 }) {
   const StatusIcon = task.status === 'done' ? CheckCircle2 : task.status === 'in_progress' ? Clock : Circle;
+  const isDragging = draggingTaskId === task.id;
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-4 transition-all duration-200 hover:shadow-md hover:border-indigo-200 dark:hover:border-gray-600 group">
+    <div
+      draggable={isDraggable}
+      onDragStart={(e) => {
+        e.dataTransfer.setData('taskId', task.id);
+        e.dataTransfer.setData('fromStatus', task.status);
+        e.dataTransfer.effectAllowed = 'move';
+        onDragStart?.();
+      }}
+      onDragEnd={() => onDragEnd?.()}
+      className={`bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-4 transition-all duration-200 hover:shadow-md hover:border-teal-200 dark:hover:border-gray-600 group ${
+        isDraggable ? 'cursor-grab active:cursor-grabbing' : ''
+      } ${isDragging ? 'opacity-40 scale-95 rotate-1 shadow-xl border-teal-400 dark:border-teal-600' : ''}`}
+    >
       <div className="flex items-start gap-3">
+        {isDraggable && (
+          <div className="mt-1 text-gray-300 dark:text-gray-600 shrink-0 hover:text-gray-400 dark:hover:text-gray-500 cursor-grab active:cursor-grabbing">
+            <GripVertical className="w-4 h-4" />
+          </div>
+        )}
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -384,7 +430,7 @@ function TaskCard({ task, isRTL, onEdit, onDelete, onStatusChange, getPriorityCo
             onStatusChange(task.id, nextStatus);
           }}
           className={`mt-0.5 transition-colors shrink-0 ${
-            task.status === 'done' ? 'text-indigo-500' :
+            task.status === 'done' ? 'text-teal-500' :
             task.status === 'in_progress' ? 'text-amber-500' : 'text-gray-300 hover:text-gray-400'
           }`}
         >

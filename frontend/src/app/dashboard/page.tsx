@@ -269,21 +269,15 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <h2 className="text-2xl sm:text-3xl font-bold flex items-center gap-2 flex-wrap">
-                ☀️ {t.dashboard.welcome}، {user.name}! 🔗
+                {t.dashboard.welcome}، {user.name}!
               </h2>
               <p className="mt-2 text-white/80 text-sm">
-                {isRTL ? `مساء الخير ${user.name}! 🚀 جاهز ليوم متميز؟ لنصنع أهدافاً ونحقق الإنجازات` : `Good day ${user.name}! 🚀 Ready for a productive day? Let's set goals and achieve!`}
+                {isRTL ? `مساء الخير ${user.name}! جاهز ليوم متميز؟ لنصنع أهدافاً ونحقق الإنجازات` : `Good day ${user.name}! Ready for a productive day? Let's set goals and achieve!`}
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2.5 text-center">
-                <p className="text-[10px] text-white/70 font-medium">{isRTL ? 'الأداء' : 'Performance'}</p>
-                <p className="text-lg font-bold">{tasks.length ? ((completedTasks/tasks.length)*100).toFixed(1) : '0.0'}%</p>
-              </div>
-              <button className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-white/30 transition-colors flex items-center gap-2">
-                <Download className="w-4 h-4" />
-                {isRTL ? 'تصدير' : 'Export'}
-              </button>
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2.5 text-center">
+              <p className="text-[10px] text-white/70 font-medium">{isRTL ? 'صحة المشروع' : 'Project Health'}</p>
+              <p className="text-lg font-bold">{health}%</p>
             </div>
           </div>
           <p className="mt-3 text-white/70 text-sm italic">{getPhrase(isRTL)}</p>
@@ -331,40 +325,6 @@ export default function DashboardPage() {
               </div>
             </div>
           ))}
-        </section>
-
-        {/* ── Daily Inspiration & News ── */}
-        <div className="text-center mb-4">
-          <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-widest uppercase">💡 {isRTL ? 'إلهام يومي وأخبار' : 'DAILY INSPIRATION & NEWS'}</p>
-        </div>
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6 sm:mb-8">
-          <DailyQuote />
-          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 overflow-hidden">
-            <div className={`flex items-center gap-3 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <div className="w-10 h-10 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center shrink-0">
-                <Globe className="w-5 h-5 text-teal-600 dark:text-teal-400" />
-              </div>
-              <div className={isRTL ? 'text-right' : ''}>
-                <h3 className="font-bold text-gray-900 dark:text-white text-sm">{isRTL ? '🚀 أخبار التقنية والذكاء الاصطناعي' : '🚀 Tech & AI News'}</h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{isRTL ? 'آخر التحديثات في عالم البيانات' : 'Latest updates in the data world'}</p>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className={`flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
-                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
-                  <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{isRTL ? 'كلود يقدم ميزة التفكير المعمق' : 'Claude introduces deep thinking'}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{isRTL ? 'أنثروبيك تطلق كلود بإمكانيات التفكير المعمق لحل المشاكل المعقدة' : 'Anthropic launches Claude with deep thinking capabilities'}</p>
-                  <div className={`flex items-center gap-2 mt-1.5 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <span className="text-[10px] text-gray-400">Anthropic</span>
-                    <span className="text-[10px] bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded">AI</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </section>
 
         {/* ══ Employee Cards (Manager/Owner only) ══ */}
