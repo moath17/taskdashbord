@@ -129,8 +129,8 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-          <span className="text-indigo-700 dark:text-gray-300">{t.app.loading}</span>
+          <div className="w-8 h-8 border-4 border-sky-600 border-t-transparent rounded-full animate-spin" />
+          <span className="text-sky-700 dark:text-gray-300">{t.app.loading}</span>
         </div>
       </div>
     );
@@ -171,7 +171,7 @@ export default function DashboardPage() {
   ];
 
   const stats = [
-    { label: isRTL ? 'المهام' : 'Tasks', value: String(tasks.length), icon: CheckSquare, color: 'bg-indigo-500', href: '/tasks' },
+    { label: isRTL ? 'المهام' : 'Tasks', value: String(tasks.length), icon: CheckSquare, color: 'bg-sky-500', href: '/tasks' },
     { label: isRTL ? 'الأهداف' : 'Goals', value: String(goals.length), icon: Target, color: 'bg-emerald-500', href: '/goals' },
     { label: isRTL ? 'الإجازات' : 'Leaves', value: String(leaves.length), icon: CalendarDays, color: 'bg-amber-500', href: '/leaves' },
     { label: isRTL ? 'التدريب' : 'Training', value: String(trainings.length), icon: GraduationCap, color: 'bg-teal-500', href: '/trainings' },
@@ -186,7 +186,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-indigo-600 dark:bg-indigo-500 rounded-xl flex items-center justify-center shadow">
+              <div className="w-10 h-10 bg-sky-600 dark:bg-sky-500 rounded-xl flex items-center justify-center shadow">
                 <LayoutDashboard className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -204,7 +204,7 @@ export default function DashboardPage() {
               <button
                 onClick={toggleTheme}
                 className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 
-                           hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                           hover:bg-sky-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
                 title={theme === 'dark' ? (isRTL ? 'الوضع الفاتح' : 'Light mode') : (isRTL ? 'الوضع الداكن' : 'Dark mode')}
               >
                 {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -213,20 +213,20 @@ export default function DashboardPage() {
               <button
                 onClick={toggleLanguage}
                 className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 
-                           hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                           hover:bg-sky-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 <Globe className="w-4 h-4" />
                 {language === 'ar' ? 'EN' : 'AR'}
               </button>
 
               {/* User Menu */}
-              <div className="hidden sm:flex items-center gap-3 px-3 py-2 bg-indigo-50 dark:bg-gray-700 rounded-lg">
+              <div className="hidden sm:flex items-center gap-3 px-3 py-2 bg-sky-50 dark:bg-gray-700 rounded-lg">
                 <div className={`text-sm ${isRTL ? 'text-right' : 'text-left'}`}>
                   <p className="font-medium text-gray-900 dark:text-white">{user.name}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">{getRoleLabel(user.role)}</p>
                 </div>
-                <div className="w-9 h-9 bg-indigo-200 dark:bg-indigo-600 rounded-full flex items-center justify-center">
-                  <span className="text-indigo-700 dark:text-white font-semibold">
+                <div className="w-9 h-9 bg-sky-200 dark:bg-sky-600 rounded-full flex items-center justify-center">
+                  <span className="text-sky-700 dark:text-white font-semibold">
                     {user.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -237,8 +237,8 @@ export default function DashboardPage() {
                 <div className={`text-sm ${isRTL ? 'text-right' : 'text-left'}`}>
                   <p className="font-medium text-gray-900 dark:text-white">{user.name}</p>
                 </div>
-                <div className="w-9 h-9 bg-indigo-200 dark:bg-indigo-600 rounded-full flex items-center justify-center shrink-0">
-                  <span className="text-indigo-700 dark:text-white font-semibold text-sm">
+                <div className="w-9 h-9 bg-sky-200 dark:bg-sky-600 rounded-full flex items-center justify-center shrink-0">
+                  <span className="text-sky-700 dark:text-white font-semibold text-sm">
                     {user.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -263,7 +263,7 @@ export default function DashboardPage() {
                 key={link.href}
                 href={link.href}
                 className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-500 dark:text-gray-400 
-                           hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-t-lg transition-colors 
+                           hover:text-sky-600 dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-gray-700 rounded-t-lg transition-colors 
                            whitespace-nowrap"
               >
                 <link.icon className="w-4 h-4" />
@@ -277,11 +277,11 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Welcome banner */}
-        <section className="rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 dark:from-indigo-600 dark:via-indigo-700 dark:to-violet-800 p-6 sm:p-8 mb-6 sm:mb-8 text-white shadow-lg">
+        <section className="rounded-2xl bg-gradient-to-br from-sky-400 via-sky-500 to-blue-600 dark:from-sky-600 dark:via-blue-700 dark:to-sky-800 p-6 sm:p-8 mb-6 sm:mb-8 text-white shadow-lg">
           <h2 className="text-2xl sm:text-3xl font-bold">
             {t.dashboard.welcome}، {user.name} 👋
           </h2>
-          <p className="mt-1 text-indigo-100">{t.dashboard.overview}</p>
+          <p className="mt-1 text-sky-100">{t.dashboard.overview}</p>
           <p className="mt-2 text-white/95 text-sm sm:text-base italic">{getMotivationalPhrase(isRTL)}</p>
         </section>
 
@@ -291,7 +291,7 @@ export default function DashboardPage() {
             <Link
               key={index}
               href={stat.href}
-              className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-gray-600 flex items-center gap-3 sm:gap-4 p-4 transition-all duration-200 group"
+              className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md hover:border-sky-200 dark:hover:border-gray-600 flex items-center gap-3 sm:gap-4 p-4 transition-all duration-200 group"
             >
               <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform`}>
                 <stat.icon className="w-6 h-6 text-white" />
@@ -312,12 +312,12 @@ export default function DashboardPage() {
             <article className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
               <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-9 h-9 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center">
-                    <CheckSquare className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  <div className="w-9 h-9 rounded-lg bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center">
+                    <CheckSquare className="w-5 h-5 text-sky-600 dark:text-sky-400" />
                   </div>
                   <h3 className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'المهام' : 'Tasks'}</h3>
                 </div>
-                <Link href="/tasks" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 flex items-center gap-1">
+                <Link href="/tasks" className="text-sm font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 flex items-center gap-1">
                 {isRTL ? 'عرض الكل' : 'View all'}
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
@@ -334,9 +334,9 @@ export default function DashboardPage() {
                   {tasks.slice(0, 5).map((task) => (
                     <li key={task.id}>
                       <Link href="/tasks" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
-                        <p className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 truncate">{task.title}</p>
+                        <p className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-sky-600 dark:group-hover:text-sky-400 truncate">{task.title}</p>
                         <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                          <span className={`px-2 py-0.5 rounded-full ${task.status === 'done' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' : task.status === 'in_progress' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}`}>
+                          <span className={`px-2 py-0.5 rounded-full ${task.status === 'done' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' : task.status === 'in_progress' ? 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}`}>
                             {task.status === 'done' ? (isRTL ? 'مكتملة' : 'Done') : task.status === 'in_progress' ? (isRTL ? 'قيد العمل' : 'In progress') : (isRTL ? 'جديدة' : 'To do')}
                           </span>
                           {task.dueDate && <span>{new Date(task.dueDate).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}</span>}
@@ -493,10 +493,10 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             <Link
               href="/tasks"
-              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-indigo-200 dark:hover:border-gray-600 transition-all group"
+              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-sky-200 dark:hover:border-gray-600 transition-all group"
             >
-              <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                <CheckSquare className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+              <div className="w-12 h-12 bg-sky-100 dark:bg-sky-900/50 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                <CheckSquare className="w-6 h-6 text-sky-600 dark:text-sky-400" />
               </div>
               <div className="min-w-0">
                 <p className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'إدارة المهام' : 'Manage Tasks'}</p>
@@ -519,10 +519,10 @@ export default function DashboardPage() {
 
             <Link
               href="/kpis"
-              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-violet-200 dark:hover:border-gray-600 transition-all group"
+              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-blue-200 dark:hover:border-gray-600 transition-all group"
             >
-              <div className="w-12 h-12 bg-violet-100 dark:bg-violet-900/50 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                <TrendingUp className="w-6 h-6 text-violet-600 dark:text-violet-400" />
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="min-w-0">
                 <p className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'مؤشرات الأداء' : 'KPIs'}</p>
@@ -559,10 +559,10 @@ export default function DashboardPage() {
             {canManageTeam && (
               <Link
                 href="/team"
-                className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-indigo-200 dark:hover:border-gray-600 transition-all group"
+                className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center gap-4 p-4 hover:shadow-md hover:border-sky-200 dark:hover:border-gray-600 transition-all group"
               >
-                <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                  <Users className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                <div className="w-12 h-12 bg-sky-100 dark:bg-sky-900/50 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <Users className="w-6 h-6 text-sky-600 dark:text-sky-400" />
                 </div>
                 <div className="min-w-0">
                   <p className="font-semibold text-gray-900 dark:text-white">{isRTL ? 'إدارة الفريق' : 'Manage Team'}</p>
@@ -593,14 +593,14 @@ export default function DashboardPage() {
           return (
             <section className="mb-6 sm:mb-8">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
+                <Sparkles className="w-5 h-5 text-sky-500 dark:text-sky-400" />
                 {isRTL ? 'تحليل ذكي' : 'AI Analysis'}
               </h3>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 {isOwnerOrManager ? (
                   <>
                     <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-4 sm:p-5">
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-sky-600 dark:text-sky-400">
                         <BarChart3 className="w-4 h-4" />
                         {isRTL ? 'تحليل عام' : 'Overview'}
                       </h4>
@@ -645,7 +645,7 @@ export default function DashboardPage() {
                             </li>
                           ))}
                           {pendingLeaves.length > 0 && (
-                            <li className="text-indigo-600 flex items-center gap-2">
+                            <li className="text-sky-600 flex items-center gap-2">
                               <AlertTriangle className="w-4 h-4 shrink-0" />
                               {isRTL ? 'إجازات قيد المراجعة' : 'Leaves pending review'}: {pendingLeaves.length}
                             </li>
@@ -657,7 +657,7 @@ export default function DashboardPage() {
                 ) : (
                   <>
                     <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-4 sm:p-5">
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-sky-600 dark:text-sky-400">
                         <CheckSquare className="w-4 h-4" />
                         {isRTL ? 'حالة المهام' : 'My Tasks'}
                       </h4>
@@ -695,7 +695,7 @@ export default function DashboardPage() {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             {/* Left: Logo & Copyright */}
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-indigo-600 dark:bg-indigo-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-sky-600 dark:bg-sky-500 rounded-lg flex items-center justify-center">
                 <LayoutDashboard className="w-4 h-4 text-white" />
               </div>
               <div>
@@ -708,16 +708,16 @@ export default function DashboardPage() {
 
             {/* Center: Links */}
             <div className="flex items-center gap-6 text-sm text-gray-500">
-              <Link href="/tasks" className="hover:text-indigo-600 transition-colors">
+              <Link href="/tasks" className="hover:text-sky-600 transition-colors">
                 {isRTL ? 'المهام' : 'Tasks'}
               </Link>
-              <Link href="/goals" className="hover:text-indigo-600 transition-colors">
+              <Link href="/goals" className="hover:text-sky-600 transition-colors">
                 {isRTL ? 'الأهداف' : 'Goals'}
               </Link>
-              <Link href="/kpis" className="hover:text-indigo-600 transition-colors">
+              <Link href="/kpis" className="hover:text-sky-600 transition-colors">
                 {isRTL ? 'المؤشرات' : 'KPIs'}
               </Link>
-              <Link href="/team" className="hover:text-indigo-600 transition-colors">
+              <Link href="/team" className="hover:text-sky-600 transition-colors">
                 {isRTL ? 'الفريق' : 'Team'}
               </Link>
             </div>
@@ -739,8 +739,8 @@ export default function DashboardPage() {
               href={link.href}
               className={`flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors
                 ${link.href === '/dashboard' 
-                  ? 'text-indigo-600 dark:text-indigo-400' 
-                  : 'text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400'
+                  ? 'text-sky-600 dark:text-sky-400' 
+                  : 'text-gray-400 hover:text-sky-600 dark:hover:text-sky-400'
                 }`}
             >
               <link.icon className="w-5 h-5" />
@@ -753,7 +753,7 @@ export default function DashboardPage() {
             <button
               onClick={() => setMoreMenuOpen(!moreMenuOpen)}
               className={`flex flex-col items-center justify-center gap-1 w-full py-2 rounded-lg transition-colors
-                ${moreMenuOpen ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400'}`}
+                ${moreMenuOpen ? 'text-sky-600 dark:text-sky-400' : 'text-gray-400 hover:text-sky-600 dark:hover:text-sky-400'}`}
             >
               <MoreHorizontal className="w-5 h-5" />
               <span className="text-[10px] font-medium leading-none">
@@ -777,7 +777,7 @@ export default function DashboardPage() {
                       href={link.href}
                       onClick={() => setMoreMenuOpen(false)}
                       className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 
-                                 hover:bg-indigo-50 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                                 hover:bg-sky-50 dark:hover:bg-gray-700 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
                     >
                       <link.icon className="w-5 h-5" />
                       <span className="font-medium">{link.label}</span>

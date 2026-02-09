@@ -176,12 +176,12 @@ export function MemberModal({ isOpen, onClose, onSave, member }: MemberModalProp
               onClick={() => setRole('manager')}
               className={`p-4 rounded-xl border-2 transition-all text-center
                          ${role === 'manager'
-                           ? 'border-indigo-500 bg-indigo-50'
+                           ? 'border-sky-500 bg-sky-50'
                            : 'border-gray-200 hover:border-gray-300'}`}
             >
               <Shield className={`w-6 h-6 mx-auto mb-2 
-                                  ${role === 'manager' ? 'text-indigo-600' : 'text-gray-400'}`} />
-              <p className={`font-medium ${role === 'manager' ? 'text-indigo-900' : 'text-gray-700'}`}>
+                                  ${role === 'manager' ? 'text-sky-600' : 'text-gray-400'}`} />
+              <p className={`font-medium ${role === 'manager' ? 'text-sky-900' : 'text-gray-700'}`}>
                 {texts.manager}
               </p>
               <p className="text-xs text-gray-500 mt-1">{texts.managerDesc}</p>
@@ -193,12 +193,12 @@ export function MemberModal({ isOpen, onClose, onSave, member }: MemberModalProp
               onClick={() => setRole('employee')}
               className={`p-4 rounded-xl border-2 transition-all text-center
                          ${role === 'employee'
-                           ? 'border-indigo-500 bg-indigo-50'
+                           ? 'border-sky-500 bg-sky-50'
                            : 'border-gray-200 hover:border-gray-300'}`}
             >
               <User className={`w-6 h-6 mx-auto mb-2 
-                                ${role === 'employee' ? 'text-indigo-600' : 'text-gray-400'}`} />
-              <p className={`font-medium ${role === 'employee' ? 'text-indigo-900' : 'text-gray-700'}`}>
+                                ${role === 'employee' ? 'text-sky-600' : 'text-gray-400'}`} />
+              <p className={`font-medium ${role === 'employee' ? 'text-sky-900' : 'text-gray-700'}`}>
                 {texts.employee}
               </p>
               <p className="text-xs text-gray-500 mt-1">{texts.employeeDesc}</p>

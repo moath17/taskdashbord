@@ -25,7 +25,7 @@ function ResetPasswordForm() {
   // No token provided
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-blue-50 p-4">
         <div className="w-full max-w-md animate-fadeIn">
           <div className="card text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 
@@ -57,7 +57,7 @@ function ResetPasswordForm() {
   // Success state
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-blue-50 p-4">
         <div className="w-full max-w-md animate-fadeIn">
           <div className="card text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 
@@ -121,7 +121,7 @@ function ResetPasswordForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-blue-50 p-4">
       {/* Language Toggle */}
       <button
         onClick={toggleLanguage}
@@ -139,7 +139,7 @@ function ResetPasswordForm() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 
-                          bg-indigo-600 rounded-2xl mb-4 shadow-lg shadow-indigo-200">
+                          bg-sky-600 rounded-2xl mb-4 shadow-lg shadow-sky-200">
             <ShieldCheck className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">
@@ -262,7 +262,7 @@ export default function ResetPasswordPage() {
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-sky-600 border-t-transparent rounded-full animate-spin" />
           <span className="text-gray-600">Loading...</span>
         </div>
       </div>

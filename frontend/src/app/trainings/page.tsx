@@ -184,7 +184,7 @@ export default function TrainingsPage() {
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+        <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
       </div>
     );
   }
@@ -310,9 +310,9 @@ export default function TrainingsPage() {
                 {t.participants.length > 0 && (
                   <div className="flex -space-x-2 mt-3 rtl:space-x-reverse">
                     {t.participants.slice(0, 5).map((p, i) => (
-                      <div key={i} className="w-7 h-7 bg-indigo-100 border-2 border-white rounded-full flex items-center justify-center"
+                      <div key={i} className="w-7 h-7 bg-sky-100 border-2 border-white rounded-full flex items-center justify-center"
                         title={p.user?.name}>
-                        <span className="text-xs font-semibold text-indigo-600">{p.user?.name?.charAt(0)}</span>
+                        <span className="text-xs font-semibold text-sky-600">{p.user?.name?.charAt(0)}</span>
                       </div>
                     ))}
                     {t.participants.length > 5 && (

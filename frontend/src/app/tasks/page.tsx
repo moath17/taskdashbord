@@ -288,7 +288,7 @@ export default function TasksPage() {
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+        <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
       </div>
     );
   }
@@ -355,7 +355,7 @@ export default function TasksPage() {
                 onClick={() => setFilterStatus(status)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
                            ${filterStatus === status
-                             ? 'bg-indigo-100 text-indigo-700'
+                             ? 'bg-sky-100 text-sky-700'
                              : 'bg-white text-gray-600 hover:bg-gray-100'}`}
               >
                 {status === 'all' ? texts.all : getStatusLabel(status)}
