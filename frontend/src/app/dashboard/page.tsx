@@ -11,7 +11,7 @@ import {
   Building2, ChevronLeft, ChevronRight, CalendarDays, GraduationCap, Heart, Home,
   MoreHorizontal, ArrowUpRight, Flag, User, Loader2, Sparkles, Lightbulb,
   AlertTriangle, BarChart3, Moon, Sun, Zap, Award, Clock, ShieldCheck,
-  Activity, Flame, ListChecks, CheckCircle2, AlertCircle, Download,
+  Activity, Flame, ListChecks, CheckCircle2, AlertCircle, Download, KeyRound,
 } from 'lucide-react';
 import DailyQuote from '@/components/DailyQuote';
 
@@ -524,6 +524,7 @@ export default function DashboardPage() {
               { href: '/leaves', icon: CalendarDays, color: 'bg-amber-100 dark:bg-amber-900/30', iClr: 'text-amber-600 dark:text-amber-400', label: isRTL ? 'الإجازات' : 'Leaves', desc: isRTL ? 'طلب وإدارة الإجازات' : 'Request and manage' },
               { href: '/trainings', icon: GraduationCap, color: 'bg-teal-100 dark:bg-teal-900/30', iClr: 'text-teal-600 dark:text-teal-400', label: isRTL ? 'التدريب' : 'Training', desc: isRTL ? 'الدورات والورش' : 'Courses & workshops' },
               ...(canManage ? [{ href: '/team', icon: Users, color: 'bg-teal-100 dark:bg-teal-900/30', iClr: 'text-teal-600 dark:text-teal-400', label: isRTL ? 'الفريق' : 'Team', desc: isRTL ? 'إدارة أعضاء الفريق' : 'Manage members' }] : []),
+              { href: '/change-password', icon: KeyRound, color: 'bg-gray-100 dark:bg-gray-800', iClr: 'text-gray-600 dark:text-gray-400', label: isRTL ? 'تغيير كلمة المرور' : 'Change Password', desc: isRTL ? 'تغيير كلمة المرور الخاصة بك' : 'Update your password' },
             ].map(a => (
               <Link key={a.href} href={a.href} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 flex items-center gap-4 p-4 hover:shadow-md transition-all group">
                 <div className={`w-11 h-11 ${a.color} rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform`}><a.icon className={`w-5 h-5 ${a.iClr}`} /></div>
