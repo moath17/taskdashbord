@@ -435,7 +435,7 @@ function GoalCard({
   texts: any;
 }) {
   return (
-    <div className="card hover:shadow-md transition-shadow group">
+    <div className="card hover:shadow-md transition-shadow group cursor-pointer" onClick={onEdit}>
       {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex items-center gap-2 flex-wrap">
@@ -466,7 +466,7 @@ function GoalCard({
                               border border-gray-200 dark:border-gray-700 py-1 min-w-[100px] z-10
                               ${isRTL ? 'left-0' : 'right-0'}`}>
                 <button
-                  onClick={onEdit}
+                  onClick={(e) => { e.stopPropagation(); onEdit(); }}
                   className="w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 
                              flex items-center gap-2"
                 >
@@ -474,7 +474,7 @@ function GoalCard({
                   {texts.edit}
                 </button>
                 <button
-                  onClick={onDelete}
+                  onClick={(e) => { e.stopPropagation(); onDelete(); }}
                   className="w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 
                              flex items-center gap-2"
                 >
@@ -511,7 +511,7 @@ function GoalCard({
             {[0, 25, 50, 75, 100].map((p) => (
               <button
                 key={p}
-                onClick={() => onProgressChange(goal.id, p)}
+                onClick={(e) => { e.stopPropagation(); onProgressChange(goal.id, p); }}
                 className={`flex-1 py-1 text-xs rounded transition-colors
                            ${goal.progress === p 
                              ? 'bg-green-100 text-green-700 font-medium' 
