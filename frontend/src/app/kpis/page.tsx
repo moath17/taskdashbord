@@ -313,17 +313,19 @@ export default function KPIsPage() {
               </div>
             </div>
 
-            {/* Add Button */}
-            <button
-              onClick={() => {
-                setEditingKPI(null);
-                setIsModalOpen(true);
-              }}
-              className="btn btn-primary flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">{texts.addKPI}</span>
-            </button>
+            {/* Add Button — owner/manager only */}
+            {canManage && (
+              <button
+                onClick={() => {
+                  setEditingKPI(null);
+                  setIsModalOpen(true);
+                }}
+                className="btn btn-primary flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">{texts.addKPI}</span>
+              </button>
+            )}
           </div>
         </div>
       </header>

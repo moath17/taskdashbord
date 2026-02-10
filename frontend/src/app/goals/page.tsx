@@ -302,17 +302,19 @@ export default function GoalsPage() {
               </div>
             </div>
 
-            {/* Add Button */}
-            <button
-              onClick={() => {
-                setEditingGoal(null);
-                setIsModalOpen(true);
-              }}
-              className="btn btn-primary flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">{texts.addGoal}</span>
-            </button>
+            {/* Add Button — owner/manager only */}
+            {canManage && (
+              <button
+                onClick={() => {
+                  setEditingGoal(null);
+                  setIsModalOpen(true);
+                }}
+                className="btn btn-primary flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">{texts.addGoal}</span>
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -503,21 +505,23 @@ function GoalCard({
             style={{ width: `${goal.progress}%` }}
           />
         </div>
-        {/* Quick progress buttons */}
-        <div className="flex gap-1 mt-2">
-          {[0, 25, 50, 75, 100].map((p) => (
-            <button
-              key={p}
-              onClick={() => onProgressChange(goal.id, p)}
-              className={`flex-1 py-1 text-xs rounded transition-colors
-                         ${goal.progress === p 
-                           ? 'bg-green-100 text-green-700 font-medium' 
-                           : 'bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600'}`}
-            >
-              {p}%
-            </button>
-          ))}
-        </div>
+        {/* Quick progress buttons — owner/manager only */}
+        {canManage && (
+          <div className="flex gap-1 mt-2">
+            {[0, 25, 50, 75, 100].map((p) => (
+              <button
+                key={p}
+                onClick={() => onProgressChange(goal.id, p)}
+                className={`flex-1 py-1 text-xs rounded transition-colors
+                           ${goal.progress === p 
+                             ? 'bg-green-100 text-green-700 font-medium' 
+                             : 'bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600'}`}
+              >
+                {p}%
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Meta */}

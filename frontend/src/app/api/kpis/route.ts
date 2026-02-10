@@ -8,15 +8,21 @@ export async function GET(request: NextRequest) {
   try {
     const user = await requireAuth(request);
 
-    const { data: kpis, error } = await supabase
+    let query = supabase
       .from('kpis')
       .select(`
         *,
         owner:users!kpis_owner_id_fkey(id, name, email),
         creator:users!kpis_created_by_fkey(id, name)
       `)
-      .eq('organization_id', user.organizationId)
-      .order('created_at', { ascending: false });
+      .eq('organization_id', user.organizationId);
+
+    // Employees only see their own KPIs
+    if (user.role === 'employee') {
+      query = query.eq('owner_id', user.id);
+    }
+
+    const { data: kpis, error } = await query.order('created_at', { ascending: false });
 
     if (error) {
       console.error('Get KPIs error:', error);
