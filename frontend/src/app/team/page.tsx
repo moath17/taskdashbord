@@ -8,8 +8,6 @@ import { MemberModal } from '@/components/MemberModal';
 import {
   Users,
   UserPlus,
-  MoreVertical,
-  Edit2,
   Trash2,
   Crown,
   Shield,
@@ -42,8 +40,7 @@ export default function TeamPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
   
-  // Dropdown state
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  
 
   // Check auth
   useEffect(() => {
@@ -59,12 +56,7 @@ export default function TeamPage() {
     }
   }, [isAuthenticated]);
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClick = () => setOpenDropdown(null);
-    document.addEventListener('click', handleClick);
-    return () => document.removeEventListener('click', handleClick);
-  }, []);
+  
 
   const fetchMembers = async () => {
     try {
@@ -150,7 +142,6 @@ export default function TeamPage() {
   const openEditModal = (member: Member) => {
     setEditingMember(member);
     setIsModalOpen(true);
-    setOpenDropdown(null);
   };
 
   const canManageTeam = user?.role === 'owner' || user?.role === 'manager';
@@ -279,79 +270,69 @@ export default function TeamPage() {
               const RoleIcon = getRoleIcon(member.role);
               const isCurrentUser = member.id === user?.id;
 
-              return (
-                <div
-                  key={member.id}
-                  className="card hover:shadow-md transition-shadow relative group"
-                >
-                  {/* Actions Dropdown */}
-                  {canManageTeam && member.role !== 'owner' && !isCurrentUser && (
-                    <div className="absolute top-4 right-4">
+              {/* Card: clickable to edit (for owner/manager, non-owner members, not self) */}
+              {(() => {
+                const canEdit = canManageTeam && member.role !== 'owner' && !isCurrentUser;
+                return (
+                  <div
+                    key={member.id}
+                    onClick={() => canEdit && openEditModal(member)}
+                    className={`card hover:shadow-md transition-shadow relative
+                                ${canEdit ? 'cursor-pointer active:scale-[0.98]' : ''}`}
+                  >
+                    {/* Delete button — always visible for eligible members */}
+                    {canEdit && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setOpenDropdown(openDropdown === member.id ? null : member.id);
+                          handleDeleteMember(member.id);
                         }}
-                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 
-                                   rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                        className={`absolute top-4 ${isRTL ? 'left-4' : 'right-4'} p-2 text-gray-400 
+                                   hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors`}
+                        title={texts.delete}
                       >
-                        <MoreVertical className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
+                    )}
 
-                      {openDropdown === member.id && (
-                        <div className={`absolute top-full mt-1 bg-white rounded-lg shadow-lg 
-                                        border border-gray-200 py-1 min-w-[120px] z-10
-                                        ${isRTL ? 'left-0' : 'right-0'}`}>
-                          <button
-                            onClick={() => openEditModal(member)}
-                            className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 
-                                       flex items-center gap-2"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                            {texts.edit}
-                          </button>
-                          <button
-                            onClick={() => handleDeleteMember(member.id)}
-                            className="w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 
-                                       flex items-center gap-2"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            {texts.delete}
-                          </button>
-                        </div>
+                    {/* Avatar */}
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-14 h-14 bg-gradient-to-br from-teal-500 to-emerald-600 
+                                      rounded-full flex items-center justify-center text-white 
+                                      text-xl font-bold shadow-lg">
+                        {member.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-gray-900 truncate">
+                          {member.name}
+                          {isCurrentUser && (
+                            <span className="text-teal-600 text-sm font-normal mr-1">
+                              {texts.you}
+                            </span>
+                          )}
+                        </h3>
+                        <p className="text-sm text-gray-500 truncate" dir="ltr">
+                          {member.email}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Role Badge + Edit hint */}
+                    <div className="flex items-center justify-between">
+                      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm
+                                      ${getRoleColor(member.role)}`}>
+                        <RoleIcon className="w-4 h-4" />
+                        {getRoleLabel(member.role)}
+                      </div>
+                      {canEdit && (
+                        <span className="text-xs text-gray-400">
+                          {isRTL ? 'اضغط للتعديل' : 'Tap to edit'}
+                        </span>
                       )}
                     </div>
-                  )}
-
-                  {/* Avatar */}
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-14 h-14 bg-gradient-to-br from-teal-500 to-emerald-600 
-                                    rounded-full flex items-center justify-center text-white 
-                                    text-xl font-bold shadow-lg">
-                      {member.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 truncate">
-                        {member.name}
-                        {isCurrentUser && (
-                          <span className="text-teal-600 text-sm font-normal mr-1">
-                            {texts.you}
-                          </span>
-                        )}
-                      </h3>
-                      <p className="text-sm text-gray-500 truncate" dir="ltr">
-                        {member.email}
-                      </p>
-                    </div>
                   </div>
-
-                  {/* Role Badge */}
-                  <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm
-                                  ${getRoleColor(member.role)}`}>
-                    <RoleIcon className="w-4 h-4" />
-                    {getRoleLabel(member.role)}
-                  </div>
-                </div>
+                );
+              })()}
               );
             })}
           </div>
