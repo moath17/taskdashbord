@@ -190,7 +190,7 @@ export default function TeamPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full animate-spin" />
         </div>
@@ -199,24 +199,24 @@ export default function TeamPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Back & Title */}
             <div className="flex items-center gap-4">
               <button
                 onClick={() => router.push('/dashboard')}
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
               </button>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-teal-100 rounded-xl flex items-center justify-center">
-                  <Users className="w-5 h-5 text-teal-600" />
+                <div className="w-10 h-10 bg-teal-100 dark:bg-teal-900/50 rounded-xl flex items-center justify-center">
+                  <Users className="w-5 h-5 text-teal-600 dark:text-teal-400" />
                 </div>
-                <h1 className="text-lg font-bold text-gray-900">{texts.title}</h1>
+                <h1 className="text-lg font-bold text-gray-900 dark:text-white">{texts.title}</h1>
               </div>
             </div>
 
@@ -253,7 +253,7 @@ export default function TeamPage() {
 
         {/* Error */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700">
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400">
             {error}
           </div>
         )}
@@ -261,8 +261,8 @@ export default function TeamPage() {
         {/* Members Grid */}
         {filteredMembers.length === 0 ? (
           <div className="card text-center py-12">
-            <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">{texts.noMembers}</p>
+            <Users className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-gray-400">{texts.noMembers}</p>
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -286,7 +286,7 @@ export default function TeamPage() {
                         handleDeleteMember(member.id);
                       }}
                       className={`absolute top-4 ${isRTL ? 'left-4' : 'right-4'} p-2 text-gray-400 
-                                 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors`}
+                                 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors`}
                       title={texts.delete}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -301,7 +301,7 @@ export default function TeamPage() {
                       {member.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 truncate">
+                      <h3 className="font-semibold text-gray-900 dark:text-white truncate">
                         {member.name}
                         {isCurrentUser && (
                           <span className="text-teal-600 text-sm font-normal mr-1">
@@ -309,7 +309,7 @@ export default function TeamPage() {
                           </span>
                         )}
                       </h3>
-                      <p className="text-sm text-gray-500 truncate" dir="ltr">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate" dir="ltr">
                         {member.email}
                       </p>
                     </div>

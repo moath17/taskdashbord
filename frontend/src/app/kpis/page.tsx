@@ -285,31 +285,31 @@ export default function KPIsPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <Loader2 className="w-8 h-8 text-teal-600 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Back & Title */}
             <div className="flex items-center gap-4">
               <button
                 onClick={() => router.push('/dashboard')}
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
               </button>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-purple-600" />
+                <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/50 rounded-xl flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                 </div>
-                <h1 className="text-lg font-bold text-gray-900">{texts.title}</h1>
+                <h1 className="text-lg font-bold text-gray-900 dark:text-white">{texts.title}</h1>
               </div>
             </div>
 
@@ -353,8 +353,8 @@ export default function KPIsPage() {
                 onClick={() => setFilterStatus(status)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
                            ${filterStatus === status
-                             ? 'bg-purple-100 text-purple-700'
-                             : 'bg-white text-gray-600 hover:bg-gray-100'}`}
+                             ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-400'
+                             : 'bg-white text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'}`}
               >
                 {status === 'all' ? texts.all : getStatusLabel(status)}
               </button>
@@ -365,8 +365,8 @@ export default function KPIsPage() {
         {/* KPIs Grid */}
         {filteredKPIs.length === 0 ? (
           <div className="card text-center py-12">
-            <TrendingUp className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">{texts.noKPIs}</p>
+            <TrendingUp className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-gray-400">{texts.noKPIs}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -381,7 +381,7 @@ export default function KPIsPage() {
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <div className="flex items-center gap-2 flex-wrap">
                       {kpi.category && (
-                        <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">
+                        <span className="px-2 py-1 bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 rounded-full text-xs">
                           {kpi.category}
                         </span>
                       )}
@@ -398,22 +398,22 @@ export default function KPIsPage() {
                             e.stopPropagation();
                             setOpenDropdown(openDropdown === kpi.id ? null : kpi.id);
                           }}
-                          className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 
+                          className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-700 
                                      rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                         >
                           <MoreVertical className="w-4 h-4" />
                         </button>
 
                         {openDropdown === kpi.id && (
-                          <div className={`absolute top-full mt-1 bg-white rounded-lg shadow-lg 
-                                          border border-gray-200 py-1 min-w-[100px] z-10
+                          <div className={`absolute top-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg 
+                                          border border-gray-200 dark:border-gray-700 py-1 min-w-[100px] z-10
                                           ${isRTL ? 'left-0' : 'right-0'}`}>
                             <button
                               onClick={() => {
                                 setEditingKPI(kpi);
                                 setIsModalOpen(true);
                               }}
-                              className="w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 
+                              className="w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700 
                                          flex items-center gap-2"
                             >
                               <Edit2 className="w-3.5 h-3.5" />
@@ -421,7 +421,7 @@ export default function KPIsPage() {
                             </button>
                             <button
                               onClick={() => handleDeleteKPI(kpi.id)}
-                              className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 
+                              className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30 
                                          flex items-center gap-2"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -434,25 +434,25 @@ export default function KPIsPage() {
                   </div>
 
                   {/* Name & Description */}
-                  <h3 className="font-semibold text-gray-900 mb-1">{kpi.name}</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{kpi.name}</h3>
                   {kpi.description && (
-                    <p className="text-sm text-gray-500 line-clamp-2 mb-4">{kpi.description}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">{kpi.description}</p>
                   )}
 
                   {/* Values */}
                   <div className="flex items-end justify-between mb-3">
                     <div>
-                      <p className="text-xs text-gray-500 mb-1">{texts.current}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{texts.current}</p>
                       <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold text-gray-900">
+                        <span className="text-2xl font-bold text-gray-900 dark:text-white">
                           {formatValue(kpi.currentValue, kpi.unit)}
                         </span>
                         {getProgressIcon(progress)}
                       </div>
                     </div>
                     <div className={`${isRTL ? 'text-left' : 'text-right'}`}>
-                      <p className="text-xs text-gray-500 mb-1">{texts.target}</p>
-                      <span className="text-lg font-medium text-gray-600">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{texts.target}</p>
+                      <span className="text-lg font-medium text-gray-600 dark:text-gray-400">
                         {formatValue(kpi.targetValue, kpi.unit)}
                       </span>
                     </div>
@@ -461,10 +461,10 @@ export default function KPIsPage() {
                   {/* Progress Bar */}
                   <div className="mb-3">
                     <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="text-gray-500">{texts.progress}</span>
-                      <span className="font-medium text-gray-700">{progress}%</span>
+                      <span className="text-gray-500 dark:text-gray-400">{texts.progress}</span>
+                      <span className="font-medium text-gray-700 dark:text-gray-300">{progress}%</span>
                     </div>
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                       <div 
                         className={`h-full rounded-full transition-all duration-300 ${getProgressColor(progress)}`}
                         style={{ width: `${progress}%` }}
@@ -473,9 +473,9 @@ export default function KPIsPage() {
                   </div>
 
                   {/* Meta */}
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 pt-3 border-t border-gray-100">
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 dark:text-gray-400 pt-3 border-t border-gray-100 dark:border-gray-700">
                     {/* Frequency */}
-                    <span className="px-2 py-1 bg-gray-50 rounded text-gray-600">
+                    <span className="px-2 py-1 bg-gray-50 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-400">
                       {getFrequencyLabel(kpi.frequency)}
                     </span>
 

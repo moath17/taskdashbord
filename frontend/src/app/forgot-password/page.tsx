@@ -12,7 +12,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-emerald-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-emerald-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 p-4">
       {/* Language Toggle */}
       <button
         onClick={toggleLanguage}
@@ -29,21 +29,21 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md animate-fadeIn">
         <div className="card text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 
-                          bg-emerald-100 rounded-full mb-4 mx-auto">
+                          bg-emerald-100 dark:bg-emerald-900/50 rounded-full mb-4 mx-auto">
             <CheckCircle2 className="w-8 h-8 text-emerald-600" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
             {isRTL ? 'نسيت كلمة المرور' : 'Forgot Password'}
           </h2>
-          <p className="text-gray-500 mb-4 leading-relaxed">
+          <p className="text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">
             {isRTL 
               ? 'الرجاء الرجوع إلى المدير (أو المالك) لتغيير كلمة المرور.'
               : 'Please contact the manager (or owner) to reset your password.'}
           </p>
 
           {/* Support contact */}
-          <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 mb-6">
-            <p className="text-sm text-gray-600 mb-2">
+          <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 mb-6">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
               {isRTL 
                 ? 'إذا كنت مالك المنظمة، تواصل مع الدعم الفني:'
                 : 'If you are the organization owner, contact support:'}

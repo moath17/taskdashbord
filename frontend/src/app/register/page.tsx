@@ -49,16 +49,16 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-emerald-50 p-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-emerald-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 p-4 py-8">
       {/* Language Toggle */}
       <button
         onClick={toggleLanguage}
         className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 
-                   bg-white rounded-lg shadow-sm border border-gray-200 
-                   hover:bg-gray-50 transition-colors"
+                   bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 
+                   hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
       >
-        <Globe className="w-4 h-4 text-gray-500" />
-        <span className="text-sm font-medium text-gray-700">
+        <Globe className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
           {language === 'ar' ? 'English' : 'عربي'}
         </span>
       </button>
@@ -70,8 +70,8 @@ export default function RegisterPage() {
                           bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl mb-4 shadow-lg shadow-teal-500/20">
             <Building2 className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">{t.auth.registerOrg}</h1>
-          <p className="text-gray-500 mt-2">{t.auth.registerSubtitle}</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.auth.registerOrg}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-2">{t.auth.registerSubtitle}</p>
         </div>
 
         {/* Form */}
@@ -145,7 +145,7 @@ export default function RegisterPage() {
                   dir="ltr"
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 {isRTL ? '6 أحرف على الأقل' : 'At least 6 characters'}
               </p>
             </div>
@@ -170,7 +170,7 @@ export default function RegisterPage() {
 
             {/* Error */}
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                 <p className="text-sm text-red-600">{error}</p>
               </div>
             )}
@@ -196,8 +196,8 @@ export default function RegisterPage() {
           </form>
 
           {/* Login Link */}
-          <div className="mt-6 pt-6 border-t border-gray-100 text-center">
-            <p className="text-gray-600">
+          <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700 text-center">
+            <p className="text-gray-600 dark:text-gray-400">
               {t.auth.hasAccount}{' '}
               <Link href="/login" className="link">
                 {t.auth.login}

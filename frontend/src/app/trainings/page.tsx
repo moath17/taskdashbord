@@ -183,26 +183,26 @@ export default function TrainingsPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <Loader2 className="w-8 h-8 text-teal-600 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <button onClick={() => router.push('/dashboard')} className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+              <button onClick={() => router.push('/dashboard')} className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors">
                 {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
               </button>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-teal-100 rounded-xl flex items-center justify-center">
-                  <GraduationCap className="w-5 h-5 text-teal-600" />
+                <div className="w-10 h-10 bg-teal-100 dark:bg-teal-900/50 rounded-xl flex items-center justify-center">
+                  <GraduationCap className="w-5 h-5 text-teal-600 dark:text-teal-400" />
                 </div>
-                <h1 className="text-lg font-bold text-gray-900">{texts.title}</h1>
+                <h1 className="text-lg font-bold text-gray-900 dark:text-white">{texts.title}</h1>
               </div>
             </div>
             {canManage && (
@@ -227,7 +227,7 @@ export default function TrainingsPage() {
             {['all', 'planned', 'in_progress', 'completed', 'cancelled'].map((s) => (
               <button key={s} onClick={() => setFilterStatus(s)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                  ${filterStatus === s ? 'bg-teal-100 text-teal-700' : 'bg-white text-gray-600 hover:bg-gray-100'}`}>
+                  ${filterStatus === s ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-400' : 'bg-white text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'}`}>
                 {s === 'all' ? texts.all : getStatusLabel(s)}
               </button>
             ))}
@@ -236,8 +236,8 @@ export default function TrainingsPage() {
 
         {filteredTrainings.length === 0 ? (
           <div className="card text-center py-12">
-            <GraduationCap className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">{texts.noTrainings}</p>
+            <GraduationCap className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-gray-400">{texts.noTrainings}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -256,17 +256,17 @@ export default function TrainingsPage() {
                   {canManage && (
                     <div className="relative">
                       <button onClick={(e) => { e.stopPropagation(); setOpenDropdown(openDropdown === t.id ? null : t.id); }}
-                        className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
+                        className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
                         <MoreVertical className="w-4 h-4" />
                       </button>
                       {openDropdown === t.id && (
-                        <div className={`absolute top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[100px] z-10 ${isRTL ? 'left-0' : 'right-0'}`}>
+                        <div className={`absolute top-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 min-w-[100px] z-10 ${isRTL ? 'left-0' : 'right-0'}`}>
                           <button onClick={() => { setEditingTraining(t); setIsModalOpen(true); }}
-                            className="w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                            className="w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700 flex items-center gap-2">
                             <Edit2 className="w-3.5 h-3.5" /> {texts.edit}
                           </button>
                           <button onClick={() => handleDelete(t.id)}
-                            className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                            className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30 flex items-center gap-2">
                             <Trash2 className="w-3.5 h-3.5" /> {texts.delete}
                           </button>
                         </div>
@@ -275,11 +275,11 @@ export default function TrainingsPage() {
                   )}
                 </div>
 
-                <h3 className="font-semibold text-gray-900 mb-1">{t.title}</h3>
-                {t.description && <p className="text-sm text-gray-500 line-clamp-2 mb-3">{t.description}</p>}
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{t.title}</h3>
+                {t.description && <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">{t.description}</p>}
 
                 {/* Meta */}
-                <div className="space-y-2 text-sm text-gray-500 pt-3 border-t border-gray-100">
+                <div className="space-y-2 text-sm text-gray-500 dark:text-gray-400 pt-3 border-t border-gray-100 dark:border-gray-700">
                   {t.provider && (
                     <div className="flex items-center gap-2">
                       <Building2 className="w-4 h-4" /> {t.provider}
@@ -310,14 +310,14 @@ export default function TrainingsPage() {
                 {t.participants.length > 0 && (
                   <div className="flex -space-x-2 mt-3 rtl:space-x-reverse">
                     {t.participants.slice(0, 5).map((p, i) => (
-                      <div key={i} className="w-7 h-7 bg-teal-100 border-2 border-white rounded-full flex items-center justify-center"
+                      <div key={i} className="w-7 h-7 bg-teal-100 dark:bg-teal-900/50 border-2 border-white dark:border-gray-800 rounded-full flex items-center justify-center"
                         title={p.user?.name}>
                         <span className="text-xs font-semibold text-teal-600">{p.user?.name?.charAt(0)}</span>
                       </div>
                     ))}
                     {t.participants.length > 5 && (
-                      <div className="w-7 h-7 bg-gray-100 border-2 border-white rounded-full flex items-center justify-center">
-                        <span className="text-xs text-gray-500">+{t.participants.length - 5}</span>
+                      <div className="w-7 h-7 bg-gray-100 dark:bg-gray-700 border-2 border-white dark:border-gray-800 rounded-full flex items-center justify-center">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">+{t.participants.length - 5}</span>
                       </div>
                     )}
                   </div>
