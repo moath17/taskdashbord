@@ -378,7 +378,7 @@ export default function KPIsPage() {
                 : 0;
 
               return (
-                <div key={kpi.id} className="card hover:shadow-md transition-shadow group">
+                <div key={kpi.id} className="card hover:shadow-md transition-shadow group cursor-pointer" onClick={() => { setEditingKPI(kpi); setIsModalOpen(true); }}>
                   {/* Header */}
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -411,7 +411,8 @@ export default function KPIsPage() {
                                           border border-gray-200 dark:border-gray-700 py-1 min-w-[100px] z-10
                                           ${isRTL ? 'left-0' : 'right-0'}`}>
                             <button
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setEditingKPI(kpi);
                                 setIsModalOpen(true);
                               }}
@@ -422,7 +423,7 @@ export default function KPIsPage() {
                               {texts.edit}
                             </button>
                             <button
-                              onClick={() => handleDeleteKPI(kpi.id)}
+                              onClick={(e) => { e.stopPropagation(); handleDeleteKPI(kpi.id); }}
                               className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30 
                                          flex items-center gap-2"
                             >

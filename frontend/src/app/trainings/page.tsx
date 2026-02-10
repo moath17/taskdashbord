@@ -242,7 +242,7 @@ export default function TrainingsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredTrainings.map((t) => (
-              <div key={t.id} className="card hover:shadow-md transition-shadow group">
+              <div key={t.id} className="card hover:shadow-md transition-shadow group cursor-pointer" onClick={() => { setEditingTraining(t); setIsModalOpen(true); }}>
                 {/* Header */}
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -261,11 +261,11 @@ export default function TrainingsPage() {
                       </button>
                       {openDropdown === t.id && (
                         <div className={`absolute top-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 min-w-[100px] z-10 ${isRTL ? 'left-0' : 'right-0'}`}>
-                          <button onClick={() => { setEditingTraining(t); setIsModalOpen(true); }}
+                          <button onClick={(e) => { e.stopPropagation(); setEditingTraining(t); setIsModalOpen(true); }}
                             className="w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700 flex items-center gap-2">
                             <Edit2 className="w-3.5 h-3.5" /> {texts.edit}
                           </button>
-                          <button onClick={() => handleDelete(t.id)}
+                          <button onClick={(e) => { e.stopPropagation(); handleDelete(t.id); }}
                             className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30 flex items-center gap-2">
                             <Trash2 className="w-3.5 h-3.5" /> {texts.delete}
                           </button>
