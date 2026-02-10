@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
-import { Globe, CheckCircle2 } from 'lucide-react';
+import { Globe, CheckCircle2, Mail } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
   const { language, setLanguage, isRTL } = useLanguage();
@@ -35,11 +35,30 @@ export default function ForgotPasswordPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-2">
             {isRTL ? 'نسيت كلمة المرور' : 'Forgot Password'}
           </h2>
-          <p className="text-gray-500 mb-6 leading-relaxed">
+          <p className="text-gray-500 mb-4 leading-relaxed">
             {isRTL 
               ? 'الرجاء الرجوع إلى المدير (أو المالك) لتغيير كلمة المرور.'
               : 'Please contact the manager (or owner) to reset your password.'}
           </p>
+
+          {/* Support contact */}
+          <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 mb-6">
+            <p className="text-sm text-gray-600 mb-2">
+              {isRTL 
+                ? 'إذا كنت مالك المنظمة، تواصل مع الدعم الفني:'
+                : 'If you are the organization owner, contact support:'}
+            </p>
+            <a 
+              href="mailto:***REMOVED***" 
+              className="inline-flex items-center gap-2 text-teal-600 hover:text-teal-700 
+                         font-medium text-sm transition-colors"
+              dir="ltr"
+            >
+              <Mail className="w-4 h-4" />
+              ***REMOVED***
+            </a>
+          </div>
+
           <Link href="/login" className="btn btn-primary w-full text-center inline-block">
             {isRTL ? 'العودة لتسجيل الدخول' : 'Back to Login'}
           </Link>

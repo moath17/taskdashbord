@@ -21,6 +21,7 @@ import {
   User,
   Clock,
   LogOut,
+  KeyRound,
 } from 'lucide-react';
 
 interface Member {
@@ -180,6 +181,43 @@ export default function AdminPage() {
       } else {
         const data = await res.json();
         alert(data.error || (isRTL ? 'فشل في الحذف' : 'Failed to delete'));
+      }
+    } catch (err) {
+      alert(isRTL ? 'حدث خطأ' : 'An error occurred');
+    }
+  };
+
+  const handleResetPassword = async (orgId: string, userId: string, userName: string) => {
+    const newPass = prompt(
+      isRTL 
+        ? `أدخل كلمة المرور الجديدة لـ "${userName}" (6 أحرف على الأقل):` 
+        : `Enter new password for "${userName}" (min 6 characters):`
+    );
+
+    if (!newPass) return;
+
+    if (newPass.length < 6) {
+      alert(isRTL ? 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' : 'Password must be at least 6 characters');
+      return;
+    }
+
+    try {
+      const pass = sessionStorage.getItem('admin_pass') || password;
+      const res = await fetch(`/api/admin/organizations/${orgId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Admin ${pass}`,
+        },
+        body: JSON.stringify({ userId, newPassword: newPass }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(isRTL ? `تم تغيير كلمة المرور لـ "${userName}" بنجاح` : `Password reset for "${userName}" successfully`);
+      } else {
+        alert(data.error || (isRTL ? 'فشل في تغيير كلمة المرور' : 'Failed to reset password'));
       }
     } catch (err) {
       alert(isRTL ? 'حدث خطأ' : 'An error occurred');
@@ -533,6 +571,9 @@ export default function AdminPage() {
                             <th className={`pb-3 font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
                               {texts.lastActive}
                             </th>
+                            <th className={`pb-3 font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
+                              {isRTL ? 'إجراءات' : 'Actions'}
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
@@ -564,6 +605,18 @@ export default function AdminPage() {
                               </td>
                               <td className="py-3 text-gray-400 text-xs">
                                 {getTimeAgo(member.lastActivity)}
+                              </td>
+                              <td className="py-3">
+                                <button
+                                  onClick={() => handleResetPassword(org.id, member.id, member.name)}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium 
+                                             text-amber-400 hover:text-amber-300 bg-amber-900/20 hover:bg-amber-900/40 
+                                             rounded-lg transition-colors"
+                                  title={isRTL ? 'إعادة تعيين كلمة المرور' : 'Reset Password'}
+                                >
+                                  <KeyRound className="w-3.5 h-3.5" />
+                                  {isRTL ? 'تغيير كلمة المرور' : 'Reset Password'}
+                                </button>
                               </td>
                             </tr>
                           ))}
