@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { requireAuth, hashPassword, jsonResponse, errorResponse } from '@/lib/auth';
+import { notifyManagers } from '@/lib/notifications';
 
 // GET - Get all team members
 export async function GET(request: NextRequest) {
@@ -96,6 +97,15 @@ export async function POST(request: NextRequest) {
       console.error('Create member error:', error);
       return errorResponse('Failed to create team member', 500);
     }
+
+    // Notify managers about new member
+    notifyManagers({
+      organizationId: user.organizationId,
+      title: `عضو جديد: ${newMember.name}`,
+      message: `انضم ${newMember.name} (${newMember.role}) للفريق`,
+      type: 'team',
+      excludeUserId: user.id,
+    });
 
     return jsonResponse({
       member: {

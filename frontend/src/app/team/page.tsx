@@ -269,70 +269,66 @@ export default function TeamPage() {
             {filteredMembers.map((member) => {
               const RoleIcon = getRoleIcon(member.role);
               const isCurrentUser = member.id === user?.id;
+              const canEdit = canManageTeam && member.role !== 'owner' && !isCurrentUser;
 
-              {/* Card: clickable to edit (for owner/manager, non-owner members, not self) */}
-              {(() => {
-                const canEdit = canManageTeam && member.role !== 'owner' && !isCurrentUser;
-                return (
-                  <div
-                    key={member.id}
-                    onClick={() => canEdit && openEditModal(member)}
-                    className={`card hover:shadow-md transition-shadow relative
-                                ${canEdit ? 'cursor-pointer active:scale-[0.98]' : ''}`}
-                  >
-                    {/* Delete button — always visible for eligible members */}
-                    {canEdit && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteMember(member.id);
-                        }}
-                        className={`absolute top-4 ${isRTL ? 'left-4' : 'right-4'} p-2 text-gray-400 
-                                   hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors`}
-                        title={texts.delete}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
+              return (
+                <div
+                  key={member.id}
+                  onClick={() => canEdit && openEditModal(member)}
+                  className={`card hover:shadow-md transition-shadow relative
+                              ${canEdit ? 'cursor-pointer active:scale-[0.98]' : ''}`}
+                >
+                  {/* Delete button — always visible for eligible members */}
+                  {canEdit && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteMember(member.id);
+                      }}
+                      className={`absolute top-4 ${isRTL ? 'left-4' : 'right-4'} p-2 text-gray-400 
+                                 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors`}
+                      title={texts.delete}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
 
-                    {/* Avatar */}
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="w-14 h-14 bg-gradient-to-br from-teal-500 to-emerald-600 
-                                      rounded-full flex items-center justify-center text-white 
-                                      text-xl font-bold shadow-lg">
-                        {member.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 truncate">
-                          {member.name}
-                          {isCurrentUser && (
-                            <span className="text-teal-600 text-sm font-normal mr-1">
-                              {texts.you}
-                            </span>
-                          )}
-                        </h3>
-                        <p className="text-sm text-gray-500 truncate" dir="ltr">
-                          {member.email}
-                        </p>
-                      </div>
+                  {/* Avatar */}
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-teal-500 to-emerald-600 
+                                    rounded-full flex items-center justify-center text-white 
+                                    text-xl font-bold shadow-lg">
+                      {member.name.charAt(0).toUpperCase()}
                     </div>
-
-                    {/* Role Badge + Edit hint */}
-                    <div className="flex items-center justify-between">
-                      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm
-                                      ${getRoleColor(member.role)}`}>
-                        <RoleIcon className="w-4 h-4" />
-                        {getRoleLabel(member.role)}
-                      </div>
-                      {canEdit && (
-                        <span className="text-xs text-gray-400">
-                          {isRTL ? 'اضغط للتعديل' : 'Tap to edit'}
-                        </span>
-                      )}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-900 truncate">
+                        {member.name}
+                        {isCurrentUser && (
+                          <span className="text-teal-600 text-sm font-normal mr-1">
+                            {texts.you}
+                          </span>
+                        )}
+                      </h3>
+                      <p className="text-sm text-gray-500 truncate" dir="ltr">
+                        {member.email}
+                      </p>
                     </div>
                   </div>
-                );
-              })()}
+
+                  {/* Role Badge + Edit hint */}
+                  <div className="flex items-center justify-between">
+                    <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm
+                                    ${getRoleColor(member.role)}`}>
+                      <RoleIcon className="w-4 h-4" />
+                      {getRoleLabel(member.role)}
+                    </div>
+                    {canEdit && (
+                      <span className="text-xs text-gray-400">
+                        {isRTL ? 'اضغط للتعديل' : 'Tap to edit'}
+                      </span>
+                    )}
+                  </div>
+                </div>
               );
             })}
           </div>

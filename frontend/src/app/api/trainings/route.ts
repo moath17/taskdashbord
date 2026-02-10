@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { requireAuth, jsonResponse, errorResponse } from '@/lib/auth';
+import { createNotification } from '@/lib/notifications';
 
 // GET - Get all trainings for the organization
 export async function GET(request: NextRequest) {
@@ -101,12 +102,25 @@ export async function POST(request: NextRequest) {
 
     // Add participants if provided
     if (participantIds && participantIds.length > 0) {
-      const participants = participantIds.map((userId: string) => ({
+      const participants = participantIds.map((uid: string) => ({
         training_id: training.id,
-        user_id: userId,
+        user_id: uid,
       }));
 
       await supabase.from('training_participants').insert(participants);
+
+      // Notify each participant
+      for (const uid of participantIds) {
+        if (uid !== user.id) {
+          createNotification({
+            userId: uid,
+            organizationId: user.organizationId,
+            title: `تدريب جديد: ${training.title}`,
+            message: `تمت إضافتك لتدريب بواسطة ${user.name}`,
+            type: 'training',
+          });
+        }
+      }
     }
 
     return jsonResponse({

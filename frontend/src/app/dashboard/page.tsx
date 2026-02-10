@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -11,7 +11,7 @@ import {
   Building2, ChevronLeft, ChevronRight, CalendarDays, GraduationCap, Heart, Home,
   MoreHorizontal, ArrowUpRight, Flag, User, Loader2, Sparkles, Lightbulb,
   AlertTriangle, BarChart3, Moon, Sun, Zap, Award, Clock, ShieldCheck,
-  Activity, Flame, ListChecks, CheckCircle2, AlertCircle, Download, KeyRound,
+  Activity, Flame, ListChecks, CheckCircle2, AlertCircle, Download, KeyRound, Bell, X,
 } from 'lucide-react';
 import DailyQuote from '@/components/DailyQuote';
 
@@ -75,6 +75,28 @@ export default function DashboardPage() {
   const [trainings, setTrainings] = useState<DashboardTraining[]>([]);
   const [dashboardLoading, setDashboardLoading] = useState(true);
 
+  // Notifications state
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notifOpen, setNotifOpen] = useState(false);
+
+  const fetchNotifications = useCallback(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    fetch('/api/notifications', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(d => { setNotifications(d.notifications || []); setUnreadCount(d.unreadCount || 0); })
+      .catch(() => {});
+  }, []);
+
+  const markAllRead = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    await fetch('/api/notifications', { method: 'PUT', headers: { Authorization: `Bearer ${token}` } });
+    setUnreadCount(0);
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+  };
+
   useEffect(() => { if (!loading && !isAuthenticated) router.replace('/login'); }, [loading, isAuthenticated, router]);
 
   useEffect(() => {
@@ -87,6 +109,14 @@ export default function DashboardPage() {
       .catch(() => {})
       .finally(() => setDashboardLoading(false));
   }, [isAuthenticated]);
+
+  // Fetch notifications + auto-refresh every 30s
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
+  }, [isAuthenticated, fetchNotifications]);
 
   /* ── Employee cards data (grouped by userId to avoid duplicates) ── */
   const employeeCards = useMemo(() => {
@@ -232,6 +262,70 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
+              {/* Notifications Bell */}
+              <div className="relative">
+                <button
+                  onClick={() => { setNotifOpen(!notifOpen); if (!notifOpen && unreadCount > 0) markAllRead(); }}
+                  className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors relative"
+                >
+                  <Bell className="w-5 h-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                {/* Notifications Dropdown */}
+                {notifOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setNotifOpen(false)} />
+                    <div className={`absolute top-full mt-2 w-80 sm:w-96 bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 max-h-[70vh] overflow-hidden ${isRTL ? 'left-0' : 'right-0'}`}>
+                      <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800">
+                        <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                          <Bell className="w-4 h-4 text-teal-500" />
+                          {isRTL ? 'الإشعارات' : 'Notifications'}
+                        </h3>
+                        <button onClick={() => setNotifOpen(false)} className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded">
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="overflow-y-auto max-h-[55vh] divide-y divide-gray-50 dark:divide-gray-800">
+                        {notifications.length === 0 ? (
+                          <div className="p-8 text-center text-gray-400">
+                            <Bell className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                            <p className="text-sm">{isRTL ? 'لا توجد إشعارات' : 'No notifications'}</p>
+                          </div>
+                        ) : (
+                          notifications.map(n => (
+                            <div key={n.id} className={`p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors ${!n.isRead ? 'bg-teal-50/50 dark:bg-teal-900/10' : ''}`}>
+                              <div className="flex items-start gap-3">
+                                <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${!n.isRead ? 'bg-teal-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                                <div className="flex-1 min-w-0">
+                                  <p className={`text-sm font-medium ${!n.isRead ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>{n.title}</p>
+                                  {n.message && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{n.message}</p>}
+                                  <p className="text-[11px] text-gray-400 mt-1">
+                                    {(() => {
+                                      const diff = Date.now() - new Date(n.createdAt).getTime();
+                                      const mins = Math.floor(diff / 60000);
+                                      const hrs = Math.floor(diff / 3600000);
+                                      const days = Math.floor(diff / 86400000);
+                                      if (mins < 1) return isRTL ? 'الآن' : 'Just now';
+                                      if (mins < 60) return isRTL ? `منذ ${mins} دقيقة` : `${mins}m ago`;
+                                      if (hrs < 24) return isRTL ? `منذ ${hrs} ساعة` : `${hrs}h ago`;
+                                      return isRTL ? `منذ ${days} يوم` : `${days}d ago`;
+                                    })()}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
               <button onClick={toggleTheme} className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
                 {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
               </button>

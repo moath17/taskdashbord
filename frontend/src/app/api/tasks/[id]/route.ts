@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { requireAuth, jsonResponse, errorResponse } from '@/lib/auth';
+import { createNotification, notifyManagers } from '@/lib/notifications';
 
 // GET - Get single task
 export async function GET(
@@ -120,6 +121,28 @@ export async function PUT(
     if (error) {
       console.error('Update task error:', error);
       return errorResponse('Failed to update task', 500);
+    }
+
+    // Notify on status change to "done"
+    if (status === 'done') {
+      notifyManagers({
+        organizationId: user.organizationId,
+        title: `مهمة مكتملة: ${task.title}`,
+        message: `أكمل ${user.name} المهمة`,
+        type: 'task',
+        excludeUserId: user.id,
+      });
+    }
+
+    // Notify assigned user if reassigned
+    if (assignedTo && assignedTo !== user.id && task.assigned_to !== user.id) {
+      createNotification({
+        userId: assignedTo,
+        organizationId: user.organizationId,
+        title: `تم تعيين مهمة لك: ${task.title}`,
+        message: `تم تعيينك لمهمة بواسطة ${user.name}`,
+        type: 'task',
+      });
     }
 
     return jsonResponse({

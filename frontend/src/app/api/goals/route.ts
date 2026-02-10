@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { requireAuth, jsonResponse, errorResponse } from '@/lib/auth';
+import { createNotification } from '@/lib/notifications';
 
 // GET - Get all goals for the organization
 export async function GET(request: NextRequest) {
@@ -100,6 +101,18 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Create goal error:', error);
       return errorResponse('Failed to create goal', 500);
+    }
+
+    // Notify goal owner
+    const goalOwnerId = ownerId || user.id;
+    if (goalOwnerId !== user.id) {
+      createNotification({
+        userId: goalOwnerId,
+        organizationId: user.organizationId,
+        title: `هدف جديد: ${goal.title}`,
+        message: `تم تعيين هدف جديد لك بواسطة ${user.name}`,
+        type: 'goal',
+      });
     }
 
     return jsonResponse({

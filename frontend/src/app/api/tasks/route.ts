@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { requireAuth, jsonResponse, errorResponse } from '@/lib/auth';
+import { createNotification } from '@/lib/notifications';
 
 // GET - Get all tasks for the organization
 export async function GET(request: NextRequest) {
@@ -112,6 +113,17 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Create task error:', error);
       return errorResponse('Failed to create task', 500);
+    }
+
+    // Send notification to assigned user
+    if (task.assigned_to && task.assigned_to !== user.id) {
+      createNotification({
+        userId: task.assigned_to,
+        organizationId: user.organizationId,
+        title: `مهمة جديدة: ${task.title}`,
+        message: `تم تعيين مهمة جديدة لك بواسطة ${user.name}`,
+        type: 'task',
+      });
     }
 
     return jsonResponse({

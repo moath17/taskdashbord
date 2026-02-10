@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { requireAuth, jsonResponse, errorResponse } from '@/lib/auth';
+import { createNotification } from '@/lib/notifications';
 
 // GET - Get all KPIs for the organization
 export async function GET(request: NextRequest) {
@@ -102,6 +103,18 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Create KPI error:', error);
       return errorResponse('Failed to create KPI', 500);
+    }
+
+    // Notify KPI owner
+    const kpiOwnerId = ownerId || user.id;
+    if (kpiOwnerId !== user.id) {
+      createNotification({
+        userId: kpiOwnerId,
+        organizationId: user.organizationId,
+        title: `مؤشر أداء جديد: ${kpi.name}`,
+        message: `تم تعيين مؤشر أداء لك بواسطة ${user.name}`,
+        type: 'kpi',
+      });
     }
 
     return jsonResponse({

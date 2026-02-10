@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { requireAuth, jsonResponse, errorResponse } from '@/lib/auth';
+import { notifyManagers } from '@/lib/notifications';
 
 // GET - Get all leaves for the organization
 export async function GET(request: NextRequest) {
@@ -91,6 +92,15 @@ export async function POST(request: NextRequest) {
       console.error('Create leave error:', error);
       return errorResponse('Failed to create leave request', 500);
     }
+
+    // Notify managers about new leave request
+    notifyManagers({
+      organizationId: user.organizationId,
+      title: `طلب إجازة جديد من ${user.name}`,
+      message: `نوع الإجازة: ${type} | من ${startDate} إلى ${endDate}`,
+      type: 'leave',
+      excludeUserId: user.id,
+    });
 
     return jsonResponse({
       leave: {

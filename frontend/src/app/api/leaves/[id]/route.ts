@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { requireAuth, jsonResponse, errorResponse } from '@/lib/auth';
+import { createNotification } from '@/lib/notifications';
 
 // PUT - Update leave (approve/reject or edit)
 export async function PUT(
@@ -68,6 +69,18 @@ export async function PUT(
     if (error) {
       console.error('Update leave error:', error);
       return errorResponse('Failed to update leave', 500);
+    }
+
+    // Notify the leave requester about approval/rejection
+    if ((status === 'approved' || status === 'rejected') && existing.user_id !== user.id) {
+      const statusAr = status === 'approved' ? 'الموافقة على' : 'رفض';
+      createNotification({
+        userId: existing.user_id,
+        organizationId: user.organizationId,
+        title: `تم ${statusAr} إجازتك`,
+        message: `${user.name} ${status === 'approved' ? 'وافق' : 'رفض'} طلب الإجازة`,
+        type: 'leave',
+      });
     }
 
     return jsonResponse({
