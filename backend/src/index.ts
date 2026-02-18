@@ -36,7 +36,7 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Initialize database
 initDatabase().catch(console.error);

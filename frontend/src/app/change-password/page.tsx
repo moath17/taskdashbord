@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { Lock, Eye, EyeOff, ArrowLeft, ArrowRight, CheckCircle2, KeyRound } from 'lucide-react';
-import { getAuthToken } from '@/lib/token';
 
 export default function ChangePasswordPage() {
   const router = useRouter();
@@ -46,12 +45,10 @@ export default function ChangePasswordPage() {
     setLoading(true);
 
     try {
-      const token = getAuthToken();
       const res = await fetch('/api/auth/change-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ currentPassword, newPassword }),
       });

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { supabase, toCamelCase, toSnakeCase } from '@/lib/supabase';
-import { hashPassword, createToken, jsonResponse, errorResponse } from '@/lib/auth';
+import { hashPassword, createToken, jsonResponse, errorResponse, setAuthCookie } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
 
     const token = await createToken(userForToken);
 
-    return jsonResponse({
+    const response = jsonResponse({
       user: {
         id: user.id,
         email: user.email,
@@ -84,6 +84,8 @@ export async function POST(request: NextRequest) {
       },
       token,
     }, 201);
+
+    return setAuthCookie(response, token);
 
   } catch (error) {
     console.error('Register error:', error);

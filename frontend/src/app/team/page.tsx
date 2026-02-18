@@ -16,7 +16,6 @@ import {
   ArrowRight,
   Search,
 } from 'lucide-react';
-import { getAuthToken } from '@/lib/token';
 
 interface Member {
   id: string;
@@ -61,10 +60,7 @@ export default function TeamPage() {
 
   const fetchMembers = async () => {
     try {
-      const token = getAuthToken();
-      const res = await fetch('/api/team', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch('/api/team');
 
       if (!res.ok) throw new Error('Failed to fetch');
 
@@ -78,12 +74,10 @@ export default function TeamPage() {
   };
 
   const handleAddMember = async (data: { name: string; email: string; password?: string; role: string }) => {
-    const token = getAuthToken();
     const res = await fetch('/api/team', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     });
@@ -97,12 +91,10 @@ export default function TeamPage() {
   const handleEditMember = async (data: { name: string; email: string; password?: string; role: string }) => {
     if (!editingMember) return;
 
-    const token = getAuthToken();
     const res = await fetch(`/api/team/${editingMember.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     });
@@ -118,10 +110,8 @@ export default function TeamPage() {
     if (!confirm(confirmMsg)) return;
 
     try {
-      const token = getAuthToken();
       const res = await fetch(`/api/team/${memberId}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!res.ok) {

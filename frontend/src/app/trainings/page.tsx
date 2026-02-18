@@ -20,7 +20,6 @@ import {
   Building2,
   Users,
 } from 'lucide-react';
-import { getAuthToken } from '@/lib/token';
 
 interface Training {
   id: string;
@@ -70,8 +69,7 @@ export default function TrainingsPage() {
 
   const fetchTrainings = async () => {
     try {
-      const token = getAuthToken();
-      const res = await fetch('/api/trainings', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch('/api/trainings');
       if (res.ok) { const data = await res.json(); setTrainings(data.trainings || []); }
     } catch { console.error('Failed to fetch trainings'); }
     finally { setLoading(false); }
@@ -79,17 +77,15 @@ export default function TrainingsPage() {
 
   const fetchMembers = async () => {
     try {
-      const token = getAuthToken();
-      const res = await fetch('/api/team', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch('/api/team');
       if (res.ok) { const data = await res.json(); setMembers(data.members || []); }
     } catch { console.error('Failed to fetch members'); }
   };
 
   const handleAdd = async (data: any) => {
-    const token = getAuthToken();
     const res = await fetch('/api/trainings', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
     const result = await res.json();
@@ -100,10 +96,9 @@ export default function TrainingsPage() {
 
   const handleEdit = async (data: any) => {
     if (!editingTraining) return;
-    const token = getAuthToken();
     const res = await fetch(`/api/trainings/${editingTraining.id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
     const result = await res.json();
@@ -115,8 +110,7 @@ export default function TrainingsPage() {
     const msg = isRTL ? 'هل أنت متأكد من الحذف؟' : 'Are you sure?';
     if (!confirm(msg)) return;
     try {
-      const token = getAuthToken();
-      const res = await fetch(`/api/trainings/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`/api/trainings/${id}`, { method: 'DELETE' });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
       setTrainings(trainings.filter(t => t.id !== id));
     } catch (err: any) { alert(err.message); }

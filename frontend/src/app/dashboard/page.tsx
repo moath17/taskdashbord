@@ -14,7 +14,6 @@ import {
   Activity, Flame, ListChecks, CheckCircle2, AlertCircle, Download, KeyRound, Bell, X,
 } from 'lucide-react';
 import DailyQuote from '@/components/DailyQuote';
-import { getAuthToken } from '@/lib/token';
 
 /* ── Types ── */
 interface DashboardTask {
@@ -82,18 +81,14 @@ export default function DashboardPage() {
   const [notifOpen, setNotifOpen] = useState(false);
 
   const fetchNotifications = useCallback(() => {
-    const token = getAuthToken();
-    if (!token) return;
-    fetch('/api/notifications', { headers: { Authorization: `Bearer ${token}` } })
+    fetch('/api/notifications')
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(d => { setNotifications(d.notifications || []); setUnreadCount(d.unreadCount || 0); })
       .catch(() => {});
   }, []);
 
   const markAllRead = async () => {
-    const token = getAuthToken();
-    if (!token) return;
-    await fetch('/api/notifications', { method: 'PUT', headers: { Authorization: `Bearer ${token}` } });
+    await fetch('/api/notifications', { method: 'PUT' });
     setUnreadCount(0);
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
   };
@@ -102,9 +97,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!isAuthenticated) return;
-    const token = getAuthToken();
-    if (!token) return;
-    fetch('/api/dashboard', { headers: { Authorization: `Bearer ${token}` } })
+    fetch('/api/dashboard')
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(d => { setTasks(d.tasks||[]); setGoals(d.goals||[]); setLeaves(d.leaves||[]); setTrainings(d.trainings||[]); })
       .catch(() => {})

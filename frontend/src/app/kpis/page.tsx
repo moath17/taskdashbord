@@ -21,7 +21,6 @@ import {
   ArrowDownRight,
   Minus,
 } from 'lucide-react';
-import { getAuthToken } from '@/lib/token';
 
 interface KPI {
   id: string;
@@ -91,10 +90,7 @@ export default function KPIsPage() {
 
   const fetchKPIs = async () => {
     try {
-      const token = getAuthToken();
-      const res = await fetch('/api/kpis', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch('/api/kpis');
       if (res.ok) {
         const data = await res.json();
         setKpis(data.kpis || []);
@@ -108,10 +104,7 @@ export default function KPIsPage() {
 
   const fetchMembers = async () => {
     try {
-      const token = getAuthToken();
-      const res = await fetch('/api/team', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch('/api/team');
       if (res.ok) {
         const data = await res.json();
         setMembers(data.members || []);
@@ -122,13 +115,9 @@ export default function KPIsPage() {
   };
 
   const handleAddKPI = async (data: any) => {
-    const token = getAuthToken();
     const res = await fetch('/api/kpis', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
 
@@ -141,13 +130,9 @@ export default function KPIsPage() {
   const handleEditKPI = async (data: any) => {
     if (!editingKPI) return;
 
-    const token = getAuthToken();
     const res = await fetch(`/api/kpis/${editingKPI.id}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
 
@@ -162,11 +147,7 @@ export default function KPIsPage() {
     if (!confirm(confirmMsg)) return;
 
     try {
-      const token = getAuthToken();
-      const res = await fetch(`/api/kpis/${kpiId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(`/api/kpis/${kpiId}`, { method: 'DELETE' });
 
       if (!res.ok) {
         const data = await res.json();
@@ -190,13 +171,9 @@ export default function KPIsPage() {
       if (progress < 50) newStatus = 'off_track';
       else if (progress < 80) newStatus = 'at_risk';
 
-      const token = getAuthToken();
       const res = await fetch(`/api/kpis/${kpiId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ currentValue: newValue, status: newStatus }),
       });
 

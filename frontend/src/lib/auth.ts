@@ -51,12 +51,40 @@ export async function verifyToken(token: string): Promise<any> {
 // Auth middleware helpers
 // =============================================
 
+const COOKIE_NAME = '__td_auth';
+const COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
+
 export function getTokenFromRequest(request: NextRequest): string | null {
+  const fromCookie = request.cookies.get(COOKIE_NAME)?.value;
+  if (fromCookie) return fromCookie;
+
   const authHeader = request.headers.get('authorization');
   if (authHeader?.startsWith('Bearer ')) {
     return authHeader.slice(7);
   }
   return null;
+}
+
+export function setAuthCookie(response: NextResponse, token: string): NextResponse {
+  response.cookies.set(COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: COOKIE_MAX_AGE,
+    path: '/',
+  });
+  return response;
+}
+
+export function clearAuthCookie(response: NextResponse): NextResponse {
+  response.cookies.set(COOKIE_NAME, '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 0,
+    path: '/',
+  });
+  return response;
 }
 
 export async function requireAuth(request: NextRequest): Promise<User> {

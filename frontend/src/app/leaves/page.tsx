@@ -19,7 +19,6 @@ import {
   X,
   Ban,
 } from 'lucide-react';
-import { getAuthToken } from '@/lib/token';
 
 interface Leave {
   id: string;
@@ -56,8 +55,7 @@ export default function LeavesPage() {
 
   const fetchLeaves = async () => {
     try {
-      const token = getAuthToken();
-      const res = await fetch('/api/leaves', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch('/api/leaves');
       if (res.ok) {
         const data = await res.json();
         setLeaves(data.leaves || []);
@@ -70,10 +68,9 @@ export default function LeavesPage() {
   };
 
   const handleAddLeave = async (data: any) => {
-    const token = getAuthToken();
     const res = await fetch('/api/leaves', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
     const result = await res.json();
@@ -85,10 +82,8 @@ export default function LeavesPage() {
     const msg = isRTL ? 'هل أنت متأكد من الحذف؟' : 'Are you sure?';
     if (!confirm(msg)) return;
     try {
-      const token = getAuthToken();
       const res = await fetch(`/api/leaves/${leaveId}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
       setLeaves(leaves.filter(l => l.id !== leaveId));

@@ -3,7 +3,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { User } from '@/lib/types';
-import { getAuthToken, setAuthToken, clearAuthToken } from '@/lib/token';
 
 interface AuthContextType {
   user: User | null;
@@ -27,24 +26,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuth = async () => {
     try {
-      const token = getAuthToken();
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      const res = await fetch('/api/auth/me', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch('/api/auth/me');
 
       if (res.ok) {
         const data = await res.json();
         setUser(data.user);
-      } else {
-        clearAuthToken();
       }
-    } catch (error) {
-      clearAuthToken();
+    } catch {
+      // cookie invalid or network error
     } finally {
       setLoading(false);
     }
@@ -63,7 +52,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error(data.error || 'Login failed');
     }
 
-    setAuthToken(data.token);
     setUser(data.user);
     router.push('/dashboard');
   };
@@ -81,13 +69,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error(data.error || 'Registration failed');
     }
 
-    setAuthToken(data.token);
     setUser(data.user);
     router.push('/dashboard');
   };
 
-  const logout = () => {
-    clearAuthToken();
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch { /* ignore */ }
     setUser(null);
     router.push('/login');
   };
