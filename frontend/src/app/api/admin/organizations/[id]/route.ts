@@ -1,22 +1,14 @@
 import { NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { hashPassword, jsonResponse, errorResponse } from '@/lib/auth';
-
-const ADMIN_PASSWORD = '***REMOVED***';
-
-function verifyAdmin(request: NextRequest): boolean {
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader) return false;
-  const password = authHeader.replace('Admin ', '');
-  return password === ADMIN_PASSWORD;
-}
+import { verifyAdminRequest } from '@/lib/admin-auth';
 
 // PUT - Reset a user's password (admin only)
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!verifyAdmin(request)) {
+  if (!verifyAdminRequest(request)) {
     return errorResponse('Unauthorized', 401);
   }
 
@@ -70,7 +62,7 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!verifyAdmin(request)) {
+  if (!verifyAdminRequest(request)) {
     return errorResponse('Unauthorized', 401);
   }
 

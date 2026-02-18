@@ -58,6 +58,7 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState('');
+  const [authChecking, setAuthChecking] = useState(true);
 
   // Data state
   const [stats, setStats] = useState<Stats | null>(null);
@@ -67,13 +68,24 @@ export default function AdminPage() {
   const [expandedOrg, setExpandedOrg] = useState<string | null>(null);
   const [filterOnline, setFilterOnline] = useState(false);
 
-  // Check saved admin session
+  // Check if admin cookie is still valid on mount
   useEffect(() => {
-    const savedPass = sessionStorage.getItem('admin_pass');
-    if (savedPass) {
-      setPassword(savedPass);
-      setIsAuthenticated(true);
-    }
+    fetch('/api/admin/organizations')
+      .then(res => {
+        if (res.ok) {
+          setIsAuthenticated(true);
+          return res.json();
+        }
+        return null;
+      })
+      .then(data => {
+        if (data) {
+          setStats(data.stats);
+          setOrganizations(data.organizations);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setAuthChecking(false));
   }, []);
 
   const POLLING_INTERVAL_MS = 30000;
@@ -90,15 +102,11 @@ export default function AdminPage() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const pass = sessionStorage.getItem('admin_pass') || password;
-      const res = await fetch('/api/admin/organizations', {
-        headers: { Authorization: `Admin ${pass}` },
-      });
+      const res = await fetch('/api/admin/organizations');
 
       if (res.status === 401) {
         setIsAuthenticated(false);
-        sessionStorage.removeItem('admin_pass');
-        setAuthError(isRTL ? 'كلمة المرور غير صحيحة' : 'Invalid password');
+        setAuthError(isRTL ? 'انتهت الجلسة، سجّل دخولك مرة أخرى' : 'Session expired, please login again');
         return;
       }
 
@@ -112,7 +120,7 @@ export default function AdminPage() {
     } finally {
       setLoading(false);
     }
-  }, [password, isRTL]);
+  }, [isRTL]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,27 +131,31 @@ export default function AdminPage() {
       return;
     }
 
-    // Verify by making API call
-    const res = await fetch('/api/admin/organizations', {
-      headers: { Authorization: `Admin ${password}` },
-    });
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
 
-    if (res.status === 401) {
-      setAuthError(isRTL ? 'كلمة المرور غير صحيحة' : 'Invalid password');
-      return;
-    }
+      if (res.status === 401) {
+        setAuthError(isRTL ? 'كلمة المرور غير صحيحة' : 'Invalid password');
+        return;
+      }
 
-    if (res.ok) {
-      sessionStorage.setItem('admin_pass', password);
-      setIsAuthenticated(true);
-      const data = await res.json();
-      setStats(data.stats);
-      setOrganizations(data.organizations);
+      if (res.ok) {
+        setIsAuthenticated(true);
+        setPassword('');
+      }
+    } catch {
+      setAuthError(isRTL ? 'حدث خطأ في الاتصال' : 'Connection error');
     }
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('admin_pass');
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' });
+    } catch { /* ignore */ }
     setIsAuthenticated(false);
     setPassword('');
     setStats(null);
@@ -157,7 +169,6 @@ export default function AdminPage() {
     
     if (!confirm(msg)) return;
 
-    // Double confirm
     const msg2 = isRTL 
       ? `تأكيد نهائي: هل تريد حذف "${orgName}"؟ لا يمكن التراجع!`
       : `Final confirmation: Delete "${orgName}"? This cannot be undone!`;
@@ -165,10 +176,8 @@ export default function AdminPage() {
     if (!confirm(msg2)) return;
 
     try {
-      const pass = sessionStorage.getItem('admin_pass') || password;
       const res = await fetch(`/api/admin/organizations/${orgId}`, {
         method: 'DELETE',
-        headers: { Authorization: `Admin ${pass}` },
       });
 
       if (res.ok) {
@@ -203,13 +212,9 @@ export default function AdminPage() {
     }
 
     try {
-      const pass = sessionStorage.getItem('admin_pass') || password;
       const res = await fetch(`/api/admin/organizations/${orgId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Admin ${pass}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, newPassword: newPass }),
       });
 
@@ -288,6 +293,14 @@ export default function AdminPage() {
     logout: isRTL ? 'خروج' : 'Logout',
     autoRefresh: isRTL ? 'تحديث تلقائي كل 30 ثانية' : 'Auto-refresh every 30s',
   };
+
+  if (authChecking) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-red-500 animate-spin" />
+      </div>
+    );
+  }
 
   // LOGIN SCREEN
   if (!isAuthenticated) {
@@ -509,7 +522,6 @@ export default function AdminPage() {
                   onClick={() => setExpandedOrg(expandedOrg === org.id ? null : org.id)}
                 >
                   <div className="flex items-center gap-4">
-                    {/* Online Indicator */}
                     <div className={`w-3 h-3 rounded-full ${org.isOnline ? 'bg-green-500 shadow-lg shadow-green-500/50' : 'bg-gray-600'}`} />
                     
                     <div>
@@ -534,7 +546,6 @@ export default function AdminPage() {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    {/* Delete Button */}
                     <button
                       onClick={(e) => { e.stopPropagation(); handleDeleteOrg(org.id, org.name); }}
                       className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-900/30 rounded-lg transition-colors"
@@ -542,7 +553,6 @@ export default function AdminPage() {
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
-                    {/* Expand/Collapse */}
                     {expandedOrg === org.id 
                       ? <ChevronUp className="w-5 h-5 text-gray-500" />
                       : <ChevronDown className="w-5 h-5 text-gray-500" />

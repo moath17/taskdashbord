@@ -1,19 +1,11 @@
 import { NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { jsonResponse, errorResponse } from '@/lib/auth';
-
-const ADMIN_PASSWORD = '***REMOVED***';
-
-function verifyAdmin(request: NextRequest): boolean {
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader) return false;
-  const password = authHeader.replace('Admin ', '');
-  return password === ADMIN_PASSWORD;
-}
+import { verifyAdminRequest } from '@/lib/admin-auth';
 
 // GET - Get all organizations with members
 export async function GET(request: NextRequest) {
-  if (!verifyAdmin(request)) {
+  if (!verifyAdminRequest(request)) {
     return errorResponse('Unauthorized', 401);
   }
 
