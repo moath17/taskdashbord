@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { User } from '@/lib/types';
 
 interface AuthContextType {
@@ -19,10 +19,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
+    if (pathname === '/admin') {
+      setLoading(false);
+      return;
+    }
     checkAuth();
-  }, []);
+  }, [pathname]);
 
   const checkAuth = async () => {
     try {

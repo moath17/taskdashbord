@@ -59,6 +59,7 @@ export default function AdminPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState('');
   const [authChecking, setAuthChecking] = useState(true);
+  const [loginLoading, setLoginLoading] = useState(false);
 
   // Data state
   const [stats, setStats] = useState<Stats | null>(null);
@@ -131,6 +132,7 @@ export default function AdminPage() {
       return;
     }
 
+    setLoginLoading(true);
     try {
       const res = await fetch('/api/admin/login', {
         method: 'POST',
@@ -143,12 +145,22 @@ export default function AdminPage() {
         return;
       }
 
+      if (res.status >= 500) {
+        setAuthError(isRTL ? 'خطأ في الخادم. تأكد من إعداد ADMIN_PASSWORD في Vercel.' : 'Server error. Ensure ADMIN_PASSWORD is set in Vercel.');
+        return;
+      }
+
       if (res.ok) {
         setIsAuthenticated(true);
         setPassword('');
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setAuthError(data.error || (isRTL ? 'حدث خطأ' : 'Something went wrong'));
       }
     } catch {
       setAuthError(isRTL ? 'حدث خطأ في الاتصال' : 'Connection error');
+    } finally {
+      setLoginLoading(false);
     }
   };
 
@@ -352,11 +364,12 @@ export default function AdminPage() {
 
             <button
               type="submit"
-              className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl 
+              disabled={loginLoading}
+              className="w-full py-3 bg-red-600 hover:bg-red-700 disabled:opacity-70 disabled:cursor-not-allowed text-white font-semibold rounded-xl 
                          transition-colors flex items-center justify-center gap-2"
             >
-              <Shield className="w-5 h-5" />
-              {texts.login}
+              {loginLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Shield className="w-5 h-5" />}
+              {loginLoading ? (isRTL ? 'جاري الدخول...' : 'Signing in...') : texts.login}
             </button>
 
             {/* Language Toggle */}
