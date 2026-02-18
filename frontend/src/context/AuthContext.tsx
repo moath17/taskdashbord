@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { User } from '@/lib/types';
+import { getAuthToken, setAuthToken, clearAuthToken } from '@/lib/token';
 
 interface AuthContextType {
   user: User | null;
@@ -20,14 +21,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Check auth on mount
   useEffect(() => {
     checkAuth();
   }, []);
 
   const checkAuth = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       if (!token) {
         setLoading(false);
         return;
@@ -41,10 +41,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const data = await res.json();
         setUser(data.user);
       } else {
-        localStorage.removeItem('token');
+        clearAuthToken();
       }
     } catch (error) {
-      localStorage.removeItem('token');
+      clearAuthToken();
     } finally {
       setLoading(false);
     }
@@ -63,7 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error(data.error || 'Login failed');
     }
 
-    localStorage.setItem('token', data.token);
+    setAuthToken(data.token);
     setUser(data.user);
     router.push('/dashboard');
   };
@@ -81,13 +81,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error(data.error || 'Registration failed');
     }
 
-    localStorage.setItem('token', data.token);
+    setAuthToken(data.token);
     setUser(data.user);
     router.push('/dashboard');
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    clearAuthToken();
     setUser(null);
     router.push('/login');
   };

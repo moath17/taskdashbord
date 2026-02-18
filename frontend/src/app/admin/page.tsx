@@ -76,12 +76,13 @@ export default function AdminPage() {
     }
   }, []);
 
+  const POLLING_INTERVAL_MS = 30000;
+
   // Auto-fetch when authenticated
   useEffect(() => {
     if (isAuthenticated) {
       fetchData();
-      // Auto-refresh every 30 seconds
-      const interval = setInterval(fetchData, 30000);
+      const interval = setInterval(fetchData, POLLING_INTERVAL_MS);
       return () => clearInterval(interval);
     }
   }, [isAuthenticated]);

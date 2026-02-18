@@ -3,9 +3,10 @@ import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcryptjs';
 import { User } from './types';
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || '***REMOVED***'
-);
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required');
+}
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 // =============================================
 // Password utilities
@@ -33,7 +34,7 @@ export async function createToken(user: Omit<User, 'createdAt' | 'updatedAt'>): 
     organizationName: user.organizationName,
   })
     .setProtectedHeader({ alg: 'HS256' })
-    .setExpirationTime('7d')
+    .setExpirationTime(process.env.JWT_EXPIRATION || '7d')
     .sign(JWT_SECRET);
 }
 

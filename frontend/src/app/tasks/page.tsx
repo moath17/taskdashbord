@@ -29,6 +29,7 @@ import {
   GripVertical,
   BarChart3,
 } from 'lucide-react';
+import { getAuthToken } from '@/lib/token';
 
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -100,7 +101,7 @@ export default function TasksPage() {
 
   const fetchTasks = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       const res = await fetch('/api/tasks', { headers: { Authorization: `Bearer ${token}` } });
       if (res.ok) {
         const data = await res.json();
@@ -115,7 +116,7 @@ export default function TasksPage() {
 
   const fetchMembers = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       const res = await fetch('/api/team', { headers: { Authorization: `Bearer ${token}` } });
       if (res.ok) {
         const data = await res.json();
@@ -128,7 +129,7 @@ export default function TasksPage() {
 
   const fetchGoals = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       const res = await fetch('/api/goals', { headers: { Authorization: `Bearer ${token}` } });
       if (res.ok) {
         const data = await res.json();
@@ -140,7 +141,7 @@ export default function TasksPage() {
   };
 
   const handleAddTask = async (data: any) => {
-    const token = localStorage.getItem('token');
+    const token = getAuthToken();
     const res = await fetch('/api/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -153,7 +154,7 @@ export default function TasksPage() {
 
   const handleEditTask = async (data: any) => {
     if (!editingTask) return;
-    const token = localStorage.getItem('token');
+    const token = getAuthToken();
     const res = await fetch(`/api/tasks/${editingTask.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -168,7 +169,7 @@ export default function TasksPage() {
     const confirmMsg = isRTL ? 'هل أنت متأكد من حذف هذه المهمة؟' : 'Are you sure you want to delete this task?';
     if (!confirm(confirmMsg)) return;
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       const res = await fetch(`/api/tasks/${taskId}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) { const data = await res.json(); throw new Error(data.error); }
       setTasks(tasks.filter(t => t.id !== taskId));
@@ -179,7 +180,7 @@ export default function TasksPage() {
 
   const handleStatusChange = async (taskId: string, newStatus: string) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       const res = await fetch(`/api/tasks/${taskId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },

@@ -20,6 +20,7 @@ import {
   Loader2,
   Filter,
 } from 'lucide-react';
+import { getAuthToken } from '@/lib/token';
 
 interface Goal {
   id: string;
@@ -86,7 +87,7 @@ export default function GoalsPage() {
 
   const fetchGoals = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       const res = await fetch('/api/goals', {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -103,7 +104,7 @@ export default function GoalsPage() {
 
   const fetchMembers = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       const res = await fetch('/api/team', {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -117,7 +118,7 @@ export default function GoalsPage() {
   };
 
   const handleAddGoal = async (data: any) => {
-    const token = localStorage.getItem('token');
+    const token = getAuthToken();
     const res = await fetch('/api/goals', {
       method: 'POST',
       headers: {
@@ -136,7 +137,7 @@ export default function GoalsPage() {
   const handleEditGoal = async (data: any) => {
     if (!editingGoal) return;
 
-    const token = localStorage.getItem('token');
+    const token = getAuthToken();
     const res = await fetch(`/api/goals/${editingGoal.id}`, {
       method: 'PUT',
       headers: {
@@ -157,7 +158,7 @@ export default function GoalsPage() {
     if (!confirm(confirmMsg)) return;
 
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       const res = await fetch(`/api/goals/${goalId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
@@ -176,7 +177,7 @@ export default function GoalsPage() {
 
   const handleProgressChange = async (goalId: string, newProgress: number) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       const res = await fetch(`/api/goals/${goalId}`, {
         method: 'PUT',
         headers: {

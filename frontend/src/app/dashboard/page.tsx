@@ -14,6 +14,7 @@ import {
   Activity, Flame, ListChecks, CheckCircle2, AlertCircle, Download, KeyRound, Bell, X,
 } from 'lucide-react';
 import DailyQuote from '@/components/DailyQuote';
+import { getAuthToken } from '@/lib/token';
 
 /* ── Types ── */
 interface DashboardTask {
@@ -81,7 +82,7 @@ export default function DashboardPage() {
   const [notifOpen, setNotifOpen] = useState(false);
 
   const fetchNotifications = useCallback(() => {
-    const token = localStorage.getItem('token');
+    const token = getAuthToken();
     if (!token) return;
     fetch('/api/notifications', { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.ok ? r.json() : Promise.reject())
@@ -90,7 +91,7 @@ export default function DashboardPage() {
   }, []);
 
   const markAllRead = async () => {
-    const token = localStorage.getItem('token');
+    const token = getAuthToken();
     if (!token) return;
     await fetch('/api/notifications', { method: 'PUT', headers: { Authorization: `Bearer ${token}` } });
     setUnreadCount(0);
@@ -101,7 +102,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!isAuthenticated) return;
-    const token = localStorage.getItem('token');
+    const token = getAuthToken();
     if (!token) return;
     fetch('/api/dashboard', { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.ok ? r.json() : Promise.reject())
@@ -110,11 +111,13 @@ export default function DashboardPage() {
       .finally(() => setDashboardLoading(false));
   }, [isAuthenticated]);
 
+  const POLLING_INTERVAL_MS = 30000;
+
   // Fetch notifications + auto-refresh every 30s
   useEffect(() => {
     if (!isAuthenticated) return;
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000);
+    const interval = setInterval(fetchNotifications, POLLING_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [isAuthenticated, fetchNotifications]);
 

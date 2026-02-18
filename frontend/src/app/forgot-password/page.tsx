@@ -49,13 +49,13 @@ export default function ForgotPasswordPage() {
                 : 'If you are the organization owner, contact support:'}
             </p>
             <a 
-              href="mailto:***REMOVED***" 
+              href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@example.com'}`}
               className="inline-flex items-center gap-2 text-teal-600 hover:text-teal-700 
                          font-medium text-sm transition-colors"
               dir="ltr"
             >
               <Mail className="w-4 h-4" />
-              ***REMOVED***
+              {process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@example.com'}
             </a>
           </div>
 

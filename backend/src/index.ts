@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { initDatabase } from './models/database';
 import authRoutes from './routes/auth';
@@ -19,8 +21,21 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3100;
 
-// Middleware
-app.use(cors());
+// Security middleware
+app.use(helmet());
+
+const allowedOrigin = process.env.ALLOWED_ORIGIN || '*';
+app.use(cors({ origin: allowedOrigin }));
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: Number(process.env.RATE_LIMIT_MAX) || 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later' },
+});
+app.use(limiter);
+
 app.use(express.json());
 
 // Initialize database
